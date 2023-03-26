@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: brownout-controller
+  labels:
+    app: brownout-controller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: brownout-controller
+  template:
+    metadata:
+      labels:
+        app: brownout-controller
+    spec:
+      serviceAccountName: brownout-sa
+      containers:
+        - name: brownout-controller
+          image: lakshanbanneheke/brownout-controller:latest
+          imagePullPolicy: Always
