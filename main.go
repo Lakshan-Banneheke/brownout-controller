@@ -1,10 +1,13 @@
 package main
 
-import "fmt"
+import (
+	"brownout-controller/kubernetes-functions"
+	"fmt"
+)
 
 func main() {
-	clientset := getKubernetesClientSet()
+	clientset := kubernetes_functions.GetKubernetesClientSet()
 
-	nodeNames := getNodesWithLabel(clientset, "optional")
+	nodeNames := kubernetes_functions.GetNodesWithLabel(clientset, "optional")
 	fmt.Println(nodeNames)
 }

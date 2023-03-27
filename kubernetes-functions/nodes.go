@@ -1,4 +1,4 @@
-package main
+package kubernetes_functions
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
-func getNodesWithLabel(clientset *kubernetes.Clientset, label string) []string {
+func GetNodesWithLabel(clientset *kubernetes.Clientset, label string) []string {
 
 	labelSelector := labels.SelectorFromSet(labels.Set{"category": label})
 

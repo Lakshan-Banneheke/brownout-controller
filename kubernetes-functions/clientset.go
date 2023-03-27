@@ -1,4 +1,4 @@
-package main
+package kubernetes_functions
 
 import (
 	"k8s.io/client-go/kubernetes"
@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 )
 
-func getKubernetesClientSet() *kubernetes.Clientset {
+func GetKubernetesClientSet() *kubernetes.Clientset {
 	var config *rest.Config
 	var err error
 
