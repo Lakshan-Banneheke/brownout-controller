@@ -2,11 +2,11 @@ package kubernetes_functions
 
 import (
 	"context"
-	"fmt"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/kubernetes"
 	metrics "k8s.io/metrics/pkg/client/clientset/versioned"
+	"sort"
 	"strconv"
 )
 
@@ -31,7 +31,7 @@ func GetNodeNames(clientset *kubernetes.Clientset, label string) []string {
 	return nodeNames
 }
 
-func GetNodesSortedCPUUsage(metricsClient *metrics.Clientset, label string) map[string]int {
+func GetNodesSortedCPUUsage(metricsClient *metrics.Clientset, label string) []string {
 
 	labelSelector := labels.SelectorFromSet(labels.Set{"category": label})
 
@@ -47,22 +47,28 @@ func GetNodesSortedCPUUsage(metricsClient *metrics.Clientset, label string) map[
 	nodesCPUUsage := map[string]int{}
 	var nodeNames []string
 
-	//TODO For testing, Delete later
-	nodesCPUUsage["a"] = 12345
-	nodesCPUUsage["b"] = 4565465
-	nodesCPUUsage["c"] = 2342342344234432
-	nodeNames = append(nodeNames, "a", "b", "c")
-
 	for _, nodeMetric := range nodeMetrics.Items {
 		cpuUsage := nodeMetric.Usage.Cpu().String()
 		// Removing the unit "n" from CPU Usage and converting to int for ease of sorting
-		cpuUsageInt, _ := strconv.Atoi(cpuUsage[:len(cpuUsage)-1])
+		cpuUsageInt, err := strconv.Atoi(cpuUsage[:len(cpuUsage)-1])
+		if err != nil {
+			panic(err.Error())
+		}
 		nodesCPUUsage[nodeMetric.ObjectMeta.Name] = cpuUsageInt
 		nodeNames = append(nodeNames, nodeMetric.ObjectMeta.Name)
 	}
 
-	fmt.Println(nodesCPUUsage)
-	fmt.Println(nodeNames)
+	nodesSortedCPU := sortNodesUsage(nodesCPUUsage, nodeNames)
 
-	return nodesCPUUsage
+	return nodesSortedCPU
+}
+
+// function returns a list of node names in sorted order of increasing cpu usage
+func sortNodesUsage(nodesCPUUsage map[string]int, nodeNames []string) []string {
+
+	sort.SliceStable(nodeNames, func(i, j int) bool {
+		return nodesCPUUsage[nodeNames[i]] < nodesCPUUsage[nodeNames[j]]
+	})
+
+	return nodeNames
 }

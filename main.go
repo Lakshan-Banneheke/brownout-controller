@@ -11,7 +11,6 @@ func main() {
 	nodeNames := kubernetes_functions.GetNodeNames(kubernetesClientset, "optional")
 	nodesCPU := kubernetes_functions.GetNodesSortedCPUUsage(metricsClientSet, "optional")
 
-	fmt.Println("=====================================================")
 	fmt.Println(nodeNames)
 	fmt.Println(nodesCPU)
 
