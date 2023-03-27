@@ -1,7 +1,10 @@
 package main
 
+import "fmt"
+
 func main() {
 	clientset := getKubernetesClientSet()
 
-	getNodesWithLabel(clientset, "optional")
+	nodeNames := getNodesWithLabel(clientset, "optional")
+	fmt.Println(nodeNames)
 }

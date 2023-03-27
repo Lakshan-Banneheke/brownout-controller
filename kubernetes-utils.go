@@ -2,13 +2,12 @@ package main
 
 import (
 	"context"
-	"fmt"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/kubernetes"
 )
 
-func getNodesWithLabel(clientset *kubernetes.Clientset, label string) {
+func getNodesWithLabel(clientset *kubernetes.Clientset, label string) []string {
 
 	labelSelector := labels.SelectorFromSet(labels.Set{"category": label})
 
@@ -20,10 +19,11 @@ func getNodesWithLabel(clientset *kubernetes.Clientset, label string) {
 		panic(err.Error())
 	}
 
-	fmt.Println("NODE LIST:", nodeList)
-	fmt.Println("======================================================")
-	// print the names of the nodes
+	// create a list of node names
+	var nodeNames []string
 	for _, node := range nodeList.Items {
-		fmt.Println(node)
+		nodeNames = append(nodeNames, node.Name)
 	}
+
+	return nodeNames
 }
