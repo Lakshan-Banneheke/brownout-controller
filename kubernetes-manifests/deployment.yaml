@@ -19,3 +19,6 @@ spec:
         - name: brownout-controller
           image: lakshanbanneheke/brownout-controller:latest
           imagePullPolicy: Always
+          env:
+            - name: inCluster
+              value: "true"

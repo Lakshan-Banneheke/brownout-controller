@@ -3,11 +3,35 @@ package main
 import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
+	"k8s.io/client-go/tools/clientcmd"
+	"k8s.io/client-go/util/homedir"
+	"os"
+	"path/filepath"
 )
 
 func getKubernetesClientSet() *kubernetes.Clientset {
-	// creates the in-cluster config
-	config, err := rest.InClusterConfig()
+	var config *rest.Config
+	var err error
+
+	//check environment variables and gets the value of inCluster
+	inCluster, present := os.LookupEnv("inCluster")
+
+	//if inCluster env variable is not set, assuming in-cluster configuration
+	if !present {
+		inCluster = "true"
+	}
+
+	if inCluster == "true" {
+		// creates the in-cluster config
+		config, err = rest.InClusterConfig()
+	} else {
+		// creates out of cluster configuration assuming kube config file is in "/home/.kube/config"
+		config, err = clientcmd.BuildConfigFromFlags(
+			"",
+			filepath.Join(homedir.HomeDir(), ".kube/config"),
+		)
+	}
+
 	if err != nil {
 		panic(err.Error())
 	}
