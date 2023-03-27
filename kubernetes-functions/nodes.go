@@ -2,7 +2,6 @@ package kubernetes_functions
 
 import (
 	"context"
-	"fmt"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/kubernetes"
@@ -30,7 +29,7 @@ func GetNodeNames(clientset *kubernetes.Clientset, label string) []string {
 	return nodeNames
 }
 
-func GetNodeMetrics(metricsClient *metrics.Clientset, label string) {
+func GetNodesSortedCPUUsage(metricsClient *metrics.Clientset, label string) map[string]string {
 
 	labelSelector := labels.SelectorFromSet(labels.Set{"category": label})
 
@@ -42,19 +41,14 @@ func GetNodeMetrics(metricsClient *metrics.Clientset, label string) {
 		panic(err.Error())
 	}
 
-	//// create a list of node names
-	//var nodeCPUUsages []string
-	//for _, nodeMetric := range nodeMetrics.Items {
-	//	nodeCPUUsages = append(nodeCPUUsages, node.Name)
-	//}
-	//
-	//return nodeNames
+	nodes := map[string]string{}
+
+	//Make a map of node Name and cpu usage and return it
 
 	// print the CPU usage for the node
 	for _, nodeMetric := range nodeMetrics.Items {
-		fmt.Println(nodeMetric)
-		fmt.Println("======================")
-		fmt.Println(nodeMetric.Usage)
-		fmt.Printf("Node: %s, CPU Usage: %v\n", nodeMetric.ObjectMeta.Name, nodeMetric.Usage.Cpu())
+		nodes[nodeMetric.ObjectMeta.Name] = nodeMetric.Usage.Cpu().String()
 	}
+
+	return nodes
 }

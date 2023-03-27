@@ -9,7 +9,8 @@ func main() {
 	kubernetesClientset, metricsClientSet := kubernetes_functions.GetKubernetesClientSet()
 
 	nodeNames := kubernetes_functions.GetNodeNames(kubernetesClientset, "optional")
-	kubernetes_functions.GetNodeMetrics(metricsClientSet, "optional")
+	nodesCPU := kubernetes_functions.GetNodesSortedCPUUsage(metricsClientSet, "optional")
 	fmt.Println(nodeNames)
+	fmt.Println(nodesCPU)
 
 }
