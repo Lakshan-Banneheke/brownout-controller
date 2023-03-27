@@ -6,8 +6,10 @@ import (
 )
 
 func main() {
-	clientset := kubernetes_functions.GetKubernetesClientSet()
+	kubernetesClientset, metricsClientSet := kubernetes_functions.GetKubernetesClientSet()
 
-	nodeNames := kubernetes_functions.GetNodesWithLabel(clientset, "optional")
+	nodeNames := kubernetes_functions.GetNodeNames(kubernetesClientset, "optional")
+	kubernetes_functions.GetNodeMetrics(metricsClientSet, "optional")
 	fmt.Println(nodeNames)
+
 }

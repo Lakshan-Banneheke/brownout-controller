@@ -5,11 +5,41 @@ import (
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/homedir"
+	metrics "k8s.io/metrics/pkg/client/clientset/versioned"
 	"os"
 	"path/filepath"
 )
 
-func GetKubernetesClientSet() *kubernetes.Clientset {
+func GetKubernetesClientSet() (*kubernetes.Clientset, *metrics.Clientset) {
+	config := getConfig()
+
+	kubernetesClientset := getKubernetesClientSet(config)
+
+	metricsClientSet := getMetricsClient(config)
+
+	return kubernetesClientset, metricsClientSet
+}
+
+func getKubernetesClientSet(config *rest.Config) *kubernetes.Clientset {
+	// creates the kubernetes kubernetesClientset
+	kubernetesClientset, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		panic(err.Error())
+	}
+	return kubernetesClientset
+}
+
+func getMetricsClient(config *rest.Config) *metrics.Clientset {
+	// create a new metrics client
+	metricsClientSet, err := metrics.NewForConfig(config)
+
+	if err != nil {
+		panic(err.Error())
+	}
+	return metricsClientSet
+}
+
+func getConfig() *rest.Config {
 	var config *rest.Config
 	var err error
 
@@ -35,12 +65,5 @@ func GetKubernetesClientSet() *kubernetes.Clientset {
 	if err != nil {
 		panic(err.Error())
 	}
-
-	// creates the clientset
-	clientset, err := kubernetes.NewForConfig(config)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	return clientset
+	return config
 }
