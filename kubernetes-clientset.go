@@ -16,9 +16,9 @@ func getKubernetesClientSet() *kubernetes.Clientset {
 	//check environment variables and gets the value of inCluster
 	inCluster, present := os.LookupEnv("inCluster")
 
-	//if inCluster env variable is not set, assuming in-cluster configuration
+	//if inCluster env variable is not set, assuming out of cluster configuration
 	if !present {
-		inCluster = "true"
+		inCluster = "false"
 	}
 
 	if inCluster == "true" {

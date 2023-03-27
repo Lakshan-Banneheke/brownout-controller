@@ -4,5 +4,5 @@ metadata:
   name: brownout-cr
 rules:
   - apiGroups: [""] # "" indicates the core API group
-    resources: ["namespaces"]
+    resources: ["nodes"]
     verbs: ["list"]
