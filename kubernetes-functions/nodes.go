@@ -52,6 +52,9 @@ func GetNodeMetrics(metricsClient *metrics.Clientset, label string) {
 
 	// print the CPU usage for the node
 	for _, nodeMetric := range nodeMetrics.Items {
+		fmt.Println(nodeMetric)
+		fmt.Println("======================")
+		fmt.Println(nodeMetric.Usage)
 		fmt.Printf("Node: %s, CPU Usage: %v\n", nodeMetric.ObjectMeta.Name, nodeMetric.Usage.Cpu())
 	}
 }
