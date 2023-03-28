@@ -2,9 +2,11 @@ package kubernetes_functions
 
 import (
 	"context"
+	"fmt"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/kubernetes"
+	"k8s.io/metrics/pkg/apis/metrics/v1beta1"
 	metrics "k8s.io/metrics/pkg/client/clientset/versioned"
 	"sort"
 	"strconv"
@@ -31,7 +33,7 @@ func GetPodNames(clientset *kubernetes.Clientset, namespace string, categoryLabe
 	return podNames
 }
 
-func GetPodsSortedCPUUsage(metricsClient *metrics.Clientset, namespace string, categoryLabel string) []string {
+func GetPodsSortedCPUUsageAll(metricsClient *metrics.Clientset, namespace string, categoryLabel string) []string {
 
 	labelSelector := labels.SelectorFromSet(labels.Set{"category": categoryLabel})
 
@@ -43,6 +45,29 @@ func GetPodsSortedCPUUsage(metricsClient *metrics.Clientset, namespace string, c
 		panic(err.Error())
 	}
 
+	podsSortedCPU := extractAndSortMetrics(podMetrics)
+
+	return podsSortedCPU
+}
+
+func GetPodsSortedCPUUsageNode(nodeName string, metricsClient *metrics.Clientset, namespace string, categoryLabel string) []string {
+
+	labelSelector := labels.SelectorFromSet(labels.Set{"category": categoryLabel})
+
+	// get the CPU usage for the pod that matches the label selector
+	podMetrics, err := metricsClient.MetricsV1beta1().PodMetricses(namespace).List(context.Background(),
+		metav1.ListOptions{LabelSelector: labelSelector.String(), FieldSelector: fmt.Sprintf("spec.nodeName=%s", nodeName)})
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	podsSortedCPU := extractAndSortMetrics(podMetrics)
+
+	return podsSortedCPU
+}
+
+func extractAndSortMetrics(podMetrics *v1beta1.PodMetricsList) []string {
 	//Make a map of pod Name and cpu usage
 	podsCPUUsage := map[string]int{}
 	var podNames []string
@@ -70,7 +95,6 @@ func GetPodsSortedCPUUsage(metricsClient *metrics.Clientset, namespace string, c
 	}
 
 	podsSortedCPU := sortPodsUsage(podsCPUUsage, podNames)
-
 	return podsSortedCPU
 }
 
