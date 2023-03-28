@@ -28,4 +28,7 @@ func main() {
 	fmt.Println(podsCPUSortedInstance4)
 	fmt.Println("==============Instance 5===================")
 	fmt.Println(podsCPUSortedInstance5)
+
+	fmt.Println("==============")
+	fmt.Println(kubernetes_functions.GetPodNamesNode(kubernetesClientset, "wso2", "optional"))
 }
