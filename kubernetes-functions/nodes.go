@@ -14,7 +14,7 @@ func GetNodeNames(clientset *kubernetes.Clientset, label string) []string {
 
 	labelSelector := labels.SelectorFromSet(labels.Set{"category": label})
 
-	// get the list of nodes that match the label selector
+	// get the list of nodes that match the label selector (optional or mandatory or mixed)
 	nodeList, err := clientset.CoreV1().Nodes().List(context.Background(),
 		metav1.ListOptions{LabelSelector: labelSelector.String()})
 

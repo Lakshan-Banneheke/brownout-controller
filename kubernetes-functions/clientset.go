@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 )
 
-func GetKubernetesClientSet() (*kubernetes.Clientset, *metrics.Clientset) {
+func GetClientSets() (*kubernetes.Clientset, *metrics.Clientset) {
 	config := getConfig()
 
 	kubernetesClientset := getKubernetesClientSet(config)

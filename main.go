@@ -6,12 +6,14 @@ import (
 )
 
 func main() {
-	kubernetesClientset, metricsClientSet := kubernetes_functions.GetKubernetesClientSet()
+	kubernetesClientset, metricsClientSet := kubernetes_functions.GetClientSets()
 
-	nodeNames := kubernetes_functions.GetNodeNames(kubernetesClientset, "optional")
+	//nodeNames := kubernetes_functions.GetNodeNames(kubernetesClientset, "optional")
 	nodesCPU := kubernetes_functions.GetNodesSortedCPUUsage(metricsClientSet, "optional")
 
-	fmt.Println(nodeNames)
+	podNames := kubernetes_functions.GetPodNames(kubernetesClientset, "", "optional")
+	//fmt.Println(nodeNames)
 	fmt.Println(nodesCPU)
+	fmt.Println(podNames)
 
 }
