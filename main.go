@@ -16,6 +16,7 @@ func main() {
 	podsCPU := kubernetes_functions.GetPodsSortedCPUUsage(metricsClientSet, "default", "optional")
 	//fmt.Println(nodeNames)
 	//fmt.Println(nodesCPU)
+	fmt.Println("=================================")
 	fmt.Println(podNames)
 	fmt.Println(podsCPU)
 

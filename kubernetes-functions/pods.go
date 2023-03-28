@@ -2,6 +2,7 @@ package kubernetes_functions
 
 import (
 	"context"
+	"fmt"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/kubernetes"
@@ -50,7 +51,9 @@ func GetPodsSortedCPUUsage(metricsClient *metrics.Clientset, namespace string, c
 	for _, podMetric := range podMetrics.Items {
 		podCPU := 0
 		for _, cont := range podMetric.Containers {
+			fmt.Println(cont.Name)
 			contCPU := cont.Usage.Cpu().String()
+			fmt.Println(contCPU)
 			// Removing the unit "n" from CPU Usage and converting to int for ease of sorting
 			cpuUsageInt, err := strconv.Atoi(contCPU[:len(contCPU)-1])
 			if err != nil {
