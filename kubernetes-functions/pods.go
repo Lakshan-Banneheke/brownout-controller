@@ -2,7 +2,6 @@ package kubernetes_functions
 
 import (
 	"context"
-	"fmt"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/kubernetes"
@@ -69,8 +68,6 @@ func GetPodsSortedCPUUsage(metricsClient *metrics.Clientset, namespace string, c
 		podsCPUUsage[podMetric.ObjectMeta.Name] = podCPU
 		podNames = append(podNames, podMetric.ObjectMeta.Name)
 	}
-
-	fmt.Println(podsCPUUsage)
 
 	podsSortedCPU := sortPodsUsage(podsCPUUsage, podNames)
 
