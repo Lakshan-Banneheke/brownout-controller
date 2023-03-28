@@ -12,8 +12,8 @@ func main() {
 	//nodeNames := kubernetes_functions.GetNodeNames(kubernetesClientset, "optional")
 	//nodesCPU := kubernetes_functions.GetNodesSortedCPUUsage(metricsClientSet, "optional")
 
-	podNames := kubernetes_functions.GetPodNames(kubernetesClientset, "default", "optional")
-	podsCPU := kubernetes_functions.GetPodsSortedCPUUsage(metricsClientSet, "default", "optional")
+	podNames := kubernetes_functions.GetPodNames(kubernetesClientset, "wso2", "optional")
+	podsCPU := kubernetes_functions.GetPodsSortedCPUUsage(metricsClientSet, "wso2", "optional")
 	//fmt.Println(nodeNames)
 	//fmt.Println(nodesCPU)
 	fmt.Println("=================================")
