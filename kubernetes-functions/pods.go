@@ -2,7 +2,6 @@ package kubernetes_functions
 
 import (
 	"context"
-	"fmt"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/kubernetes"
@@ -56,7 +55,7 @@ func GetPodsSortedCPUUsageNode(nodeName string, metricsClient *metrics.Clientset
 
 	// get the CPU usage for the pod that matches the label selector
 	podMetrics, err := metricsClient.MetricsV1beta1().PodMetricses(namespace).List(context.Background(),
-		metav1.ListOptions{LabelSelector: labelSelector.String(), FieldSelector: fmt.Sprintf("spec.nodeName=%s", nodeName)})
+		metav1.ListOptions{LabelSelector: labelSelector.String(), FieldSelector: "spec.nodeName=" + nodeName})
 
 	if err != nil {
 		panic(err.Error())
