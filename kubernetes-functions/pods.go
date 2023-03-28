@@ -66,10 +66,11 @@ func GetPodsSortedCPUUsage(metricsClient *metrics.Clientset, namespace string, c
 			podCPU += cpuUsageInt
 		}
 
-		fmt.Println(podsCPUUsage)
 		podsCPUUsage[podMetric.ObjectMeta.Name] = podCPU
 		podNames = append(podNames, podMetric.ObjectMeta.Name)
 	}
+
+	fmt.Println(podsCPUUsage)
 
 	podsSortedCPU := sortPodsUsage(podsCPUUsage, podNames)
 
