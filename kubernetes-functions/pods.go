@@ -32,13 +32,34 @@ func GetPodNames(clientset *kubernetes.Clientset, namespace string, categoryLabe
 	return podNames
 }
 
+func GetPodNamesNode(clientset *kubernetes.Clientset, namespace string, categoryLabel string) []string {
+
+	labelSelector := labels.SelectorFromSet(labels.Set{"category": categoryLabel})
+
+	// get the list of pods that match the categoryLabel selector (optional or mandatory)
+	podList, err := clientset.CoreV1().Pods(namespace).List(context.Background(),
+		metav1.ListOptions{LabelSelector: labelSelector.String()})
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	// create a list of pod names
+	var podNames []string
+	for _, pod := range podList.Items {
+		podNames = append(podNames, pod.Name)
+	}
+
+	return podNames
+}
+
 func GetPodsSortedCPUUsageAll(metricsClient *metrics.Clientset, namespace string, categoryLabel string) []string {
 
 	labelSelector := labels.SelectorFromSet(labels.Set{"category": categoryLabel})
 
 	// get the CPU usage for the pod that matches the label selector
 	podMetrics, err := metricsClient.MetricsV1beta1().PodMetricses(namespace).List(context.Background(),
-		metav1.ListOptions{LabelSelector: labelSelector.String()})
+		metav1.ListOptions{LabelSelector: labelSelector.String(), FieldSelector: "spec.nodeName=instance-4"})
 
 	if err != nil {
 		panic(err.Error())
