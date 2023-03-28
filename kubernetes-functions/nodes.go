@@ -10,9 +10,9 @@ import (
 	"strconv"
 )
 
-func GetNodeNames(clientset *kubernetes.Clientset, label string) []string {
+func GetNodeNames(clientset *kubernetes.Clientset, categoryLabel string) []string {
 
-	labelSelector := labels.SelectorFromSet(labels.Set{"category": label})
+	labelSelector := labels.SelectorFromSet(labels.Set{"category": categoryLabel})
 
 	// get the list of nodes that match the label selector (optional or mandatory or mixed)
 	nodeList, err := clientset.CoreV1().Nodes().List(context.Background(),
@@ -31,9 +31,9 @@ func GetNodeNames(clientset *kubernetes.Clientset, label string) []string {
 	return nodeNames
 }
 
-func GetNodesSortedCPUUsage(metricsClient *metrics.Clientset, label string) []string {
+func GetNodesSortedCPUUsage(metricsClient *metrics.Clientset, categoryLabel string) []string {
 
-	labelSelector := labels.SelectorFromSet(labels.Set{"category": label})
+	labelSelector := labels.SelectorFromSet(labels.Set{"category": categoryLabel})
 
 	// get the CPU usage for the node that matches the label selector
 	nodeMetrics, err := metricsClient.MetricsV1beta1().NodeMetricses().List(context.Background(),
