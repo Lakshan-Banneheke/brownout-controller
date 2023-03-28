@@ -54,8 +54,14 @@ func GetPodsSortedCPUUsage(metricsClient *metrics.Clientset, namespace string, c
 			fmt.Println(cont.Name)
 			contCPU := cont.Usage.Cpu().String()
 			fmt.Println(contCPU)
+			var contCPUTrimmed string
 			// Removing the unit "n" from CPU Usage and converting to int for ease of sorting
-			cpuUsageInt, err := strconv.Atoi(contCPU[:len(contCPU)-1])
+			if contCPU != "0" {
+				contCPUTrimmed = contCPU[:len(contCPU)-1]
+			} else {
+				contCPUTrimmed = contCPU
+			}
+			cpuUsageInt, err := strconv.Atoi(contCPUTrimmed)
 			if err != nil {
 				panic(err.Error())
 			}
