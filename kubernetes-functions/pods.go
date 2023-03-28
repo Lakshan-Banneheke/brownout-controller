@@ -76,7 +76,7 @@ func GetPodsSortedCPUUsageNode(nodeName string, metricsClient *metrics.Clientset
 
 	// get the CPU usage for the pod that matches the label selector
 	podMetrics, err := metricsClient.MetricsV1beta1().PodMetricses(namespace).List(context.Background(),
-		metav1.ListOptions{LabelSelector: labelSelector.String(), FieldSelector: "spec.nodeName=" + nodeName})
+		metav1.ListOptions{LabelSelector: labelSelector.String(), FieldSelector: "spec.nodeName=instance-4"})
 
 	if err != nil {
 		panic(err.Error())

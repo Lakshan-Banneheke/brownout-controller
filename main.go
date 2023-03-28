@@ -16,19 +16,19 @@ func main() {
 	podNames := kubernetes_functions.GetPodNames(kubernetesClientset, "wso2", "optional")
 	podsCPUSorted := kubernetes_functions.GetPodsSortedCPUUsageAll(metricsClientSet, "wso2", "optional")
 
-	//podsCPUSortedInstance4 := kubernetes_functions.GetPodsSortedCPUUsageNode("instance-4", metricsClientSet, "wso2", "optional")
-	//podsCPUSortedInstance5 := kubernetes_functions.GetPodsSortedCPUUsageNode("instance-5", metricsClientSet, "wso2", "optional")
+	podsCPUSortedInstance4 := kubernetes_functions.GetPodsSortedCPUUsageNode("instance-4", metricsClientSet, "wso2", "optional")
+	podsCPUSortedInstance5 := kubernetes_functions.GetPodsSortedCPUUsageNode("instance-5", metricsClientSet, "wso2", "optional")
 
 	//fmt.Println(nodeNames)
 	//fmt.Println(nodesCPU)
 	fmt.Println("==============All Pods ===================")
 	fmt.Println(podNames)
 	fmt.Println(podsCPUSorted)
-	//fmt.Println("==============Instance 4===================")
-	//fmt.Println(podsCPUSortedInstance4)
-	//fmt.Println("==============Instance 5===================")
-	//fmt.Println(podsCPUSortedInstance5)
+	fmt.Println("==============Instance 4===================")
+	fmt.Println(podsCPUSortedInstance4)
+	fmt.Println("==============Instance 5===================")
+	fmt.Println(podsCPUSortedInstance5)
 
-	fmt.Println("==============")
-	fmt.Println(kubernetes_functions.GetPodNamesNode(kubernetesClientset, "wso2", "optional"))
+	//fmt.Println("==============")
+	//fmt.Println(kubernetes_functions.GetPodNamesNode(kubernetesClientset, "wso2", "optional"))
 }
