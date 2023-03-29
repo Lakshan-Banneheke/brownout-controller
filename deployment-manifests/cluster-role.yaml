@@ -5,4 +5,4 @@ metadata:
 rules:
   - apiGroups: ["", "metrics.k8s.io"] # "" indicates the core API group
     resources: ["nodes", "pods"]
-    verbs: ["list"]
+    verbs: ["get", "list"]
