@@ -57,38 +57,37 @@ func GetPodsSortedCPUUsageAll(metricsClient *metrics.Clientset, namespace string
 
 	podsCPUUsage, podNames := extractMetrics(podMetrics.Items, err)
 
-	fmt.Println(podsCPUUsage)
 	return sortPodsUsage(podsCPUUsage, podNames)
 
 }
 
-//func GetPodsSortedCPUUsageInNode(nodeName string, clientset *kubernetes.Clientset, metricsClient *metrics.Clientset, namespace string, categoryLabel string) []string {
-//
-//	pods := GetPodsInNode(nodeName, clientset, namespace, categoryLabel)
-//
-//	var podMetricsItems []*v1beta1.PodMetrics
-//
-//	for _, podName := range pods {
-//		podMetrics, err := metricsClient.MetricsV1beta1().PodMetricses(namespace).Get(context.Background(), podName, metav1.GetOptions{})
-//		if err != nil {
-//			panic(err.Error())
-//		}
-//		podMetricsItems = append(podMetricsItems, podMetrics)
-//	}
-//	// get the CPU usage for the pod that matches the label selector
-//	// TODO Remove the below line, doesnt work. Get the pods of the node and loop through them and get metrics for each pod
-//
-//	podsCPUUsage, podNames := extractMetrics(podMetrics, err)
-//
-//	return sortPodsUsage(podsCPUUsage, podNames)
-//}
+func GetPodsSortedCPUUsageInNode(nodeName string, clientset *kubernetes.Clientset, metricsClient *metrics.Clientset, namespace string, categoryLabel string) []string {
+
+	// get the pods in the given node of the given category
+	pods := GetPodsInNode(nodeName, clientset, namespace, categoryLabel)
+
+	// get pod Metrics for all the pods in that node
+	var podMetricsItems []v1beta1.PodMetrics
+	for _, podName := range pods {
+		podMetrics, err := metricsClient.MetricsV1beta1().PodMetricses(namespace).Get(context.Background(), podName, metav1.GetOptions{})
+		if err != nil {
+			panic(err.Error())
+		}
+		podMetricsItems = append(podMetricsItems, *podMetrics)
+	}
+
+	podsCPUUsage, podNames := extractMetrics(podMetricsItems, nil)
+
+	fmt.Println(podsCPUUsage)
+	return sortPodsUsage(podsCPUUsage, podNames)
+}
 
 func extractMetrics(podMetricsItems []v1beta1.PodMetrics, err error) (map[string]int, []string) {
 	if err != nil {
 		panic(err.Error())
 	}
 
-	//Make a map of pod Name and cpu usage
+	// make a map of pod Name and cpu usage
 	podsCPUUsage := map[string]int{}
 	var podNames []string
 
