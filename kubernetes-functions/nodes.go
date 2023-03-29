@@ -3,7 +3,6 @@ package kubernetes_functions
 import (
 	"context"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/kubernetes"
 	metrics "k8s.io/metrics/pkg/client/clientset/versioned"
 	"sort"
@@ -12,11 +11,9 @@ import (
 
 func GetNodeNames(clientset *kubernetes.Clientset, categoryLabel string) []string {
 
-	labelSelector := labels.SelectorFromSet(labels.Set{"category": categoryLabel})
-
 	// get the list of nodes that match the label selector (optional or mandatory or mixed)
 	nodeList, err := clientset.CoreV1().Nodes().List(context.Background(),
-		metav1.ListOptions{LabelSelector: labelSelector.String()})
+		metav1.ListOptions{LabelSelector: "category=" + categoryLabel})
 
 	if err != nil {
 		panic(err.Error())
@@ -33,11 +30,9 @@ func GetNodeNames(clientset *kubernetes.Clientset, categoryLabel string) []strin
 
 func GetNodesSortedCPUUsage(metricsClient *metrics.Clientset, categoryLabel string) []string {
 
-	labelSelector := labels.SelectorFromSet(labels.Set{"category": categoryLabel})
-
 	// get the CPU usage for the node that matches the label selector
 	nodeMetrics, err := metricsClient.MetricsV1beta1().NodeMetricses().List(context.Background(),
-		metav1.ListOptions{LabelSelector: labelSelector.String()})
+		metav1.ListOptions{LabelSelector: "category=" + categoryLabel})
 
 	if err != nil {
 		panic(err.Error())

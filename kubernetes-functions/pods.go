@@ -3,7 +3,6 @@ package kubernetes_functions
 import (
 	"context"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/metrics/pkg/apis/metrics/v1beta1"
 	metrics "k8s.io/metrics/pkg/client/clientset/versioned"
@@ -13,11 +12,9 @@ import (
 
 func GetPodNames(clientset *kubernetes.Clientset, namespace string, categoryLabel string) []string {
 
-	labelSelector := labels.SelectorFromSet(labels.Set{"category": categoryLabel})
-
 	// get the list of pods that match the categoryLabel selector (optional or mandatory)
 	podList, err := clientset.CoreV1().Pods(namespace).List(context.Background(),
-		metav1.ListOptions{LabelSelector: labelSelector.String()})
+		metav1.ListOptions{LabelSelector: "category=" + categoryLabel})
 
 	if err != nil {
 		panic(err.Error())
@@ -34,12 +31,10 @@ func GetPodNames(clientset *kubernetes.Clientset, namespace string, categoryLabe
 
 func GetPodsInNode(nodeName string, clientset *kubernetes.Clientset, namespace string, categoryLabel string) []string {
 
-	labelSelector := labels.SelectorFromSet(labels.Set{"category": categoryLabel})
-
 	// get the list of pods that match the categoryLabel selector (optional or mandatory)
 	//TODO check if the label selector can be set in one line like the field selector
 	podList, err := clientset.CoreV1().Pods(namespace).List(context.Background(),
-		metav1.ListOptions{LabelSelector: labelSelector.String(), FieldSelector: "spec.nodeName=" + nodeName})
+		metav1.ListOptions{LabelSelector: "category=" + categoryLabel, FieldSelector: "spec.nodeName=" + nodeName})
 
 	if err != nil {
 		panic(err.Error())
@@ -56,23 +51,19 @@ func GetPodsInNode(nodeName string, clientset *kubernetes.Clientset, namespace s
 
 func GetPodsSortedCPUUsageAll(metricsClient *metrics.Clientset, namespace string, categoryLabel string) []string {
 
-	labelSelector := labels.SelectorFromSet(labels.Set{"category": categoryLabel})
-
 	// get the CPU usage for the pod that matches the label selector
 	podMetrics, err := metricsClient.MetricsV1beta1().PodMetricses(namespace).List(context.Background(),
-		metav1.ListOptions{LabelSelector: labelSelector.String()})
+		metav1.ListOptions{LabelSelector: "category=" + categoryLabel})
 
 	return extractAndSortMetrics(podMetrics, err)
 }
 
 func GetPodsSortedCPUUsageNode(nodeName string, metricsClient *metrics.Clientset, namespace string, categoryLabel string) []string {
 
-	labelSelector := labels.SelectorFromSet(labels.Set{"category": categoryLabel})
-
 	// get the CPU usage for the pod that matches the label selector
 	// TODO Remove the below line, doesnt work. Get the pods of the node and loop through them and get metrics for each pod
 	podMetrics, err := metricsClient.MetricsV1beta1().PodMetricses(namespace).List(context.Background(),
-		metav1.ListOptions{LabelSelector: labelSelector.String(), FieldSelector: "spec.nodeName=" + nodeName})
+		metav1.ListOptions{LabelSelector: "category=" + categoryLabel, FieldSelector: "spec.nodeName=" + nodeName})
 
 	return extractAndSortMetrics(podMetrics, err)
 }

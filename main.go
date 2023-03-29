@@ -16,8 +16,8 @@ func main() {
 	fmt.Println(nodesCPU)
 
 	//namespace is set as wso2 for testing
-	podNames := kubernetes_functions.GetPodNames(kubernetesClientset, "default", "optional")
-	podsCPUSorted := kubernetes_functions.GetPodsSortedCPUUsageAll(metricsClientSet, "default", "optional")
+	podNames := kubernetes_functions.GetPodNames(kubernetesClientset, "wso2", "optional")
+	podsCPUSorted := kubernetes_functions.GetPodsSortedCPUUsageAll(metricsClientSet, "wso2", "optional")
 
 	fmt.Println("==============All Pods ===================")
 	fmt.Println(podNames)
