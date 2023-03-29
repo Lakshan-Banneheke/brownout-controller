@@ -32,13 +32,14 @@ func GetPodNames(clientset *kubernetes.Clientset, namespace string, categoryLabe
 	return podNames
 }
 
-func GetPodNamesNode(clientset *kubernetes.Clientset, namespace string, categoryLabel string) []string {
+func GetPodsInNode(nodeName string, clientset *kubernetes.Clientset, namespace string, categoryLabel string) []string {
 
 	labelSelector := labels.SelectorFromSet(labels.Set{"category": categoryLabel})
 
 	// get the list of pods that match the categoryLabel selector (optional or mandatory)
+	//TODO check if the label selector can be set in one line like the field selector
 	podList, err := clientset.CoreV1().Pods(namespace).List(context.Background(),
-		metav1.ListOptions{LabelSelector: labelSelector.String(), FieldSelector: "spec.nodeName=instance-4"})
+		metav1.ListOptions{LabelSelector: labelSelector.String(), FieldSelector: "spec.nodeName=" + nodeName})
 
 	if err != nil {
 		panic(err.Error())
@@ -61,13 +62,7 @@ func GetPodsSortedCPUUsageAll(metricsClient *metrics.Clientset, namespace string
 	podMetrics, err := metricsClient.MetricsV1beta1().PodMetricses(namespace).List(context.Background(),
 		metav1.ListOptions{LabelSelector: labelSelector.String()})
 
-	if err != nil {
-		panic(err.Error())
-	}
-
-	podsSortedCPU := extractAndSortMetrics(podMetrics)
-
-	return podsSortedCPU
+	return extractAndSortMetrics(podMetrics, err)
 }
 
 func GetPodsSortedCPUUsageNode(nodeName string, metricsClient *metrics.Clientset, namespace string, categoryLabel string) []string {
@@ -75,19 +70,18 @@ func GetPodsSortedCPUUsageNode(nodeName string, metricsClient *metrics.Clientset
 	labelSelector := labels.SelectorFromSet(labels.Set{"category": categoryLabel})
 
 	// get the CPU usage for the pod that matches the label selector
+	// TODO Remove the below line, doesnt work. Get the pods of the node and loop through them and get metrics for each pod
 	podMetrics, err := metricsClient.MetricsV1beta1().PodMetricses(namespace).List(context.Background(),
-		metav1.ListOptions{LabelSelector: labelSelector.String(), FieldSelector: "spec.nodeName=instance-4"})
+		metav1.ListOptions{LabelSelector: labelSelector.String(), FieldSelector: "spec.nodeName=" + nodeName})
 
+	return extractAndSortMetrics(podMetrics, err)
+}
+
+func extractAndSortMetrics(podMetrics *v1beta1.PodMetricsList, err error) []string {
 	if err != nil {
 		panic(err.Error())
 	}
 
-	podsSortedCPU := extractAndSortMetrics(podMetrics)
-
-	return podsSortedCPU
-}
-
-func extractAndSortMetrics(podMetrics *v1beta1.PodMetricsList) []string {
 	//Make a map of pod Name and cpu usage
 	podsCPUUsage := map[string]int{}
 	var podNames []string
