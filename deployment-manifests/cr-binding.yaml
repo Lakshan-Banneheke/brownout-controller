@@ -5,7 +5,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: brownout-sa
-    namespace: default
+    namespace: wso2 #Namespace set to wso2 for testing due to WSO2 IS deployment
 roleRef:
   kind: ClusterRole
   name: brownout-cr
