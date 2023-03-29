@@ -2,7 +2,6 @@ package kubernetes_functions
 
 import (
 	"context"
-	"fmt"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/metrics/pkg/apis/metrics/v1beta1"
@@ -78,7 +77,6 @@ func GetPodsSortedCPUUsageInNode(nodeName string, clientset *kubernetes.Clientse
 
 	podsCPUUsage, podNames := extractMetrics(podMetricsItems, nil)
 
-	fmt.Println(podsCPUUsage)
 	return sortPodsUsage(podsCPUUsage, podNames)
 }
 
