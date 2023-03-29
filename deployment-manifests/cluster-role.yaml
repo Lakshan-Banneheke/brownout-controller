@@ -3,6 +3,6 @@ apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: brownout-cr
 rules:
-  - apiGroups: [""] # "" indicates the core API group
-    resources: ["nodes"]
+  - apiGroups: ["", "metrics.k8s.io"] # "" indicates the core API group
+    resources: ["nodes", "pods"]
     verbs: ["list"]
