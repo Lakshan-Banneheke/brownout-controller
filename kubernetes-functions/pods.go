@@ -2,6 +2,7 @@ package kubernetes_functions
 
 import (
 	"context"
+	"fmt"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/metrics/pkg/apis/metrics/v1beta1"
@@ -32,7 +33,6 @@ func GetPodNames(clientset *kubernetes.Clientset, namespace string, categoryLabe
 func GetPodsInNode(nodeName string, clientset *kubernetes.Clientset, namespace string, categoryLabel string) []string {
 
 	// get the list of pods that match the categoryLabel selector (optional or mandatory)
-	//TODO check if the label selector can be set in one line like the field selector
 	podList, err := clientset.CoreV1().Pods(namespace).List(context.Background(),
 		metav1.ListOptions{LabelSelector: "category=" + categoryLabel, FieldSelector: "spec.nodeName=" + nodeName})
 
@@ -55,20 +55,35 @@ func GetPodsSortedCPUUsageAll(metricsClient *metrics.Clientset, namespace string
 	podMetrics, err := metricsClient.MetricsV1beta1().PodMetricses(namespace).List(context.Background(),
 		metav1.ListOptions{LabelSelector: "category=" + categoryLabel})
 
-	return extractAndSortMetrics(podMetrics, err)
+	podsCPUUsage, podNames := extractMetrics(podMetrics.Items, err)
+
+	fmt.Println(podsCPUUsage)
+	return sortPodsUsage(podsCPUUsage, podNames)
+
 }
 
-func GetPodsSortedCPUUsageNode(nodeName string, metricsClient *metrics.Clientset, namespace string, categoryLabel string) []string {
+//func GetPodsSortedCPUUsageInNode(nodeName string, clientset *kubernetes.Clientset, metricsClient *metrics.Clientset, namespace string, categoryLabel string) []string {
+//
+//	pods := GetPodsInNode(nodeName, clientset, namespace, categoryLabel)
+//
+//	var podMetricsItems []*v1beta1.PodMetrics
+//
+//	for _, podName := range pods {
+//		podMetrics, err := metricsClient.MetricsV1beta1().PodMetricses(namespace).Get(context.Background(), podName, metav1.GetOptions{})
+//		if err != nil {
+//			panic(err.Error())
+//		}
+//		podMetricsItems = append(podMetricsItems, podMetrics)
+//	}
+//	// get the CPU usage for the pod that matches the label selector
+//	// TODO Remove the below line, doesnt work. Get the pods of the node and loop through them and get metrics for each pod
+//
+//	podsCPUUsage, podNames := extractMetrics(podMetrics, err)
+//
+//	return sortPodsUsage(podsCPUUsage, podNames)
+//}
 
-	// get the CPU usage for the pod that matches the label selector
-	// TODO Remove the below line, doesnt work. Get the pods of the node and loop through them and get metrics for each pod
-	podMetrics, err := metricsClient.MetricsV1beta1().PodMetricses(namespace).List(context.Background(),
-		metav1.ListOptions{LabelSelector: "category=" + categoryLabel, FieldSelector: "spec.nodeName=" + nodeName})
-
-	return extractAndSortMetrics(podMetrics, err)
-}
-
-func extractAndSortMetrics(podMetrics *v1beta1.PodMetricsList, err error) []string {
+func extractMetrics(podMetricsItems []v1beta1.PodMetrics, err error) (map[string]int, []string) {
 	if err != nil {
 		panic(err.Error())
 	}
@@ -77,7 +92,7 @@ func extractAndSortMetrics(podMetrics *v1beta1.PodMetricsList, err error) []stri
 	podsCPUUsage := map[string]int{}
 	var podNames []string
 
-	for _, podMetric := range podMetrics.Items {
+	for _, podMetric := range podMetricsItems {
 		podCPU := 0
 		for _, cont := range podMetric.Containers {
 			contCPU := cont.Usage.Cpu().String()
@@ -99,8 +114,7 @@ func extractAndSortMetrics(podMetrics *v1beta1.PodMetricsList, err error) []stri
 		podNames = append(podNames, podMetric.ObjectMeta.Name)
 	}
 
-	podsSortedCPU := sortPodsUsage(podsCPUUsage, podNames)
-	return podsSortedCPU
+	return podsCPUUsage, podNames
 }
 
 // function returns a list of node names in sorted order of increasing cpu usage

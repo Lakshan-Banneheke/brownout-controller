@@ -23,8 +23,8 @@ func main() {
 	fmt.Println(podNames)
 	fmt.Println(podsCPUSorted)
 
-	//podsCPUSortedInstance4 := kubernetes_functions.GetPodsSortedCPUUsageNode("instance-4", metricsClientSet, "wso2", "optional")
-	//podsCPUSortedInstance5 := kubernetes_functions.GetPodsSortedCPUUsageNode("instance-5", metricsClientSet, "wso2", "optional")
+	//podsCPUSortedInstance4 := kubernetes_functions.GetPodsSortedCPUUsageInNode("instance-4", kubernetesClientset, metricsClientSet, "wso2", "optional")
+	//podsCPUSortedInstance5 := kubernetes_functions.GetPodsSortedCPUUsageInNode("instance-5", kubernetesClientset, metricsClientSet, "wso2", "optional")
 	//
 
 	//fmt.Println("==============Instance 4===================")
