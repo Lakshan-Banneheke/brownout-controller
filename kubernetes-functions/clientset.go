@@ -12,11 +12,8 @@ import (
 
 func GetClientSets() (*kubernetes.Clientset, *metrics.Clientset) {
 	config := getConfig()
-
 	kubernetesClientset := getKubernetesClientSet(config)
-
 	metricsClientSet := getMetricsClient(config)
-
 	return kubernetesClientset, metricsClientSet
 }
 
@@ -32,7 +29,6 @@ func getKubernetesClientSet(config *rest.Config) *kubernetes.Clientset {
 func getMetricsClient(config *rest.Config) *metrics.Clientset {
 	// create a new metrics client
 	metricsClientSet, err := metrics.NewForConfig(config)
-
 	if err != nil {
 		panic(err.Error())
 	}
