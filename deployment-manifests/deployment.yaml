@@ -17,7 +17,7 @@ spec:
       serviceAccountName: brownout-sa
       containers:
         - name: brownout-controller
-          image: lakshanbanneheke/brownout-controller:latest
+          image: lakshanbanneheke/brownout-controller:rpi
           imagePullPolicy: Always
           env:
             - name: inCluster
