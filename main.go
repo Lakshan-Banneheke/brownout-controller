@@ -29,5 +29,8 @@ func main() {
 	//podsCPUSortedInstance5 := kubernetes_functions.GetPodsSortedCPUUsageInNode("instance-5", kubernetesClientset, metricsClientSet, "default", "optional")
 	//fmt.Println(podsCPUSortedInstance5)
 
-	kubernetesCluster.DeactivatePod(kubernetesClientset, "nginx-cd55c47f5-cf8sh", "default")
+	kubernetesCluster.DeactivatePod(kubernetesClientset, "nginx-cd55c47f5-7x5cz", "default")
+	kubernetesCluster.DeactivatePod(kubernetesClientset, "nginx-cd55c47f5-zznr8", "default")
+	kubernetesCluster.DeactivatePod(kubernetesClientset, "nginx-cd55c47f5-kb67k", "default")
+
 }

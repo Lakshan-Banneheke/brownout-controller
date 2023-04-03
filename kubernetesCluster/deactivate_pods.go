@@ -9,8 +9,9 @@ import (
 )
 
 func DeactivatePod(clientset *kubernetes.Clientset, podName string, namespace string) {
-	_ = annotatePodForDeletion(clientset, podName, namespace)
-
+	pod := annotatePodForDeletion(clientset, podName, namespace)
+	deploymentName := getDeployment(clientset, pod, namespace)
+	scaleDownDeployment(clientset, deploymentName, namespace)
 }
 
 func annotatePodForDeletion(clientset *kubernetes.Clientset, podName string, namespace string) corev1.Pod {
@@ -34,6 +35,15 @@ func annotatePodForDeletion(clientset *kubernetes.Clientset, podName string, nam
 	return *pod
 }
 
+func getDeployment(clientset *kubernetes.Clientset, pod corev1.Pod, namespace string) string {
+	ownerPod := pod.ObjectMeta.OwnerReferences
+	replicaSetName := ownerPod[0].Name
+	replicaSet, _ := clientset.AppsV1().ReplicaSets(namespace).Get(context.Background(), replicaSetName, metav1.GetOptions{})
+	ownerRS := replicaSet.ObjectMeta.OwnerReferences
+	deploymentName := ownerRS[0].Name
+	return deploymentName
+}
+
 func scaleDownDeployment(clientset *kubernetes.Clientset, deploymentName string, namespace string) {
 	scale, err := clientset.AppsV1().Deployments(namespace).GetScale(context.Background(), deploymentName, metav1.GetOptions{})
 	if err != nil {
@@ -42,7 +52,7 @@ func scaleDownDeployment(clientset *kubernetes.Clientset, deploymentName string,
 
 	scale.Spec.Replicas -= 1
 
-	updatedScale, err := clientset.AppsV1().Deployments("default").UpdateScale(context.Background(), "nginx", scale, metav1.UpdateOptions{})
+	updatedScale, err := clientset.AppsV1().Deployments(namespace).UpdateScale(context.Background(), "nginx", scale, metav1.UpdateOptions{})
 	if err != nil {
 		panic(err.Error())
 	}
