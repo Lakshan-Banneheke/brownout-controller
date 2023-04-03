@@ -1,0 +1,12 @@
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: brownout-crb
+subjects:
+  - kind: ServiceAccount
+    name: brownout-sa
+    namespace: default #Namespace of the service account
+roleRef:
+  kind: ClusterRole
+  name: brownout-cr
+  apiGroup: rbac.authorization.k8s.io
