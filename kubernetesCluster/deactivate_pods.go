@@ -8,7 +8,16 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
-func DeactivatePod(clientset *kubernetes.Clientset, podName string, namespace string) {
+func DeactivatePods(clientset *kubernetes.Clientset, podNames []string, deactivatedPodList []string, namespace string) []string {
+	for _, podName := range podNames {
+		deactivatePod(clientset, podName, namespace)
+		deactivatedPodList = append(deactivatedPodList, podName)
+	}
+	// function returns the deactivated pod list with the new items added
+	return deactivatedPodList
+}
+
+func deactivatePod(clientset *kubernetes.Clientset, podName string, namespace string) {
 	pod := annotatePodForDeletion(clientset, podName, namespace)
 	deploymentName := getDeployment(clientset, pod, namespace)
 	scaleDownDeployment(clientset, deploymentName, namespace)

@@ -2,6 +2,7 @@ package main
 
 import (
 	"brownout-controller/kubernetesCluster"
+	"fmt"
 )
 
 func main() {
@@ -29,8 +30,7 @@ func main() {
 	//podsCPUSortedInstance5 := kubernetes_functions.GetPodsSortedCPUUsageInNode("instance-5", kubernetesClientset, metricsClientSet, "default", "optional")
 	//fmt.Println(podsCPUSortedInstance5)
 
-	kubernetesCluster.DeactivatePod(kubernetesClientset, "nginx-cd55c47f5-7x5cz", "default")
-	kubernetesCluster.DeactivatePod(kubernetesClientset, "nginx-cd55c47f5-zznr8", "default")
-	kubernetesCluster.DeactivatePod(kubernetesClientset, "nginx-cd55c47f5-kb67k", "default")
-
+	deactivatedPodList := []string{"nginx-cd55c47f5-abcsd"}
+	deactivatedPodList = kubernetesCluster.DeactivatePods(kubernetesClientset, []string{"nginx-cd55c47f5-k2tt2", "nginx-cd55c47f5-5jsnf", "nginx-cd55c47f5-zprwk", "nginx-cd55c47f5-j56td"}, deactivatedPodList, "default")
+	fmt.Println(deactivatedPodList)
 }
