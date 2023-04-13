@@ -2,6 +2,7 @@ package main
 
 import (
 	"brownout-controller/kubernetesCluster"
+	"brownout-controller/powerModel"
 	"fmt"
 )
 
@@ -37,4 +38,14 @@ func main() {
 			"helloworld-deployment-68c547667c-vfj4b", "helloworld-deployment-68c547667c-zsz6k", "helloworld-deployment-68c547667c-gzpn5"}, "default")
 
 	fmt.Println(deactivatedDeploymentMap)
+
+	sampleData := make([]float64, 6)
+
+	sampleData[0] = 2547461207.193548
+	sampleData[1] = 735858.3512544803
+	sampleData[2] = 0
+	sampleData[3] = 7
+	sampleData[4] = 1312768740.5949821
+	sampleData[5] = 65385.74910394265
+	powerModel.CalculatePower(sampleData)
 }
