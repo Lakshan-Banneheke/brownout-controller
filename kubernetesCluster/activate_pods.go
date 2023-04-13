@@ -15,14 +15,14 @@ func scaleUpDeployment(deploymentName string, count int32, namespace string) {
 	clientset := GetKubernetesClientSet()
 	scale, err := clientset.AppsV1().Deployments(namespace).GetScale(context.Background(), deploymentName, metav1.GetOptions{})
 	if err != nil {
-		panic(err.Error())
+		fmt.Println(err.Error())
 	}
 
 	scale.Spec.Replicas += count
 
 	updatedScale, err := clientset.AppsV1().Deployments(namespace).UpdateScale(context.Background(), deploymentName, scale, metav1.UpdateOptions{})
 	if err != nil {
-		panic(err.Error())
+		fmt.Println(err.Error())
 	}
 
 	fmt.Printf("Deployment %s in namespace %s scaled up to %d replicas\n", deploymentName, namespace, updatedScale.Spec.Replicas)

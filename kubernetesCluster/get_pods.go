@@ -2,6 +2,7 @@ package kubernetesCluster
 
 import (
 	"context"
+	"fmt"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/metrics/pkg/apis/metrics/v1beta1"
 	"sort"
@@ -15,7 +16,7 @@ func GetPodNames(namespace string, categoryLabel string) []string {
 		metav1.ListOptions{LabelSelector: "category=" + categoryLabel})
 
 	if err != nil {
-		panic(err.Error())
+		fmt.Println(err.Error())
 	}
 
 	// create a list of pod names
@@ -34,7 +35,7 @@ func GetPodsInNode(nodeName string, namespace string, categoryLabel string) []st
 		metav1.ListOptions{LabelSelector: "category=" + categoryLabel, FieldSelector: "spec.nodeName=" + nodeName})
 
 	if err != nil {
-		panic(err.Error())
+		fmt.Println(err.Error())
 	}
 
 	// create a list of pod names
@@ -68,7 +69,7 @@ func GetPodsSortedCPUUsageInNode(nodeName string, namespace string, categoryLabe
 	for _, podName := range pods {
 		podMetrics, err := metricsClient.MetricsV1beta1().PodMetricses(namespace).Get(context.Background(), podName, metav1.GetOptions{})
 		if err != nil {
-			panic(err.Error())
+			fmt.Println(err.Error())
 		}
 		podMetricsItems = append(podMetricsItems, *podMetrics)
 	}
@@ -80,7 +81,7 @@ func GetPodsSortedCPUUsageInNode(nodeName string, namespace string, categoryLabe
 
 func extractMetrics(podMetricsItems []v1beta1.PodMetrics, err error) (map[string]int, []string) {
 	if err != nil {
-		panic(err.Error())
+		fmt.Println(err.Error())
 	}
 
 	// make a map of pod Name and cpu usage
@@ -100,7 +101,7 @@ func extractMetrics(podMetricsItems []v1beta1.PodMetrics, err error) (map[string
 			}
 			cpuUsageInt, err := strconv.Atoi(contCPUTrimmed)
 			if err != nil {
-				panic(err.Error())
+				fmt.Println(err.Error())
 			}
 			podCPU += cpuUsageInt
 		}

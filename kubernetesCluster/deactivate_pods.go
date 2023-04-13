@@ -40,7 +40,7 @@ func annotatePodForDeletion(podName string, namespace string) corev1.Pod {
 	clientset := GetKubernetesClientSet()
 	pod, err := clientset.CoreV1().Pods(namespace).Get(context.Background(), podName, metav1.GetOptions{})
 	if err != nil {
-		panic(err.Error())
+		fmt.Println(err.Error())
 	}
 
 	// set the annotation on the Pod object
@@ -50,7 +50,7 @@ func annotatePodForDeletion(podName string, namespace string) corev1.Pod {
 	// update the Pod object
 	pod, err = clientset.CoreV1().Pods("default").Update(context.Background(), pod, metav1.UpdateOptions{})
 	if err != nil {
-		panic(err.Error())
+		fmt.Println(err.Error())
 	}
 
 	fmt.Printf("Pod %s annotated with controller.kubernetes.io/pod-deletion-cost:-999 and scheduled for deletion\n", podName)
@@ -72,14 +72,14 @@ func scaleDownDeployment(deploymentName string, count int32, namespace string) {
 	clientset := GetKubernetesClientSet()
 	scale, err := clientset.AppsV1().Deployments(namespace).GetScale(context.Background(), deploymentName, metav1.GetOptions{})
 	if err != nil {
-		panic(err.Error())
+		fmt.Println(err.Error())
 	}
 
 	scale.Spec.Replicas -= count
 
 	updatedScale, err := clientset.AppsV1().Deployments(namespace).UpdateScale(context.Background(), deploymentName, scale, metav1.UpdateOptions{})
 	if err != nil {
-		panic(err.Error())
+		fmt.Println(err.Error())
 	}
 
 	fmt.Printf("Deployment %s in namespace %s scaled down to %d replicas\n", deploymentName, namespace, updatedScale.Spec.Replicas)
