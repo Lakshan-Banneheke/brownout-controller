@@ -8,19 +8,31 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
-func DeactivatePods(clientset *kubernetes.Clientset, podNames []string, deactivatedPodList []string, namespace string) []string {
+func DeactivatePods(clientset *kubernetes.Clientset, podNames []string, namespace string) map[string]int32 {
+	var deployments map[string]int32
+
 	for _, podName := range podNames {
-		deactivatePod(clientset, podName, namespace)
-		deactivatedPodList = append(deactivatedPodList, podName)
+		pod := annotatePodForDeletion(clientset, podName, namespace)
+		deploymentName := getDeployment(clientset, pod, namespace)
+
+		if val, exists := deployments[deploymentName]; exists {
+			deployments[deploymentName] = val + 1
+		} else {
+			deployments[deploymentName] = 1
+		}
 	}
-	// function returns the deactivated pod list with the new items added
-	return deactivatedPodList
+
+	for deploymentName, value := range deployments {
+		scaleDownDeployment(clientset, deploymentName, value, namespace)
+	}
+	// function returns the deactivated deployment map
+	return deployments
 }
 
-func deactivatePod(clientset *kubernetes.Clientset, podName string, namespace string) {
+func DeactivatePod(clientset *kubernetes.Clientset, podName string, namespace string) {
 	pod := annotatePodForDeletion(clientset, podName, namespace)
 	deploymentName := getDeployment(clientset, pod, namespace)
-	scaleDownDeployment(clientset, deploymentName, namespace)
+	scaleDownDeployment(clientset, deploymentName, 1, namespace)
 }
 
 func annotatePodForDeletion(clientset *kubernetes.Clientset, podName string, namespace string) corev1.Pod {
@@ -53,13 +65,13 @@ func getDeployment(clientset *kubernetes.Clientset, pod corev1.Pod, namespace st
 	return deploymentName
 }
 
-func scaleDownDeployment(clientset *kubernetes.Clientset, deploymentName string, namespace string) {
+func scaleDownDeployment(clientset *kubernetes.Clientset, deploymentName string, count int32, namespace string) {
 	scale, err := clientset.AppsV1().Deployments(namespace).GetScale(context.Background(), deploymentName, metav1.GetOptions{})
 	if err != nil {
 		panic(err.Error())
 	}
 
-	scale.Spec.Replicas -= 1
+	scale.Spec.Replicas -= count
 
 	updatedScale, err := clientset.AppsV1().Deployments(namespace).UpdateScale(context.Background(), "nginx", scale, metav1.UpdateOptions{})
 	if err != nil {

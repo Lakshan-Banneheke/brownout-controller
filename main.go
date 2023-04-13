@@ -30,7 +30,11 @@ func main() {
 	//podsCPUSortedInstance5 := kubernetes_functions.GetPodsSortedCPUUsageInNode("instance-5", kubernetesClientset, metricsClientSet, "default", "optional")
 	//fmt.Println(podsCPUSortedInstance5)
 
-	deactivatedPodList := []string{"nginx-cd55c47f5-abcsd"}
-	deactivatedPodList = kubernetesCluster.DeactivatePods(kubernetesClientset, []string{"nginx-cd55c47f5-k2tt2", "nginx-cd55c47f5-5jsnf", "nginx-cd55c47f5-zprwk", "nginx-cd55c47f5-j56td"}, deactivatedPodList, "default")
-	fmt.Println(deactivatedPodList)
+	deactivatedDeploymentMap := kubernetesCluster.DeactivatePods(kubernetesClientset,
+		[]string{
+			"nginx-cd55c47f5-g8zp5", "nginx-cd55c47f5-mn5hq", "nginx-cd55c47f5-htr2f", "nginx-cd55c47f5-pqnpx",
+			"traefik-7c57d8789b-7666j", "traefik-7c57d8789b-gp6vg",
+			"helloworld-deployment-68c547667c-vfj4b", "helloworld-deployment-68c547667c-zsz6k", "helloworld-deployment-68c547667c-gzpn5"}, "default")
+
+	fmt.Println(deactivatedDeploymentMap)
 }
