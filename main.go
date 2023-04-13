@@ -2,7 +2,6 @@ package main
 
 import (
 	"brownout-controller/kubernetesCluster"
-	"fmt"
 )
 
 func main() {
@@ -30,11 +29,14 @@ func main() {
 	//podsCPUSortedInstance5 := kubernetes_functions.GetPodsSortedCPUUsageInNode("instance-5", kubernetesClientset, metricsClientSet, "default", "optional")
 	//fmt.Println(podsCPUSortedInstance5)
 
-	deactivatedDeploymentMap := kubernetesCluster.DeactivatePods(kubernetesClientset,
-		[]string{
-			"nginx-cd55c47f5-g8zp5", "nginx-cd55c47f5-mn5hq", "nginx-cd55c47f5-htr2f", "nginx-cd55c47f5-pqnpx",
-			"traefik-7c57d8789b-7666j", "traefik-7c57d8789b-gp6vg",
-			"helloworld-deployment-68c547667c-vfj4b", "helloworld-deployment-68c547667c-zsz6k", "helloworld-deployment-68c547667c-gzpn5"}, "default")
+	//deactivatedDeploymentMap := kubernetesCluster.DeactivatePods(kubernetesClientset,
+	//	[]string{
+	//		"nginx-cd55c47f5-g8zp5", "nginx-cd55c47f5-mn5hq", "nginx-cd55c47f5-htr2f", "nginx-cd55c47f5-pqnpx",
+	//		"traefik-7c57d8789b-7666j", "traefik-7c57d8789b-gp6vg",
+	//		"helloworld-deployment-68c547667c-vfj4b", "helloworld-deployment-68c547667c-zsz6k", "helloworld-deployment-68c547667c-gzpn5"}, "default")
+	//
+	//fmt.Println(deactivatedDeploymentMap)
 
-	fmt.Println(deactivatedDeploymentMap)
+	deployments := map[string]int32{"nginx": 10, "traefik": 5}
+	kubernetesCluster.ActivatePods(kubernetesClientset, deployments, "default")
 }
