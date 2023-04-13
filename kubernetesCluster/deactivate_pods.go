@@ -8,8 +8,9 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
+// DeactivatePods function returns the deactivated deployment map
 func DeactivatePods(clientset *kubernetes.Clientset, podNames []string, namespace string) map[string]int32 {
-	var deployments map[string]int32
+	var deployments = make(map[string]int32)
 
 	for _, podName := range podNames {
 		pod := annotatePodForDeletion(clientset, podName, namespace)
@@ -25,15 +26,15 @@ func DeactivatePods(clientset *kubernetes.Clientset, podNames []string, namespac
 	for deploymentName, value := range deployments {
 		scaleDownDeployment(clientset, deploymentName, value, namespace)
 	}
-	// function returns the deactivated deployment map
+
 	return deployments
 }
 
-func DeactivatePod(clientset *kubernetes.Clientset, podName string, namespace string) {
-	pod := annotatePodForDeletion(clientset, podName, namespace)
-	deploymentName := getDeployment(clientset, pod, namespace)
-	scaleDownDeployment(clientset, deploymentName, 1, namespace)
-}
+//func DeactivatePod(clientset *kubernetes.Clientset, podName string, namespace string) {
+//	pod := annotatePodForDeletion(clientset, podName, namespace)
+//	deploymentName := getDeployment(clientset, pod, namespace)
+//	scaleDownDeployment(clientset, deploymentName, 1, namespace)
+//}
 
 func annotatePodForDeletion(clientset *kubernetes.Clientset, podName string, namespace string) corev1.Pod {
 	pod, err := clientset.CoreV1().Pods(namespace).Get(context.Background(), podName, metav1.GetOptions{})
@@ -73,7 +74,7 @@ func scaleDownDeployment(clientset *kubernetes.Clientset, deploymentName string,
 
 	scale.Spec.Replicas -= count
 
-	updatedScale, err := clientset.AppsV1().Deployments(namespace).UpdateScale(context.Background(), "nginx", scale, metav1.UpdateOptions{})
+	updatedScale, err := clientset.AppsV1().Deployments(namespace).UpdateScale(context.Background(), deploymentName, scale, metav1.UpdateOptions{})
 	if err != nil {
 		panic(err.Error())
 	}
