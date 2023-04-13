@@ -1,4 +1,4 @@
-package kubernetes_functions
+package kubernetesCluster
 
 import (
 	"context"
