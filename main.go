@@ -39,13 +39,19 @@ func main() {
 
 	fmt.Println(deactivatedDeploymentMap)
 
+	// should initialize coefficients with the correct version at the start
+	powerModel.SetCoefficients("v1")
+
+	// example of input data format for version 1
 	sampleData := make([]float64, 6)
 
-	sampleData[0] = 2547461207.193548
-	sampleData[1] = 735858.3512544803
-	sampleData[2] = 0
-	sampleData[3] = 7
-	sampleData[4] = 1312768740.5949821
-	sampleData[5] = 65385.74910394265
-	powerModel.CalculatePower(sampleData)
+	sampleData[0] = 1187612200.712264
+	sampleData[1] = 673290.5449273121
+	sampleData[2] = 2
+	sampleData[3] = 4
+	sampleData[4] = 2460314074.985385
+	sampleData[5] = 311636.2853386947
+
+	// calling power model to predict power consumption
+	fmt.Println(powerModel.CalculatePower(sampleData))
 }

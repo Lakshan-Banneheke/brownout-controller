@@ -1,10 +1,8 @@
 package powerModel
 
 import (
-	"encoding/csv"
-	"io"
+	"brownout-controller/powerModel/util"
 	"log"
-	"os"
 	"strconv"
 	"sync"
 )
@@ -17,10 +15,11 @@ type MinMaxScaler struct {
 var scaler *MinMaxScaler
 var once sync.Once
 
-func GetScaler() *MinMaxScaler {
+func GetScaler(version string) *MinMaxScaler {
 	once.Do(func() {
+		// initialize scaler for the first time
 		scaler = &MinMaxScaler{}
-		data := getDataFromFile("./powerModel/data/final-test-data-v1.csv")
+		data := getDataFromFile("./powerModel/data/final-test-data-" + version + ".csv")
 		scaler.Fit(data)
 	})
 	return scaler
@@ -50,7 +49,7 @@ func (scaler *MinMaxScaler) Fit(data [][]float64) {
 func (scaler *MinMaxScaler) Transform(data []float64) []float64 {
 	numFeatures := len(data)
 
-	normalizedData := make([]float64, 6)
+	normalizedData := make([]float64, numFeatures)
 
 	for i := 0; i < numFeatures; i++ {
 		normalizedData[i] = (data[i] - scaler.mins[i]) / (scaler.maxs[i] - scaler.mins[i])
@@ -60,31 +59,16 @@ func (scaler *MinMaxScaler) Transform(data []float64) []float64 {
 }
 
 func getDataFromFile(filepath string) [][]float64 {
-	// Open the CSV file
-	file, err := os.Open(filepath)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer func(file *os.File) {
-		err := file.Close()
-		if err != nil {
-			log.Fatal(err)
-		}
-	}(file)
+	// extract data needed to fit the scaler from the csv file
+	rows := util.ExtractDataFromCSV(filepath)
 
 	var data [][]float64
 
-	// Create a new CSV reader
-	reader := csv.NewReader(file)
-
-	// Read the CSV data into a slice of slices
-	for {
-		row, err := reader.Read()
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			log.Fatal(err)
+	// convert the data into floats and populate the slice
+	for j, row := range rows {
+		if j == 0 {
+			// skip the header row
+			continue
 		}
 
 		floatRow := make([]float64, len(row))
@@ -92,7 +76,7 @@ func getDataFromFile(filepath string) [][]float64 {
 		for i := range row {
 			floatValue, err := strconv.ParseFloat(row[i], 64)
 			if err != nil {
-				continue
+				log.Fatal(err)
 			}
 			floatRow[i] = floatValue
 		}
