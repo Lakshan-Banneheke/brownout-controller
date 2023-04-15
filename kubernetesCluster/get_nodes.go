@@ -28,6 +28,33 @@ func GetNodeNames(clientset *kubernetes.Clientset, categoryLabel string) []strin
 	return nodeNames
 }
 
+func GetWorkerNodeCount(clientset *kubernetes.Clientset) int {
+	// retrieve all nodes in the cluster
+	nodeList, err := clientset.CoreV1().Nodes().List(context.Background(), metav1.ListOptions{})
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	// count the number of worker nodes
+	workerNodeCount := 0
+	for _, node := range nodeList.Items {
+		for key, value := range node.ObjectMeta.Labels {
+			if key == "node-role.kubernetes.io/worker" { //TODO: check the labels
+				role, err := strconv.Atoi(value)
+				if err != nil {
+					panic(err.Error())
+				}
+				if role == 1 { // role 1 refers to worker nodes
+					workerNodeCount++
+				}
+			}
+		}
+	}
+
+	return workerNodeCount
+}
+
 func GetNodesSortedCPUUsage(metricsClient *metrics.Clientset, categoryLabel string) []string {
 
 	// get the CPU usage for the node that matches the label selector

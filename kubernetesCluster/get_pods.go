@@ -48,6 +48,28 @@ func GetPodsInNode(nodeName string, clientset *kubernetes.Clientset, namespace s
 	return podNames
 }
 
+func GetPodsInNodes(nodeNames []string, clientset *kubernetes.Clientset, namespace string) []string {
+
+	// create a slice of pod names
+	var podNames []string
+
+	for _, node := range nodeNames {
+		// get the list of pods that resides in the node
+		podList, err := clientset.CoreV1().Pods(namespace).List(context.Background(),
+			metav1.ListOptions{FieldSelector: "spec.nodeName=" + node})
+
+		if err != nil {
+			panic(err.Error())
+		}
+
+		for _, pod := range podList.Items {
+			podNames = append(podNames, pod.Name)
+		}
+	}
+
+	return podNames
+}
+
 func GetPodsSortedCPUUsageAll(metricsClient *metrics.Clientset, namespace string, categoryLabel string) []string {
 
 	// get the CPU usage for the pod that matches the label selector
@@ -78,6 +100,49 @@ func GetPodsSortedCPUUsageInNode(nodeName string, clientset *kubernetes.Clientse
 	podsCPUUsage, podNames := extractMetrics(podMetricsItems, nil)
 
 	return sortPodsUsage(podsCPUUsage, podNames)
+}
+
+func GetPodsCPUUsageSum(metricsClient *metrics.Clientset, podNames []string, namespace string) float64 {
+
+	var podMetricsItems []v1beta1.PodMetrics
+	for _, podName := range podNames {
+		podMetrics, err := metricsClient.MetricsV1beta1().PodMetricses(namespace).Get(context.Background(), podName, metav1.GetOptions{})
+		if err != nil {
+			panic(err.Error())
+		}
+		podMetricsItems = append(podMetricsItems, *podMetrics)
+	}
+
+	podsCPUUsage, _ := extractMetrics(podMetricsItems, nil)
+
+	podsCPUUsageSum := 0.0
+	for _, cpuUsage := range podsCPUUsage {
+		podsCPUUsageSum += float64(cpuUsage)
+	}
+
+	return podsCPUUsageSum
+}
+
+func GetPodsMemUsageSum(metricsClient *metrics.Clientset, podNames []string, namespace string) float64 {
+
+	//TODO: Test the method
+	var podMetricsItems []v1beta1.PodMetrics
+	for _, podName := range podNames {
+		podMetrics, err := metricsClient.MetricsV1beta1().PodMetricses(namespace).Get(context.Background(), podName, metav1.GetOptions{})
+		if err != nil {
+			panic(err.Error())
+		}
+		podMetricsItems = append(podMetricsItems, *podMetrics)
+	}
+
+	podsMemUsage, _ := extractMemMetrics(podMetricsItems, nil)
+
+	podsMemUsageSum := 0.0
+	for _, memUsage := range podsMemUsage {
+		podsMemUsageSum += memUsage
+	}
+
+	return podsMemUsageSum
 }
 
 func extractMetrics(podMetricsItems []v1beta1.PodMetrics, err error) (map[string]int, []string) {
@@ -112,6 +177,42 @@ func extractMetrics(podMetricsItems []v1beta1.PodMetrics, err error) (map[string
 	}
 
 	return podsCPUUsage, podNames
+}
+
+func extractMemMetrics(podMetricsItems []v1beta1.PodMetrics, err error) (map[string]float64, []string) {
+
+	//TODO: test
+	if err != nil {
+		panic(err.Error())
+	}
+
+	// make a map of pod Name and memory usage
+	podsMemUsage := map[string]float64{}
+	var podNames []string
+
+	for _, podMetric := range podMetricsItems {
+		podMem := 0.0
+		for _, cont := range podMetric.Containers {
+			contMem := cont.Usage.Memory().String()
+			var contMemTrimmed string
+			// Removing the unit "Ki" from Memory Usage and converting to int for ease of sorting
+			if contMem != "0" {
+				contMemTrimmed = contMem[:len(contMem)-2]
+			} else {
+				contMemTrimmed = contMem
+			}
+			memUsageInt, err := strconv.ParseFloat(contMemTrimmed, 64)
+			if err != nil {
+				panic(err.Error())
+			}
+			podMem += memUsageInt
+		}
+
+		podsMemUsage[podMetric.ObjectMeta.Name] = podMem
+		podNames = append(podNames, podMetric.ObjectMeta.Name)
+	}
+
+	return podsMemUsage, podNames
 }
 
 // function returns a list of node names in sorted order of increasing cpu usage
