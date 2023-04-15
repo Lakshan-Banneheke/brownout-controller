@@ -13,19 +13,31 @@ type MinMaxScaler struct {
 }
 
 var scaler *MinMaxScaler
-var once sync.Once
+var onceMMS sync.Once
 
 func GetScaler(version string) *MinMaxScaler {
-	once.Do(func() {
+	onceMMS.Do(func() {
 		// initialize scaler for the first time
 		scaler = &MinMaxScaler{}
-		data := getDataFromFile("./powerModel/data/final-test-data-" + version + ".csv")
-		scaler.Fit(data)
+		data := getDataFromFile("./powerModel/data/scaler-fit-data-" + version + ".csv")
+		scaler.fit(data)
 	})
 	return scaler
 }
 
-func (scaler *MinMaxScaler) Fit(data [][]float64) {
+func (scaler *MinMaxScaler) Transform(data []float64) []float64 {
+	numFeatures := len(data)
+
+	normalizedData := make([]float64, numFeatures)
+
+	for i := 0; i < numFeatures; i++ {
+		normalizedData[i] = (data[i] - scaler.mins[i]) / (scaler.maxs[i] - scaler.mins[i])
+	}
+
+	return normalizedData
+}
+
+func (scaler *MinMaxScaler) fit(data [][]float64) {
 	numRows := len(data)
 	numFeatures := len(data[0])
 
@@ -44,18 +56,6 @@ func (scaler *MinMaxScaler) Fit(data [][]float64) {
 			}
 		}
 	}
-}
-
-func (scaler *MinMaxScaler) Transform(data []float64) []float64 {
-	numFeatures := len(data)
-
-	normalizedData := make([]float64, numFeatures)
-
-	for i := 0; i < numFeatures; i++ {
-		normalizedData[i] = (data[i] - scaler.mins[i]) / (scaler.maxs[i] - scaler.mins[i])
-	}
-
-	return normalizedData
 }
 
 func getDataFromFile(filepath string) [][]float64 {
