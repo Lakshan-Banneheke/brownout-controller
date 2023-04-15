@@ -37,7 +37,7 @@ func DeactivatePods(podNames []string, namespace string) map[string]int32 {
 //}
 
 func annotatePodForDeletion(podName string, namespace string) corev1.Pod {
-	clientset := GetKubernetesClientSet()
+	clientset := getKubernetesClientSet()
 	pod, err := clientset.CoreV1().Pods(namespace).Get(context.Background(), podName, metav1.GetOptions{})
 	if err != nil {
 		fmt.Println(err.Error())
@@ -59,7 +59,7 @@ func annotatePodForDeletion(podName string, namespace string) corev1.Pod {
 }
 
 func getDeployment(pod corev1.Pod, namespace string) string {
-	clientset := GetKubernetesClientSet()
+	clientset := getKubernetesClientSet()
 	ownerPod := pod.ObjectMeta.OwnerReferences
 	replicaSetName := ownerPod[0].Name
 	replicaSet, _ := clientset.AppsV1().ReplicaSets(namespace).Get(context.Background(), replicaSetName, metav1.GetOptions{})
@@ -69,7 +69,7 @@ func getDeployment(pod corev1.Pod, namespace string) string {
 }
 
 func scaleDownDeployment(deploymentName string, count int32, namespace string) {
-	clientset := GetKubernetesClientSet()
+	clientset := getKubernetesClientSet()
 	scale, err := clientset.AppsV1().Deployments(namespace).GetScale(context.Background(), deploymentName, metav1.GetOptions{})
 	if err != nil {
 		fmt.Println(err.Error())

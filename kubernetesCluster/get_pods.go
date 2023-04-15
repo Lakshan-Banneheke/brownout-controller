@@ -10,7 +10,7 @@ import (
 )
 
 func GetPodNames(namespace string, categoryLabel string) []string {
-	clientset := GetKubernetesClientSet()
+	clientset := getKubernetesClientSet()
 	// get the list of pods that match the categoryLabel selector (optional or mandatory)
 	podList, err := clientset.CoreV1().Pods(namespace).List(context.Background(),
 		metav1.ListOptions{LabelSelector: "category=" + categoryLabel})
@@ -29,7 +29,7 @@ func GetPodNames(namespace string, categoryLabel string) []string {
 }
 
 func GetPodsInNode(nodeName string, namespace string, categoryLabel string) []string {
-	clientset := GetKubernetesClientSet()
+	clientset := getKubernetesClientSet()
 	// get the list of pods that match the categoryLabel selector (optional or mandatory)
 	podList, err := clientset.CoreV1().Pods(namespace).List(context.Background(),
 		metav1.ListOptions{LabelSelector: "category=" + categoryLabel, FieldSelector: "spec.nodeName=" + nodeName})
@@ -48,7 +48,7 @@ func GetPodsInNode(nodeName string, namespace string, categoryLabel string) []st
 }
 
 func GetPodsSortedCPUUsageAll(namespace string, categoryLabel string) []string {
-	metricsClient := GetMetricsClient()
+	metricsClient := getMetricsClient()
 	// get the CPU usage for the pod that matches the label selector
 	podMetrics, err := metricsClient.MetricsV1beta1().PodMetricses(namespace).List(context.Background(),
 		metav1.ListOptions{LabelSelector: "category=" + categoryLabel})
@@ -60,7 +60,7 @@ func GetPodsSortedCPUUsageAll(namespace string, categoryLabel string) []string {
 }
 
 func GetPodsSortedCPUUsageInNode(nodeName string, namespace string, categoryLabel string) []string {
-	metricsClient := GetMetricsClient()
+	metricsClient := getMetricsClient()
 	// get the pods in the given node of the given category
 	pods := GetPodsInNode(nodeName, namespace, categoryLabel)
 
