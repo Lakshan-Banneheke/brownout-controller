@@ -13,10 +13,10 @@ type MinMaxScaler struct {
 }
 
 var scaler *MinMaxScaler
-var once sync.Once
+var onceMMS sync.Once
 
 func GetScaler(version string) *MinMaxScaler {
-	once.Do(func() {
+	onceMMS.Do(func() {
 		// initialize scaler for the first time
 		scaler = &MinMaxScaler{}
 		data := getDataFromFile("./powerModel/data/final-test-data-" + version + ".csv")
