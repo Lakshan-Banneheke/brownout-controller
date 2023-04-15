@@ -9,7 +9,7 @@ import (
 )
 
 func GetNodeNames(categoryLabel string) []string {
-	clientset := GetKubernetesClientSet()
+	clientset := getKubernetesClientSet()
 	// get the list of nodes that match the label selector (optional or mandatory or mixed)
 	nodeList, err := clientset.CoreV1().Nodes().List(context.Background(),
 		metav1.ListOptions{LabelSelector: "category=" + categoryLabel})
@@ -28,7 +28,7 @@ func GetNodeNames(categoryLabel string) []string {
 }
 
 func GetNodesSortedCPUUsage(categoryLabel string) []string {
-	metricsClient := GetMetricsClient()
+	metricsClient := getMetricsClient()
 	// get the CPU usage for the node that matches the label selector
 	nodeMetrics, err := metricsClient.MetricsV1beta1().NodeMetricses().List(context.Background(),
 		metav1.ListOptions{LabelSelector: "category=" + categoryLabel})

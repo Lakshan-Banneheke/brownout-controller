@@ -22,7 +22,7 @@ var config *rest.Config
 //	return kubernetesClientset, metricsClientSet
 //}
 
-func GetKubernetesClientSet() *kubernetes.Clientset {
+func getKubernetesClientSet() *kubernetes.Clientset {
 	// creates the kubernetes kubernetesClientset
 	if kubernetesClientset == nil {
 		var err error
@@ -36,7 +36,7 @@ func GetKubernetesClientSet() *kubernetes.Clientset {
 	return kubernetesClientset
 }
 
-func GetMetricsClient() *metrics.Clientset {
+func getMetricsClient() *metrics.Clientset {
 	// create a new metrics client
 	if metricsClientSet == nil {
 		var err error

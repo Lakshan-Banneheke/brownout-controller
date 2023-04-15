@@ -12,7 +12,7 @@ func ActivatePods(deploymentMap map[string]int32, namespace string) {
 	}
 }
 func scaleUpDeployment(deploymentName string, count int32, namespace string) {
-	clientset := GetKubernetesClientSet()
+	clientset := getKubernetesClientSet()
 	scale, err := clientset.AppsV1().Deployments(namespace).GetScale(context.Background(), deploymentName, metav1.GetOptions{})
 	if err != nil {
 		fmt.Println(err.Error())
