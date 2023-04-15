@@ -32,4 +32,14 @@ func main() {
 	//
 	//deployments := map[string]int32{"nginx": 10, "traefik": 5}
 	//kubernetesCluster.ActivatePods(deployments, "default")
+
+	//policies.LUCF{}.ExecuteForCluster()
+
+	//lucf := policies.LUCF{}
+	//lucf.ExecuteForCluster()
+
+	//var t policies.IPolicy
+	//t = policies.LUCF{}
+	//t.ExecuteForCluster()
+
 }
