@@ -1,6 +1,7 @@
 package powerModel
 
 import (
+	"brownout-controller/constants"
 	"brownout-controller/kubernetesCluster"
 	"brownout-controller/powerModel/util"
 	"log"
@@ -36,19 +37,19 @@ func GetPowerModel(version string) *PowerModel {
 }
 
 // GetPowerConsumptionNodes : function to compute power consumption when a set of nodes given
-func (model *PowerModel) GetPowerConsumptionNodes(nodeNames []string, namespace string) float64 {
+func (model *PowerModel) GetPowerConsumptionNodes(nodeNames []string) float64 {
 
-	podNames := kubernetesCluster.GetPodsInNodes(nodeNames, namespace) // retrieve all the pod names of the given nodes
+	podNames := kubernetesCluster.GetPodsInNodes(nodeNames, constants.NAMESPACE) // retrieve all the pod names of the given nodes
 
 	// call the pod power consumption calculating function for the relevant version
-	return model.GetPowerConsumptionPods(podNames, namespace)
+	return model.GetPowerConsumptionPods(podNames)
 }
 
 // GetPowerConsumptionPods : function to compute power consumption when a set of pods given
-func (model *PowerModel) GetPowerConsumptionPods(podNames []string, namespace string) float64 {
+func (model *PowerModel) GetPowerConsumptionPods(podNames []string) float64 {
 
 	// call the pod power consumption calculating function for the relevant version
-	return powerConsumptionPodsMap[model.powerModelVersion](model, podNames, namespace)
+	return powerConsumptionPodsMap[model.powerModelVersion](model, podNames, constants.NAMESPACE)
 }
 
 // function to set coefficients of the power model
