@@ -38,8 +38,7 @@ func GetPowerModel(version string) *PowerModel {
 // GetPowerConsumptionNodes : function to compute power consumption when a set of nodes given
 func (model *PowerModel) GetPowerConsumptionNodes(nodeNames []string, namespace string) float64 {
 
-	clientset, _ := kubernetesCluster.GetClientSets()                             // retrieve client set and metrics client
-	podNames := kubernetesCluster.GetPodsInNodes(nodeNames, clientset, namespace) // retrieve all the pod names of the given nodes
+	podNames := kubernetesCluster.GetPodsInNodes(nodeNames, namespace) // retrieve all the pod names of the given nodes
 
 	// call the pod power consumption calculating function for the relevant version
 	return model.GetPowerConsumptionPods(podNames, namespace)
@@ -89,12 +88,11 @@ func (model *PowerModel) calculatePower(params []float64) float64 {
 func (model *PowerModel) getPowerConsumptionPodsV1(podNames []string, namespace string) float64 {
 
 	// retrieve input parameters needed by the power model
-	clientset, metricsClient := kubernetesCluster.GetClientSets()                               // retrieve client set and metrics client
-	masterCPUUsage, masterMemUsage := kubernetesCluster.GetMasterNodeUsage(metricsClient)       // retrieve master node CPU and Memory usage
-	podsCPUUsageSum := kubernetesCluster.GetPodsCPUUsageSum(metricsClient, podNames, namespace) // get the sum of CPU usage of the mentioned pods
-	podsMemUsageSum := kubernetesCluster.GetPodsMemUsageSum(metricsClient, podNames, namespace) // get the sum of Memory usage of the mentioned pods
-	workerNodeCount := float64(kubernetesCluster.GetWorkerNodeCount(clientset))                 // get the number of worker nodes
-	podCount := float64(len(podNames))                                                          // calculate the pod count
+	masterCPUUsage, masterMemUsage := kubernetesCluster.GetMasterNodeUsage()     // retrieve master node CPU and Memory usage
+	podsCPUUsageSum := kubernetesCluster.GetPodsCPUUsageSum(podNames, namespace) // get the sum of CPU usage of the mentioned pods
+	podsMemUsageSum := kubernetesCluster.GetPodsMemUsageSum(podNames, namespace) // get the sum of Memory usage of the mentioned pods
+	workerNodeCount := float64(kubernetesCluster.GetWorkerNodeCount())           // get the number of worker nodes
+	podCount := float64(len(podNames))                                           // calculate the pod count
 
 	//generate the input parameter list for calculating power
 	params := []float64{masterCPUUsage, masterMemUsage, workerNodeCount, podCount, podsCPUUsageSum, podsMemUsageSum}
@@ -108,11 +106,10 @@ func (model *PowerModel) getPowerConsumptionPodsV1(podNames []string, namespace 
 func (model *PowerModel) getPowerConsumptionPodsV2(podNames []string, namespace string) float64 {
 
 	// retrieve input parameters needed by the power model
-	clientset, metricsClient := kubernetesCluster.GetClientSets()                               // retrieve client set and metrics client
-	podsCPUUsageSum := kubernetesCluster.GetPodsCPUUsageSum(metricsClient, podNames, namespace) // get the sum of CPU usage of the mentioned pods
-	podsMemUsageSum := kubernetesCluster.GetPodsMemUsageSum(metricsClient, podNames, namespace) // get the sum of Memory usage of the mentioned pods
-	workerNodeCount := float64(kubernetesCluster.GetWorkerNodeCount(clientset))                 // get the number of worker nodes
-	podCount := float64(len(podNames))                                                          // calculate the pod count
+	podsCPUUsageSum := kubernetesCluster.GetPodsCPUUsageSum(podNames, namespace) // get the sum of CPU usage of the mentioned pods
+	podsMemUsageSum := kubernetesCluster.GetPodsMemUsageSum(podNames, namespace) // get the sum of Memory usage of the mentioned pods
+	workerNodeCount := float64(kubernetesCluster.GetWorkerNodeCount())           // get the number of worker nodes
+	podCount := float64(len(podNames))                                           // calculate the pod count
 
 	//generate the input parameter list for calculating power
 	params := []float64{workerNodeCount, podCount, podsCPUUsageSum, podsMemUsageSum}
@@ -126,10 +123,9 @@ func (model *PowerModel) getPowerConsumptionPodsV2(podNames []string, namespace 
 func (model *PowerModel) getPowerConsumptionPodsV3(podNames []string, namespace string) float64 {
 
 	// retrieve input parameters needed by the power model
-	clientset, metricsClient := kubernetesCluster.GetClientSets()                               // retrieve client set and metrics client
-	podsCPUUsageSum := kubernetesCluster.GetPodsCPUUsageSum(metricsClient, podNames, namespace) // get the sum of CPU usage of the mentioned pods
-	workerNodeCount := float64(kubernetesCluster.GetWorkerNodeCount(clientset))                 // get the number of worker nodes
-	podCount := float64(len(podNames))                                                          // calculate the pod count
+	podsCPUUsageSum := kubernetesCluster.GetPodsCPUUsageSum(podNames, namespace) // get the sum of CPU usage of the mentioned pods
+	workerNodeCount := float64(kubernetesCluster.GetWorkerNodeCount())           // get the number of worker nodes
+	podCount := float64(len(podNames))                                           // calculate the pod count
 
 	//generate the input parameter list for calculating power
 	params := []float64{workerNodeCount, podCount, podsCPUUsageSum}
@@ -143,9 +139,8 @@ func (model *PowerModel) getPowerConsumptionPodsV3(podNames []string, namespace 
 func (model *PowerModel) getPowerConsumptionPodsV4(podNames []string, namespace string) float64 {
 
 	// retrieve input parameters needed by the power model
-	clientset, metricsClient := kubernetesCluster.GetClientSets()                               // retrieve client set and metrics client
-	podsCPUUsageSum := kubernetesCluster.GetPodsCPUUsageSum(metricsClient, podNames, namespace) // get the sum of CPU usage of the mentioned pods
-	workerNodeCount := float64(kubernetesCluster.GetWorkerNodeCount(clientset))                 // get the number of worker nodes
+	podsCPUUsageSum := kubernetesCluster.GetPodsCPUUsageSum(podNames, namespace) // get the sum of CPU usage of the mentioned pods
+	workerNodeCount := float64(kubernetesCluster.GetWorkerNodeCount())           // get the number of worker nodes
 
 	//generate the input parameter list for calculating power
 	params := []float64{workerNodeCount, podsCPUUsageSum}
