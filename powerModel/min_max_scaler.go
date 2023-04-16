@@ -4,28 +4,33 @@ import (
 	"brownout-controller/powerModel/util"
 	"log"
 	"strconv"
-	"sync"
 )
 
 type MinMaxScaler struct {
-	mins []float64
-	maxs []float64
+	mins          []float64
+	maxs          []float64
+	scalerVersion string
 }
 
 var scaler *MinMaxScaler
-var onceMMS sync.Once
 
+// GetScaler : function to retireve the Min Max Scaler
 func GetScaler(version string) *MinMaxScaler {
-	onceMMS.Do(func() {
-		// initialize scaler for the first time
-		scaler = &MinMaxScaler{}
-		data := getDataFromFile("./powerModel/data/scaler-fit-data-" + version + ".csv")
+
+	if scaler == nil || scaler.scalerVersion != version {
+		// initialize scaler
+		scaler = &MinMaxScaler{
+			scalerVersion: version,
+		}
+		data := getDataFromFile("data/scaler-fit-data-" + version + ".csv")
 		scaler.fit(data)
-	})
+	}
 	return scaler
 }
 
+// Transform : function to normalize the given data
 func (scaler *MinMaxScaler) Transform(data []float64) []float64 {
+
 	numFeatures := len(data)
 
 	normalizedData := make([]float64, numFeatures)
@@ -37,7 +42,9 @@ func (scaler *MinMaxScaler) Transform(data []float64) []float64 {
 	return normalizedData
 }
 
+// function to fit the scaler with the relevant dataset
 func (scaler *MinMaxScaler) fit(data [][]float64) {
+
 	numRows := len(data)
 	numFeatures := len(data[0])
 
@@ -58,7 +65,9 @@ func (scaler *MinMaxScaler) fit(data [][]float64) {
 	}
 }
 
+// function to extract the dataset from the csv file
 func getDataFromFile(filepath string) [][]float64 {
+
 	// extract data needed to fit the scaler from the csv file
 	rows := util.ExtractDataFromCSV(filepath)
 

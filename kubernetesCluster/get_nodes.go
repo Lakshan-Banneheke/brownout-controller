@@ -29,28 +29,17 @@ func GetNodeNames(clientset *kubernetes.Clientset, categoryLabel string) []strin
 }
 
 func GetWorkerNodeCount(clientset *kubernetes.Clientset) int {
+
 	// retrieve all nodes in the cluster
-	nodeList, err := clientset.CoreV1().Nodes().List(context.Background(), metav1.ListOptions{})
+	nodeList, err := clientset.CoreV1().Nodes().List(context.Background(),
+		metav1.ListOptions{LabelSelector: "node-role.kubernetes.io/worker=true"})
 
 	if err != nil {
 		panic(err.Error())
 	}
 
 	// count the number of worker nodes
-	workerNodeCount := 0
-	for _, node := range nodeList.Items {
-		for key, value := range node.ObjectMeta.Labels {
-			if key == "node-role.kubernetes.io/worker" { //TODO: check the labels
-				role, err := strconv.Atoi(value)
-				if err != nil {
-					panic(err.Error())
-				}
-				if role == 1 { // role 1 refers to worker nodes
-					workerNodeCount++
-				}
-			}
-		}
-	}
+	workerNodeCount := len(nodeList.Items)
 
 	return workerNodeCount
 }
@@ -83,6 +72,41 @@ func GetNodesSortedCPUUsage(metricsClient *metrics.Clientset, categoryLabel stri
 	nodesSortedCPU := sortNodesUsage(nodesCPUUsage, nodeNames)
 
 	return nodesSortedCPU
+}
+
+func GetMasterNodeUsage(metricsClient *metrics.Clientset) (float64, float64) {
+
+	// get the CPU usage for the master node
+	nodeMetrics, err := metricsClient.MetricsV1beta1().NodeMetricses().List(context.Background(),
+		metav1.ListOptions{LabelSelector: "node-role.kubernetes.io/master=true"})
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	//Make a map of node Name and cpu usage
+	masterCPUUsage := 0.0
+	masterMemUsage := 0.0
+
+	for _, nodeMetric := range nodeMetrics.Items {
+		cpuUsage := nodeMetric.Usage.Cpu().String()
+		// Removing the unit "n" from CPU Usage and converting to int
+		cpuUsageInt, err := strconv.Atoi(cpuUsage[:len(cpuUsage)-1])
+		if err != nil {
+			panic(err.Error())
+		}
+		masterCPUUsage += float64(cpuUsageInt)
+
+		memUsage := nodeMetric.Usage.Memory().String()
+		// Removing the unit "Ki" from Mem Usage and converting to float
+		memUsageFloat, err := strconv.ParseFloat(memUsage[:len(memUsage)-2], 64)
+		if err != nil {
+			panic(err.Error())
+		}
+		masterMemUsage += memUsageFloat
+	}
+
+	return masterCPUUsage, masterMemUsage
 }
 
 // function returns a list of node names in sorted order of increasing cpu usage

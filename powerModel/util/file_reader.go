@@ -1,19 +1,25 @@
 package util
 
 import (
+	"embed"
 	"encoding/csv"
 	"io"
+	"io/fs"
 	"log"
-	"os"
 )
 
+//go:embed data/*
+var fileContent embed.FS
+
+// ExtractDataFromCSV : function to extract the rows of csv file
 func ExtractDataFromCSV(filepath string) [][]string {
+
 	// open the CSV file
-	file, err := os.Open(filepath)
+	file, err := fileContent.Open(filepath)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer func(file *os.File) {
+	defer func(file fs.File) {
 		err := file.Close()
 		if err != nil {
 			log.Fatal(err)

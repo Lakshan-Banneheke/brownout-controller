@@ -5,7 +5,6 @@ import (
 	"brownout-controller/powerModel/util"
 	"log"
 	"strconv"
-	"sync"
 )
 
 type PowerModel struct {
@@ -14,7 +13,6 @@ type PowerModel struct {
 }
 
 var model *PowerModel
-var oncePM sync.Once
 
 // map to store version with relevant power consumption calculating function for pods
 var powerConsumptionPodsMap = map[string]func(*PowerModel, []string, string) float64{
@@ -24,17 +22,22 @@ var powerConsumptionPodsMap = map[string]func(*PowerModel, []string, string) flo
 	"v4": (*PowerModel).getPowerConsumptionPodsV4,
 }
 
-func GetPowerModel() *PowerModel {
-	oncePM.Do(func() {
-		// initialize power model for the first time
-		model = &PowerModel{}
-		model.powerModelVersion = "v1"
+// GetPowerModel : function to retrieve the power model
+func GetPowerModel(version string) *PowerModel {
+
+	if model == nil || model.powerModelVersion != version {
+		// initialize power model
+		model = &PowerModel{
+			powerModelVersion: version,
+		}
 		model.setCoefficients()
-	})
+	}
 	return model
 }
 
+// GetPowerConsumptionNodes : function to compute power consumption when a set of nodes given
 func (model *PowerModel) GetPowerConsumptionNodes(nodeNames []string, namespace string) float64 {
+
 	clientset, _ := kubernetesCluster.GetClientSets()                             // retrieve client set and metrics client
 	podNames := kubernetesCluster.GetPodsInNodes(nodeNames, clientset, namespace) // retrieve all the pod names of the given nodes
 
@@ -42,14 +45,18 @@ func (model *PowerModel) GetPowerConsumptionNodes(nodeNames []string, namespace 
 	return model.GetPowerConsumptionPods(podNames, namespace)
 }
 
+// GetPowerConsumptionPods : function to compute power consumption when a set of pods given
 func (model *PowerModel) GetPowerConsumptionPods(podNames []string, namespace string) float64 {
+
 	// call the pod power consumption calculating function for the relevant version
 	return powerConsumptionPodsMap[model.powerModelVersion](model, podNames, namespace)
 }
 
+// function to set coefficients of the power model
 func (model *PowerModel) setCoefficients() {
+
 	// extract coefficients from csv file
-	rows := util.ExtractDataFromCSV("./powerModel/data/coefficients/analytical-model-lr-" + model.powerModelVersion + "-coefficients.csv")
+	rows := util.ExtractDataFromCSV("data/coefficients/analytical-model-lr-" + model.powerModelVersion + "-coefficients.csv")
 
 	// convert the coefficients to floats and populate the slice
 	for _, row := range rows {
@@ -62,12 +69,14 @@ func (model *PowerModel) setCoefficients() {
 	}
 }
 
+// function to calculate the power from linear regression model
 func (model *PowerModel) calculatePower(params []float64) float64 {
+
 	scaler := GetScaler(model.powerModelVersion)                 // get the min max scaler
 	normalizedParams := scaler.Transform(params)                 // normalize the input parameters
 	normalizedParams = append([]float64{1}, normalizedParams...) // append 1 to the front to facilitate the bias term
 
-	// predict power
+	// predict power using the coefficients of the linear regression model
 	power := 0.0
 	for i, coefficient := range model.coefficients {
 		power += coefficient * normalizedParams[i]
@@ -76,56 +85,72 @@ func (model *PowerModel) calculatePower(params []float64) float64 {
 	return power
 }
 
+// power calculation function - V1
 func (model *PowerModel) getPowerConsumptionPodsV1(podNames []string, namespace string) float64 {
 
-	/*
-		Not yet implemented
-		TODO: implement for V1 - add master memory and cpu
-	*/
+	// retrieve input parameters needed by the power model
 	clientset, metricsClient := kubernetesCluster.GetClientSets()                               // retrieve client set and metrics client
+	masterCPUUsage, masterMemUsage := kubernetesCluster.GetMasterNodeUsage(metricsClient)       // retrieve master node CPU and Memory usage
 	podsCPUUsageSum := kubernetesCluster.GetPodsCPUUsageSum(metricsClient, podNames, namespace) // get the sum of CPU usage of the mentioned pods
 	podsMemUsageSum := kubernetesCluster.GetPodsMemUsageSum(metricsClient, podNames, namespace) // get the sum of Memory usage of the mentioned pods
 	workerNodeCount := float64(kubernetesCluster.GetWorkerNodeCount(clientset))                 // get the number of worker nodes
 	podCount := float64(len(podNames))                                                          // calculate the pod count
 
-	params := []float64{workerNodeCount, podCount, podsCPUUsageSum, podsMemUsageSum} //generate the input parameter list for calculating power
+	//generate the input parameter list for calculating power
+	params := []float64{masterCPUUsage, masterMemUsage, workerNodeCount, podCount, podsCPUUsageSum, podsMemUsageSum}
 
-	power := model.calculatePower(params) // calculate the power using the model
+	// calculate the power using the model
+	power := model.calculatePower(params)
 	return power
 }
 
+// power calculation function - V2
 func (model *PowerModel) getPowerConsumptionPodsV2(podNames []string, namespace string) float64 {
+
+	// retrieve input parameters needed by the power model
 	clientset, metricsClient := kubernetesCluster.GetClientSets()                               // retrieve client set and metrics client
 	podsCPUUsageSum := kubernetesCluster.GetPodsCPUUsageSum(metricsClient, podNames, namespace) // get the sum of CPU usage of the mentioned pods
 	podsMemUsageSum := kubernetesCluster.GetPodsMemUsageSum(metricsClient, podNames, namespace) // get the sum of Memory usage of the mentioned pods
 	workerNodeCount := float64(kubernetesCluster.GetWorkerNodeCount(clientset))                 // get the number of worker nodes
 	podCount := float64(len(podNames))                                                          // calculate the pod count
 
-	params := []float64{workerNodeCount, podCount, podsCPUUsageSum, podsMemUsageSum} //generate the input parameter list for calculating power
+	//generate the input parameter list for calculating power
+	params := []float64{workerNodeCount, podCount, podsCPUUsageSum, podsMemUsageSum}
 
-	power := model.calculatePower(params) // calculate the power using the model
+	// calculate the power using the model
+	power := model.calculatePower(params)
 	return power
 }
 
+// power calculation function - V3
 func (model *PowerModel) getPowerConsumptionPodsV3(podNames []string, namespace string) float64 {
+
+	// retrieve input parameters needed by the power model
 	clientset, metricsClient := kubernetesCluster.GetClientSets()                               // retrieve client set and metrics client
 	podsCPUUsageSum := kubernetesCluster.GetPodsCPUUsageSum(metricsClient, podNames, namespace) // get the sum of CPU usage of the mentioned pods
 	workerNodeCount := float64(kubernetesCluster.GetWorkerNodeCount(clientset))                 // get the number of worker nodes
 	podCount := float64(len(podNames))                                                          // calculate the pod count
 
-	params := []float64{workerNodeCount, podCount, podsCPUUsageSum} //generate the input parameter list for calculating power
+	//generate the input parameter list for calculating power
+	params := []float64{workerNodeCount, podCount, podsCPUUsageSum}
 
-	power := model.calculatePower(params) // calculate the power using the model
+	// calculate the power using the model
+	power := model.calculatePower(params)
 	return power
 }
 
+// power calculation function - V4
 func (model *PowerModel) getPowerConsumptionPodsV4(podNames []string, namespace string) float64 {
+
+	// retrieve input parameters needed by the power model
 	clientset, metricsClient := kubernetesCluster.GetClientSets()                               // retrieve client set and metrics client
 	podsCPUUsageSum := kubernetesCluster.GetPodsCPUUsageSum(metricsClient, podNames, namespace) // get the sum of CPU usage of the mentioned pods
 	workerNodeCount := float64(kubernetesCluster.GetWorkerNodeCount(clientset))                 // get the number of worker nodes
 
-	params := []float64{workerNodeCount, podsCPUUsageSum} //generate the input parameter list for calculating power
+	//generate the input parameter list for calculating power
+	params := []float64{workerNodeCount, podsCPUUsageSum}
 
-	power := model.calculatePower(params) // calculate the power using the model
+	// calculate the power using the model
+	power := model.calculatePower(params)
 	return power
 }
