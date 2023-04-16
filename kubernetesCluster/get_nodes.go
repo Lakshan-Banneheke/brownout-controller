@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"sort"
 	"strconv"
 )
 
@@ -25,6 +24,22 @@ func GetNodeNames(categoryLabel string) []string {
 	}
 
 	return nodeNames
+}
+
+func GetWorkerNodeCount() int {
+	clientset := getKubernetesClientSet()
+	// retrieve all nodes in the cluster
+	nodeList, err := clientset.CoreV1().Nodes().List(context.Background(),
+		metav1.ListOptions{LabelSelector: "node-role.kubernetes.io/worker=true"})
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	// count the number of worker nodes
+	workerNodeCount := len(nodeList.Items)
+
+	return workerNodeCount
 }
 
 func GetNodesSortedCPUUsage(categoryLabel string) []string {
@@ -55,14 +70,4 @@ func GetNodesSortedCPUUsage(categoryLabel string) []string {
 	nodesSortedCPU := sortNodesUsage(nodesCPUUsage, nodeNames)
 
 	return nodesSortedCPU
-}
-
-// function returns a list of node names in sorted order of increasing cpu usage
-func sortNodesUsage(nodesCPUUsage map[string]int, nodeNames []string) []string {
-
-	sort.SliceStable(nodeNames, func(i, j int) bool {
-		return nodesCPUUsage[nodeNames[i]] < nodesCPUUsage[nodeNames[j]]
-	})
-
-	return nodeNames
 }
