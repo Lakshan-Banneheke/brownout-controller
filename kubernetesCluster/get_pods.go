@@ -2,22 +2,18 @@ package kubernetesCluster
 
 import (
 	"context"
+	"fmt"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/kubernetes"
-	"k8s.io/metrics/pkg/apis/metrics/v1beta1"
-	metrics "k8s.io/metrics/pkg/client/clientset/versioned"
-	"sort"
-	"strconv"
 )
 
-func GetPodNames(clientset *kubernetes.Clientset, namespace string, categoryLabel string) []string {
-
+func GetPodNames(namespace string, categoryLabel string) []string {
+	clientset := getKubernetesClientSet()
 	// get the list of pods that match the categoryLabel selector (optional or mandatory)
 	podList, err := clientset.CoreV1().Pods(namespace).List(context.Background(),
 		metav1.ListOptions{LabelSelector: "category=" + categoryLabel})
 
 	if err != nil {
-		panic(err.Error())
+		fmt.Println(err.Error())
 	}
 
 	// create a list of pod names
@@ -29,14 +25,14 @@ func GetPodNames(clientset *kubernetes.Clientset, namespace string, categoryLabe
 	return podNames
 }
 
-func GetPodsInNode(nodeName string, clientset *kubernetes.Clientset, namespace string, categoryLabel string) []string {
-
+func GetPodsInNode(nodeName string, namespace string, categoryLabel string) []string {
+	clientset := getKubernetesClientSet()
 	// get the list of pods that match the categoryLabel selector (optional or mandatory)
 	podList, err := clientset.CoreV1().Pods(namespace).List(context.Background(),
 		metav1.ListOptions{LabelSelector: "category=" + categoryLabel, FieldSelector: "spec.nodeName=" + nodeName})
 
 	if err != nil {
-		panic(err.Error())
+		fmt.Println(err.Error())
 	}
 
 	// create a list of pod names
