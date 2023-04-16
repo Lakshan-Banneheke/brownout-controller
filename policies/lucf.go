@@ -3,21 +3,21 @@ package policies
 import (
 	"brownout-controller/constants"
 	"brownout-controller/kubernetesCluster"
-	"fmt"
+	"log"
 )
 
 // LUCF implements the IPolicyPods interface and essentially extends the AbstractPolicy struct
 type LUCF struct{ AbstractPolicy }
 
 func (lucf LUCF) ExecuteForCluster() {
-	fmt.Println("Executing LUCF Policy for the entire cluster")
+	log.Println("Executing LUCF Policy for the entire cluster")
 	sortedPods := lucf.sortPodsCluster()
 	allClusterPods := sortedPods
 	lucf.executePolicy(allClusterPods, sortedPods)
 }
 
 func (lucf LUCF) ExecuteForNode(nodeName string) {
-	fmt.Printf("Executing LUCF Policy for the node %s\n", nodeName)
+	log.Printf("Executing LUCF Policy for the node %s\n", nodeName)
 	sortedPods := lucf.sortPodsNode(nodeName)
 	allClusterPods := kubernetesCluster.GetPodNames(constants.NAMESPACE, constants.OPTIONAL)
 	lucf.executePolicy(allClusterPods, sortedPods)

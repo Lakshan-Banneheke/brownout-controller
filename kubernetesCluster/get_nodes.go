@@ -2,8 +2,8 @@ package kubernetesCluster
 
 import (
 	"context"
-	"fmt"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"log"
 	"strconv"
 )
 
@@ -14,7 +14,7 @@ func GetNodeNames(categoryLabel string) []string {
 		metav1.ListOptions{LabelSelector: "category=" + categoryLabel})
 
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 	}
 
 	// create a list of node names
@@ -49,7 +49,7 @@ func GetNodesSortedCPUUsage(categoryLabel string) []string {
 		metav1.ListOptions{LabelSelector: "category=" + categoryLabel})
 
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 	}
 
 	//Make a map of node Name and cpu usage
@@ -61,7 +61,7 @@ func GetNodesSortedCPUUsage(categoryLabel string) []string {
 		// Removing the unit "n" from CPU Usage and converting to int for ease of sorting
 		cpuUsageInt, err := strconv.Atoi(cpuUsage[:len(cpuUsage)-1])
 		if err != nil {
-			fmt.Println(err.Error())
+			log.Println(err.Error())
 		}
 		nodesCPUUsage[nodeMetric.ObjectMeta.Name] = cpuUsageInt
 		nodeNames = append(nodeNames, nodeMetric.ObjectMeta.Name)

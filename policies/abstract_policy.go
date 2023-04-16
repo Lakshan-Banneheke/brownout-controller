@@ -3,7 +3,7 @@ package policies
 import (
 	"brownout-controller/constants"
 	"brownout-controller/kubernetesCluster"
-	"fmt"
+	"log"
 	"math"
 )
 
@@ -33,7 +33,7 @@ func (absPolicy AbstractPolicy) executePolicy(allClusterPods []string, sortedPod
 		predictedClusterPods := SliceDifference(allClusterPods, podsToDeactivate)
 
 		// TODO integrate with the powerModel package
-		fmt.Println(predictedClusterPods)
+		log.Println(predictedClusterPods)
 		//predictedPower = powerModel.getPodsPower(predictedClusterPods)
 
 		if predictedPower > constants.UPPER_THRESHOLD_POWER {

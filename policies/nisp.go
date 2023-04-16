@@ -3,7 +3,7 @@ package policies
 import (
 	"brownout-controller/constants"
 	"brownout-controller/kubernetesCluster"
-	"fmt"
+	"log"
 )
 
 // NISP implements the IPolicyNodes interface
@@ -28,7 +28,7 @@ func (nisp NISP) executePolicy(allNodes []string, sortedNodes []string) {
 		predictedClusterNodes := SliceDifference(allNodes, sortedNodes[0:i]) // get the nodes remaining in the cluster after deactivating i nodes
 
 		// TODO integrate with the powerModel package
-		fmt.Println(predictedClusterNodes)
+		log.Println(predictedClusterNodes)
 		//predictedPower = powerModel.getNodesPower(predictedClusterNodes)
 	}
 

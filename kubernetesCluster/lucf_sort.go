@@ -2,9 +2,9 @@ package kubernetesCluster
 
 import (
 	"context"
-	"fmt"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/metrics/pkg/apis/metrics/v1beta1"
+	"log"
 )
 
 func GetPodsSortedCPUUsageAll(namespace string, categoryLabel string) []string {
@@ -29,7 +29,7 @@ func GetPodsSortedCPUUsageInNode(nodeName string, namespace string, categoryLabe
 	for _, podName := range pods {
 		podMetrics, err := metricsClient.MetricsV1beta1().PodMetricses(namespace).Get(context.Background(), podName, metav1.GetOptions{})
 		if err != nil {
-			fmt.Println(err.Error())
+			log.Println(err.Error())
 		}
 		podMetricsItems = append(podMetricsItems, *podMetrics)
 	}
