@@ -1,12 +1,12 @@
 package kubernetesCluster
 
 import (
-	"fmt"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/homedir"
 	metrics "k8s.io/metrics/pkg/client/clientset/versioned"
+	"log"
 	"os"
 	"path/filepath"
 )
@@ -22,7 +22,7 @@ var config *rest.Config
 //	return kubernetesClientset, metricsClientSet
 //}
 
-func GetKubernetesClientSet() *kubernetes.Clientset {
+func getKubernetesClientSet() *kubernetes.Clientset {
 	// creates the kubernetes kubernetesClientset
 	if kubernetesClientset == nil {
 		var err error
@@ -30,13 +30,13 @@ func GetKubernetesClientSet() *kubernetes.Clientset {
 		if err != nil {
 			panic(err.Error())
 		}
-		fmt.Println("New Kubernetes Clientset created")
+		log.Println("New Kubernetes Clientset created")
 	}
 
 	return kubernetesClientset
 }
 
-func GetMetricsClient() *metrics.Clientset {
+func getMetricsClient() *metrics.Clientset {
 	// create a new metrics client
 	if metricsClientSet == nil {
 		var err error
@@ -44,7 +44,7 @@ func GetMetricsClient() *metrics.Clientset {
 		if err != nil {
 			panic(err.Error())
 		}
-		fmt.Println("New Metrics Clientset created")
+		log.Println("New Metrics Clientset created")
 	}
 
 	return metricsClientSet
