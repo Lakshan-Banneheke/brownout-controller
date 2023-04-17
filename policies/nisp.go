@@ -13,7 +13,7 @@ type NISP struct{}
 // Assumption: optional containers are deployed in nodes that are labelled as optional
 // These nodes do not contain mandatory containers
 func (nisp NISP) ExecuteForCluster() {
-	sortedNodes := kubernetesCluster.GetNodesSortedCPUUsage(constants.OPTIONAL)
+	sortedNodes := kubernetesCluster.GetNodesSortedCPUUsageAscending(constants.OPTIONAL)
 	allNodes := sortedNodes
 	nisp.executePolicy(allNodes, sortedNodes)
 }

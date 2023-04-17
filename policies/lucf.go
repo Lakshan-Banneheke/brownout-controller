@@ -24,9 +24,9 @@ func (lucf LUCF) ExecuteForNode(nodeName string) {
 }
 
 func (lucf LUCF) sortPodsCluster() []string {
-	return kubernetesCluster.GetPodsSortedCPUUsageAll(constants.NAMESPACE, constants.OPTIONAL)
+	return kubernetesCluster.GetPodsSortedCPUUsageAllAscending(constants.NAMESPACE, constants.OPTIONAL)
 }
 
 func (lucf LUCF) sortPodsNode(nodeName string) []string {
-	return kubernetesCluster.GetPodsSortedCPUUsageInNode(nodeName, constants.NAMESPACE, constants.OPTIONAL)
+	return kubernetesCluster.GetPodsSortedCPUUsageInNodeAscending(nodeName, constants.NAMESPACE, constants.OPTIONAL)
 }
