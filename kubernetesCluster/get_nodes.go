@@ -42,7 +42,7 @@ func GetWorkerNodeCount() int {
 	return workerNodeCount
 }
 
-func GetNodesSortedCPUUsage(categoryLabel string) []string {
+func GetNodesSortedCPUUsageAscending(categoryLabel string) []string {
 	metricsClient := getMetricsClient()
 	// get the CPU usage for the node that matches the label selector
 	nodeMetrics, err := metricsClient.MetricsV1beta1().NodeMetricses().List(context.Background(),
@@ -67,7 +67,7 @@ func GetNodesSortedCPUUsage(categoryLabel string) []string {
 		nodeNames = append(nodeNames, nodeMetric.ObjectMeta.Name)
 	}
 
-	nodesSortedCPU := sortNodesUsage(nodesCPUUsage, nodeNames)
+	nodesSortedCPU := sortNodesUsageAscending(nodesCPUUsage, nodeNames)
 
 	return nodesSortedCPU
 }

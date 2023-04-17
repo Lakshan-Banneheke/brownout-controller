@@ -7,7 +7,7 @@ import (
 	"log"
 )
 
-func GetPodsSortedCPUUsageAllAscending(namespace string, categoryLabel string) []string {
+func GetPodsSortedCPUUsageAllDescending(namespace string, categoryLabel string) []string {
 	metricsClient := getMetricsClient()
 	// get the CPU usage for the pod that matches the label selector
 	podMetrics, err := metricsClient.MetricsV1beta1().PodMetricses(namespace).List(context.Background(),
@@ -15,11 +15,11 @@ func GetPodsSortedCPUUsageAllAscending(namespace string, categoryLabel string) [
 
 	podsCPUUsage, podNames := extractCPUMetrics(podMetrics.Items, err)
 
-	return sortPodsUsageAscending(podsCPUUsage, podNames)
+	return sortPodsUsageDescending(podsCPUUsage, podNames)
 
 }
 
-func GetPodsSortedCPUUsageInNodeAscending(nodeName string, namespace string, categoryLabel string) []string {
+func GetPodsSortedCPUUsageInNodeDescending(nodeName string, namespace string, categoryLabel string) []string {
 	metricsClient := getMetricsClient()
 	// get the pods in the given node of the given category
 	pods := GetPodsInNode(nodeName, namespace, categoryLabel)
@@ -36,5 +36,5 @@ func GetPodsSortedCPUUsageInNodeAscending(nodeName string, namespace string, cat
 
 	podsCPUUsage, podNames := extractCPUMetrics(podMetricsItems, nil)
 
-	return sortPodsUsageAscending(podsCPUUsage, podNames)
+	return sortPodsUsageDescending(podsCPUUsage, podNames)
 }

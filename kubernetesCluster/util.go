@@ -79,7 +79,7 @@ func extractMemMetrics(podMetricsItems []v1beta1.PodMetrics, err error) (map[str
 }
 
 // function returns a list of node names in sorted order of increasing cpu usage
-func sortNodesUsage(nodesCPUUsage map[string]int, nodeNames []string) []string {
+func sortNodesUsageAscending(nodesCPUUsage map[string]int, nodeNames []string) []string {
 
 	sort.SliceStable(nodeNames, func(i, j int) bool {
 		return nodesCPUUsage[nodeNames[i]] < nodesCPUUsage[nodeNames[j]]
@@ -89,10 +89,20 @@ func sortNodesUsage(nodesCPUUsage map[string]int, nodeNames []string) []string {
 }
 
 // function returns a list of node names in sorted order of increasing cpu usage
-func sortPodsUsage(podsCPUUsage map[string]int, podNames []string) []string {
+func sortPodsUsageAscending(podsCPUUsage map[string]int, podNames []string) []string {
 
 	sort.SliceStable(podNames, func(i, j int) bool {
 		return podsCPUUsage[podNames[i]] < podsCPUUsage[podNames[j]]
+	})
+
+	return podNames
+}
+
+// function returns a list of node names in sorted order of decreasing cpu usage
+func sortPodsUsageDescending(podsCPUUsage map[string]int, podNames []string) []string {
+
+	sort.SliceStable(podNames, func(i, j int) bool {
+		return podsCPUUsage[podNames[i]] > podsCPUUsage[podNames[j]]
 	})
 
 	return podNames
