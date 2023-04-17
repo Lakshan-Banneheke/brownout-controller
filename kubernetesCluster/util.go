@@ -81,21 +81,6 @@ func extractMemMetrics(podMetricsItems []v1beta1.PodMetrics, err error) (map[str
 	return podsMemUsage, podNames
 }
 
-// function to retrieve the pod names from a given set of metrics
-func extractPodNames(podMetricsItems []v1beta1.PodMetrics, err error) []string {
-
-	if err != nil {
-		panic(err.Error())
-	}
-
-	var podNames []string
-
-	for _, podMetrics := range podMetricsItems {
-		podNames = append(podNames, podMetrics.ObjectMeta.Name)
-	}
-	return podNames
-}
-
 // function returns a list of node names in sorted order of increasing cpu usage
 func sortNodesUsageAscending(nodesCPUUsage map[string]int, nodeNames []string) []string {
 
@@ -128,11 +113,12 @@ func sortPodsUsageDescending(podsCPUUsage map[string]int, podNames []string) []s
 
 // function returns a list of pod names in a random order
 func sortPodsRandomly(podNames []string) []string {
-	// Seed the random number generator with the current time
-	rand.Seed(time.Now().UnixNano())
+
+	source := rand.NewSource(time.Now().UnixNano())
+	random := rand.New(source)
 
 	for i := len(podNames) - 1; i > 0; i-- {
-		j := rand.Intn(i + 1)
+		j := random.Intn(i + 1)
 		podNames[i], podNames[j] = podNames[j], podNames[i]
 	}
 
