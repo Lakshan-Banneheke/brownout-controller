@@ -1,9 +1,12 @@
 package kubernetesCluster
 
 import (
-	"k8s.io/metrics/pkg/apis/metrics/v1beta1"
+	"math/rand"
 	"sort"
 	"strconv"
+	"time"
+
+	"k8s.io/metrics/pkg/apis/metrics/v1beta1"
 )
 
 // function to retrieve the CPU Usage metrics from a given set of metrics
@@ -78,6 +81,21 @@ func extractMemMetrics(podMetricsItems []v1beta1.PodMetrics, err error) (map[str
 	return podsMemUsage, podNames
 }
 
+// function to retrieve the pod names from a given set of metrics
+func extractPodNames(podMetricsItems []v1beta1.PodMetrics, err error) []string {
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	var podNames []string
+
+	for _, podMetrics := range podMetricsItems {
+		podNames = append(podNames, podMetrics.ObjectMeta.Name)
+	}
+	return podNames
+}
+
 // function returns a list of node names in sorted order of increasing cpu usage
 func sortNodesUsageAscending(nodesCPUUsage map[string]int, nodeNames []string) []string {
 
@@ -104,6 +122,19 @@ func sortPodsUsageDescending(podsCPUUsage map[string]int, podNames []string) []s
 	sort.SliceStable(podNames, func(i, j int) bool {
 		return podsCPUUsage[podNames[i]] > podsCPUUsage[podNames[j]]
 	})
+
+	return podNames
+}
+
+// function returns a list of pod names in a random order
+func sortPodsRandomly(podNames []string) []string {
+	// Seed the random number generator with the current time
+	rand.Seed(time.Now().UnixNano())
+
+	for i := len(podNames) - 1; i > 0; i-- {
+		j := rand.Intn(i + 1)
+		podNames[i], podNames[j] = podNames[j], podNames[i]
+	}
 
 	return podNames
 }
