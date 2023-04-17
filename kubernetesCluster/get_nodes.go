@@ -30,7 +30,7 @@ func GetWorkerNodeCount() int {
 	clientset := getKubernetesClientSet()
 	// retrieve all nodes in the cluster
 	nodeList, err := clientset.CoreV1().Nodes().List(context.Background(),
-		metav1.ListOptions{LabelSelector: "node-role.kubernetes.io/worker=true"})
+		metav1.ListOptions{LabelSelector: "!node-role.kubernetes.io/master"})
 
 	if err != nil {
 		panic(err.Error())

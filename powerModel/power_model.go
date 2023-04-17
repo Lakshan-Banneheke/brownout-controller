@@ -130,6 +130,7 @@ func (model *PowerModel) getPowerConsumptionPodsV3(podNames []string, namespace 
 
 	//generate the input parameter list for calculating power
 	params := []float64{workerNodeCount, podCount, podsCPUUsageSum}
+	log.Println(params)
 
 	// calculate the power using the model
 	power := model.calculatePower(params)
