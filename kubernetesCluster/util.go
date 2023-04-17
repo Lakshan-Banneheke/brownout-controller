@@ -1,9 +1,12 @@
 package kubernetesCluster
 
 import (
-	"k8s.io/metrics/pkg/apis/metrics/v1beta1"
+	"math/rand"
 	"sort"
 	"strconv"
+	"time"
+
+	"k8s.io/metrics/pkg/apis/metrics/v1beta1"
 )
 
 // function to retrieve the CPU Usage metrics from a given set of metrics
@@ -104,6 +107,20 @@ func sortPodsUsageDescending(podsCPUUsage map[string]int, podNames []string) []s
 	sort.SliceStable(podNames, func(i, j int) bool {
 		return podsCPUUsage[podNames[i]] > podsCPUUsage[podNames[j]]
 	})
+
+	return podNames
+}
+
+// function returns a list of pod names in a random order
+func sortPodsRandomly(podNames []string) []string {
+
+	source := rand.NewSource(time.Now().UnixNano())
+	random := rand.New(source)
+
+	for i := len(podNames) - 1; i > 0; i-- {
+		j := random.Intn(i + 1)
+		podNames[i], podNames[j] = podNames[j], podNames[i]
+	}
 
 	return podNames
 }
