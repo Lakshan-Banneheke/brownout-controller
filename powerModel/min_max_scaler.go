@@ -1,30 +1,27 @@
 package powerModel
 
 import (
-	"brownout-controller/powerModel/util"
-	"log"
-	"strconv"
+	"brownout-controller/constants"
+	"sync"
 )
 
 type MinMaxScaler struct {
-	mins          []float64
-	maxs          []float64
-	scalerVersion string
+	mins []float64
+	maxs []float64
 }
 
 var scaler *MinMaxScaler
+var onceMMS sync.Once
 
-// GetScaler : function to retireve the Min Max Scaler
-func GetScaler(version string) *MinMaxScaler {
+// GetScaler : function to retrieve the Min Max Scaler
+func GetScaler() *MinMaxScaler {
 
-	if scaler == nil || scaler.scalerVersion != version {
+	onceMMS.Do(func() {
 		// initialize scaler
-		scaler = &MinMaxScaler{
-			scalerVersion: version,
-		}
-		data := getDataFromFile("data/scaler-fit-data-" + version + ".csv")
-		scaler.fit(data)
-	}
+		scaler = &MinMaxScaler{}
+		fitData := [][]float64{{constants.MAX0, constants.MAX1, constants.MAX2}, {constants.MIN0, constants.MIN1, constants.MIN2}}
+		scaler.fit(fitData)
+	})
 	return scaler
 }
 
@@ -63,35 +60,4 @@ func (scaler *MinMaxScaler) fit(data [][]float64) {
 			}
 		}
 	}
-}
-
-// function to extract the dataset from the csv file
-func getDataFromFile(filepath string) [][]float64 {
-
-	// extract data needed to fit the scaler from the csv file
-	rows := util.ExtractDataFromCSV(filepath)
-
-	var data [][]float64
-
-	// convert the data into floats and populate the slice
-	for j, row := range rows {
-		if j == 0 {
-			// skip the header row
-			continue
-		}
-
-		floatRow := make([]float64, len(row))
-
-		for i := range row {
-			floatValue, err := strconv.ParseFloat(row[i], 64)
-			if err != nil {
-				log.Fatal(err)
-			}
-			floatRow[i] = floatValue
-		}
-
-		data = append(data, floatRow)
-	}
-
-	return data
 }

@@ -48,7 +48,7 @@ func main() {
 	//t.ExecuteForCluster()
 
 	// get the power model
-	pm := powerModel.GetPowerModel("v3")
+	pm := powerModel.GetPowerModel()
 
 	// get power consumption when a set of pods given
 	log.Println(pm.GetPowerConsumptionPods([]string{"agri-app-master-75656cf88b-fcd29", "agri-app-master-75656cf88b-xtkl4", "agri-app-master-75656cf88b-hxplj"}))
