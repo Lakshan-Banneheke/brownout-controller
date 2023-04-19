@@ -9,18 +9,18 @@ import (
 // HUCF implements the IPolicyPods interface and essentially extends the AbstractPolicy struct
 type HUCF struct{ AbstractPolicy }
 
-func (hucf HUCF) ExecuteForCluster() {
+func (hucf HUCF) ExecuteForCluster(upperThresholdPower float64) map[string]int32 {
 	log.Println("Executing HUCF Policy for the entire cluster")
 	sortedPods := hucf.sortPodsCluster()
 	allClusterPods := sortedPods
-	hucf.executePolicy(allClusterPods, sortedPods)
+	return hucf.executePolicy(allClusterPods, sortedPods, upperThresholdPower)
 }
 
-func (hucf HUCF) ExecuteForNode(nodeName string) {
+func (hucf HUCF) ExecuteForNode(nodeName string, upperThresholdPower float64) map[string]int32 {
 	log.Printf("Executing HUCF Policy for the node %s\n", nodeName)
 	sortedPods := hucf.sortPodsNode(nodeName)
 	allClusterPods := kubernetesCluster.GetPodNames(constants.NAMESPACE, constants.OPTIONAL)
-	hucf.executePolicy(allClusterPods, sortedPods)
+	return hucf.executePolicy(allClusterPods, sortedPods, upperThresholdPower)
 }
 
 func (hucf HUCF) sortPodsCluster() []string {
