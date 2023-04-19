@@ -2,8 +2,10 @@ package main
 
 import (
 	"brownout-controller/constants"
+	"brownout-controller/powerModel"
 	"brownout-controller/prometheus"
 	"fmt"
+	"log"
 )
 
 func main() {
@@ -19,4 +21,5 @@ func main() {
 	fmt.Println(prometheus.GetSLAViolationRatio("podinfo.localdev.me", "1d", constants.SLA_VIOLATION_LATENCY))
 	fmt.Println(prometheus.GetSLASuccessRatio("podinfo.localdev.me", "1d", constants.SLA_VIOLATION_LATENCY))
 
+	brownout()
 }

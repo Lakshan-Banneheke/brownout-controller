@@ -9,12 +9,12 @@ import (
 
 type AbstractPolicy struct{}
 
-func (absPolicy AbstractPolicy) executePolicy(allClusterPods []string, sortedPods []string) {
+func (absPolicy AbstractPolicy) executePolicy(allClusterPods []string, sortedPods []string, upperThresholdPower float64) map[string]int32 {
 
 	n := len(sortedPods)
 
 	if n == 0 {
-		return
+		return make(map[string]int32)
 	}
 
 	m := n / 2 // mid point
@@ -32,11 +32,11 @@ func (absPolicy AbstractPolicy) executePolicy(allClusterPods []string, sortedPod
 		predictedClusterPods := SliceDifference(allClusterPods, podsToDeactivate)
 
 		// get power consumption of the pods
-		predictedPower = powerModel.GetPowerModel("v4").GetPowerConsumptionPods(predictedClusterPods)
+		predictedPower = powerModel.GetPowerModel().GetPowerConsumptionPods(predictedClusterPods)
 
-		if predictedPower > constants.UPPER_THRESHOLD_POWER {
+		if predictedPower > upperThresholdPower {
 			m = (m + n) / 2
-		} else if (constants.UPPER_THRESHOLD_POWER-predictedPower)/(constants.UPPER_THRESHOLD_POWER) < 0.1 {
+		} else if (upperThresholdPower-predictedPower)/(upperThresholdPower) < 0.1 {
 			break
 		} else {
 			m = (1 + m) / 2
@@ -44,5 +44,5 @@ func (absPolicy AbstractPolicy) executePolicy(allClusterPods []string, sortedPod
 
 		i++
 	}
-	kubernetesCluster.DeactivatePods(podsToDeactivate, constants.NAMESPACE)
+	return kubernetesCluster.DeactivatePods(podsToDeactivate, constants.NAMESPACE)
 }
