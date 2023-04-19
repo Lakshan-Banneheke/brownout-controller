@@ -43,10 +43,14 @@ func (nisp NISP) executePolicy(allNodes []string, sortedNodes []string, upperThr
 	if i == 1 {
 		return policy.ExecuteForNode(sortedNodes[0], upperThresholdPower) // deactivate some containers of 0th node according to a pod selection policy
 	} else {
-		nisp.deactivateNodes(sortedNodes[0 : i-1])                                         // deactivate all containers of 0 to i-1 hosts
+		nisp.deactivateNodes(sortedNodes[0 : i-1])                                         //  node_deployments                             // deactivate all containers of 0 to i-1 hosts
 		one_node_deployments := policy.ExecuteForNode(sortedNodes[i], upperThresholdPower) // deactivate some containers of ith node according to a pod selection policy
-		for key, value := range one_node_deployments {
-			node_deployments[key] = value
+		for key, value1 := range one_node_deployments {
+			if value2, exists := node_deployments[key]; exists {
+				node_deployments[key] = value2 + value1
+			} else {
+				node_deployments[key] = value1
+			}
 		}
 
 		return node_deployments
@@ -56,8 +60,13 @@ func (nisp NISP) executePolicy(allNodes []string, sortedNodes []string, upperThr
 func (nisp NISP) deactivateNodes(nodeList []string) {
 	for _, node := range nodeList {
 		one_node_deployments := kubernetesCluster.DeactivateNode(node, constants.NAMESPACE, constants.OPTIONAL)
-		for key, value := range one_node_deployments {
-			node_deployments[key] = value
+
+		for key, value1 := range one_node_deployments {
+			if value2, exists := node_deployments[key]; exists {
+				node_deployments[key] = value2 + value1
+			} else {
+				node_deployments[key] = value1
+			}
 		}
 
 	}
