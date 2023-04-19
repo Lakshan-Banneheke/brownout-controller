@@ -26,6 +26,25 @@ func GetPodNamesAll(namespace string) []string {
 	return podNames
 }
 
+func GetTerminatingPodNamesAll(namespace string) []string {
+	clientset := getKubernetesClientSet()
+	// get the list of pods that match the categoryLabel selector (optional or mandatory)
+	podList, err := clientset.CoreV1().Pods(namespace).List(context.Background(),
+		metav1.ListOptions{FieldSelector: "status.phase=Terminating"})
+
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	// create a list of pod names
+	var podNames []string
+	for _, pod := range podList.Items {
+		podNames = append(podNames, pod.Name)
+	}
+
+	return podNames
+}
+
 func GetPodNamesCategory(namespace string, categoryLabel string) []string {
 	clientset := getKubernetesClientSet()
 	// get the list of pods that match the categoryLabel selector (optional or mandatory)

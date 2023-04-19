@@ -3,9 +3,9 @@ package experimentation
 import (
 	"brownout-controller/constants"
 	"brownout-controller/kubernetesCluster"
-	"brownout-controller/policies"
 	"brownout-controller/powerModel"
 	"brownout-controller/prometheus"
+	"brownout-controller/util"
 	"fmt"
 	"log"
 	"math"
@@ -42,14 +42,18 @@ func LUCFExperiment(requiredSR float64) {
 			m = (m + n) / 2
 			if i != 0 {
 				kubernetesCluster.ActivatePods(deactivatedPods, constants.NAMESPACE)
-				sortedPods = kubernetesCluster.GetPodsSortedCPUUsageAllAscending(constants.NAMESPACE, constants.OPTIONAL)
+				terminatingPods := kubernetesCluster.GetTerminatingPodNamesAll(constants.NAMESPACE)
+				tempSlice := kubernetesCluster.GetPodsSortedCPUUsageAllAscending(constants.NAMESPACE, constants.OPTIONAL)
+				sortedPods = util.SliceDifference(tempSlice, terminatingPods)
 			}
 			deactivatedPods = kubernetesCluster.DeactivatePods(podsToDeactivate, constants.NAMESPACE)
 		} else {
 			m = (1 + m) / 2
 			if i != 0 {
 				kubernetesCluster.ActivatePods(deactivatedPods, constants.NAMESPACE)
-				sortedPods = kubernetesCluster.GetPodsSortedCPUUsageAllAscending(constants.NAMESPACE, constants.OPTIONAL)
+				terminatingPods := kubernetesCluster.GetTerminatingPodNamesAll(constants.NAMESPACE)
+				tempSlice := kubernetesCluster.GetPodsSortedCPUUsageAllAscending(constants.NAMESPACE, constants.OPTIONAL)
+				sortedPods = util.SliceDifference(tempSlice, terminatingPods)
 			}
 			deactivatedPods = kubernetesCluster.DeactivatePods(podsToDeactivate, constants.NAMESPACE)
 		}
@@ -60,7 +64,7 @@ func LUCFExperiment(requiredSR float64) {
 
 	allClusterPods := kubernetesCluster.GetPodNamesAll(constants.NAMESPACE)
 	// get the pods remaining in the cluster after deactivating above pods
-	predictedClusterPods := policies.SliceDifference(allClusterPods, podsToDeactivate)
+	predictedClusterPods := util.SliceDifference(allClusterPods, podsToDeactivate)
 	var predictedPowerList []float64
 	var srList []float64
 

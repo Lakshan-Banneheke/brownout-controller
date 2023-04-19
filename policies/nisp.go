@@ -4,6 +4,7 @@ import (
 	"brownout-controller/constants"
 	"brownout-controller/kubernetesCluster"
 	"brownout-controller/powerModel"
+	"brownout-controller/util"
 )
 
 // NISP implements the IPolicyNodes interface
@@ -27,7 +28,7 @@ func (nisp NISP) executePolicy(allNodes []string, sortedNodes []string, upperThr
 
 	for predictedPower > upperThresholdPower {
 		i++
-		predictedClusterNodes := SliceDifference(allNodes, sortedNodes[0:i]) // get the nodes remaining in the cluster after deactivating i nodes
+		predictedClusterNodes := util.SliceDifference(allNodes, sortedNodes[0:i]) // get the nodes remaining in the cluster after deactivating i nodes
 
 		// get power consumption of the nodes
 		predictedPower = powerModel.GetPowerModel().GetPowerConsumptionNodes(predictedClusterNodes)
