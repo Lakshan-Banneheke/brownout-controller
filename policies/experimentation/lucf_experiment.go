@@ -61,7 +61,7 @@ func LUCFExperiment(requiredSR float64) {
 		}
 		fmt.Println("Deactivated Pods: ", deactivatedPods)
 		i++
-		time.Sleep(90 * time.Second)
+		time.Sleep(30 * time.Second)
 	}
 
 	allClusterPods := kubernetesCluster.GetPodNamesAll(constants.NAMESPACE)
