@@ -1,10 +1,12 @@
 package main
 
-import "brownout-controller/prometheus"
+import (
+	"brownout-controller/constants"
+	"brownout-controller/prometheus"
+	"fmt"
+)
 
 func main() {
-
-	prometheus.GetTotalRequestCount("podinfo.localdev.me", "1d")
-	prometheus.GetErrorRequestCount("podinfo.localdev.me", "1d")
-	prometheus.GetSlowRequestCount("podinfo.localdev.me", "1d", "1")
+	fmt.Println(prometheus.GetSLASuccessRatio("podinfo.localdev.me", "1d", constants.SLA_VIOLATION_LATENCY))
+	fmt.Println(prometheus.GetSLASuccessRatio("podinfo.localdev.me", "1d", constants.SLA_VIOLATION_LATENCY))
 }
