@@ -1,4 +1,4 @@
-package test
+package experimentation
 
 import (
 	"brownout-controller/constants"
@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func LUCFPolicyTest(requiredSR float64) {
+func LUCFExperiment(requiredSR float64) {
 
 	allClusterPods := kubernetesCluster.GetPodNames(constants.NAMESPACE, constants.OPTIONAL)
 	sortedPods := kubernetesCluster.GetPodsSortedCPUUsageAllAscending(constants.NAMESPACE, constants.OPTIONAL)
@@ -32,19 +32,23 @@ func LUCFPolicyTest(requiredSR float64) {
 
 		podsToDeactivate = sortedPods[:m+1]
 
-		currentSR := prometheus.GetSLAViolationRatio("podinfo.localdev.me", "1min", constants.SLA_VIOLATION_LATENCY)
+		currentSR := prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY)
 
-		if math.Abs(currentSR-requiredSR) < 0.1 {
+		if math.Abs(currentSR-requiredSR) < 0.05 {
 			break
 		} else if currentSR > requiredSR {
 			m = (m + n) / 2
-			kubernetesCluster.ActivatePods(deactivatedPods, constants.NAMESPACE)
-			sortedPods = kubernetesCluster.GetPodsSortedCPUUsageAllAscending(constants.NAMESPACE, constants.OPTIONAL)
+			if i != 0 {
+				kubernetesCluster.ActivatePods(deactivatedPods, constants.NAMESPACE)
+				sortedPods = kubernetesCluster.GetPodsSortedCPUUsageAllAscending(constants.NAMESPACE, constants.OPTIONAL)
+			}
 			deactivatedPods = kubernetesCluster.DeactivatePods(podsToDeactivate, constants.NAMESPACE)
 		} else {
 			m = (1 + m) / 2
-			kubernetesCluster.ActivatePods(deactivatedPods, constants.NAMESPACE)
-			sortedPods = kubernetesCluster.GetPodsSortedCPUUsageAllAscending(constants.NAMESPACE, constants.OPTIONAL)
+			if i != 0 {
+				kubernetesCluster.ActivatePods(deactivatedPods, constants.NAMESPACE)
+				sortedPods = kubernetesCluster.GetPodsSortedCPUUsageAllAscending(constants.NAMESPACE, constants.OPTIONAL)
+			}
 			deactivatedPods = kubernetesCluster.DeactivatePods(podsToDeactivate, constants.NAMESPACE)
 		}
 
@@ -59,7 +63,7 @@ func LUCFPolicyTest(requiredSR float64) {
 	for i := 1; i <= 300; i++ {
 		// get power consumption of the pods
 		predictedPowerList = append(predictedPowerList, powerModel.GetPowerModel().GetPowerConsumptionPods(predictedClusterPods))
-		srList = append(srList, prometheus.GetSLAViolationRatio("podinfo.localdev.me", "1min", constants.SLA_VIOLATION_LATENCY))
+		srList = append(srList, prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY))
 		i++
 		time.Sleep(1 * time.Second)
 	}
@@ -67,8 +71,10 @@ func LUCFPolicyTest(requiredSR float64) {
 	avgPower := average(predictedPowerList)
 	avgSr := average(srList)
 
-	log.Println(avgPower)
-	log.Println(avgSr)
+	log.Println("Required SR: ", requiredSR)
+	log.Println("Number of pods deactivated: ", len(podsToDeactivate))
+	log.Println("Average Power: ", avgPower)
+	log.Println("Average SR: ", avgSr)
 }
 
 func average(listFloat []float64) float64 {
