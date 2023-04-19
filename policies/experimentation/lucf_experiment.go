@@ -6,6 +6,7 @@ import (
 	"brownout-controller/policies"
 	"brownout-controller/powerModel"
 	"brownout-controller/prometheus"
+	"fmt"
 	"log"
 	"math"
 	"time"
@@ -33,6 +34,8 @@ func LUCFExperiment(requiredSR float64) {
 		podsToDeactivate = sortedPods[:m+1]
 
 		currentSR := prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY)
+		fmt.Println("Current SR: ", currentSR)
+		fmt.Println("m: ", m)
 
 		if math.Abs(currentSR-requiredSR) < 0.05 {
 			break
@@ -53,13 +56,14 @@ func LUCFExperiment(requiredSR float64) {
 		}
 
 		i++
-		time.Sleep(2 * time.Minute)
+		time.Sleep(30 * time.Second)
 	}
 	// get the pods remaining in the cluster after deactivating above pods
 	predictedClusterPods := policies.SliceDifference(allClusterPods, podsToDeactivate)
 	var predictedPowerList []float64
 	var srList []float64
 
+	fmt.Println("Exited Loop")
 	for i := 1; i <= 300; i++ {
 		// get power consumption of the pods
 		predictedPowerList = append(predictedPowerList, powerModel.GetPowerModel().GetPowerConsumptionPods(predictedClusterPods))
