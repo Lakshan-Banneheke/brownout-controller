@@ -1,24 +1,49 @@
 package prometheus
 
 import (
+	"fmt"
 	"github.com/prometheus/common/model"
 	"log"
 )
 
 // GetTotalRequestCount interval parameter can have 1m, 30m, 1d, etc
-func GetTotalRequestCount(hostname string, interval string) {
-	query := "sum by (host) (increase(nginx_ingress_controller_requests{host=~\"" + hostname + "\"}[" + interval + "]))"
+func GetTotalRequestCount(hostname string, interval string) int {
+	query := fmt.Sprintf("sum by (host) (increase(nginx_ingress_controller_requests{host=~'%s'}[%s]))", hostname, interval)
 	result := doQuery(query)              // Result is of type Vector
 	vectorVal := result.(model.Vector)[0] // Cast to mode.Vector and get the first row
 	reqCount := int(vectorVal.Value)
 	log.Printf("Total Request Count for host %s in the last %s: %v", hostname, interval, reqCount)
+	return reqCount
 }
 
 // GetErrorRequestCount interval parameter can have 1m, 30m, 1d, etc
-func GetErrorRequestCount(hostname string, interval string) {
-	query := "sum by (host) (increase(nginx_ingress_controller_requests{status=~'[4-5].*', host=~'" + hostname + "'}[" + interval + "]))"
+func GetErrorRequestCount(hostname string, interval string) int {
+	query := fmt.Sprintf("sum by (host) (increase(nginx_ingress_controller_requests{status=~'[4-5].*', host=~'%s'}[%s]))", hostname, interval)
 	result := doQuery(query)              // Result is of type Vector
 	vectorVal := result.(model.Vector)[0] // Cast to mode.Vector and get the first row
 	reqCount := int(vectorVal.Value)
-	log.Printf("Total Error Request Count for host %s in the last %s: %v", hostname, interval, reqCount)
+	log.Printf("Error Request Count for host %s in the last %s: %v", hostname, interval, reqCount)
+	return reqCount
+}
+
+// GetSlowRequestCount returns the count of requests which are slower than the given latency
+// parameter latency (in seconds): 0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10
+// parameter interval: 1m, 30m, 1d, etc
+func GetSlowRequestCount(hostname string, interval string, latency string) int {
+	totalReq := GetTotalRequestCount(hostname, interval)
+	fastReq := getFastRequestCount(hostname, interval, latency)
+	slowReq := totalReq - fastReq
+	log.Printf("Slow Request Count for host %s in the last %s for latency %s: %v", hostname, interval, latency, slowReq)
+	return slowReq
+}
+
+// getFastRequestCount interval parameter can have 1m, 30m, 1d, etc
+func getFastRequestCount(hostname string, interval string, latency string) int {
+	query := fmt.Sprintf("sum by (le) (increase(nginx_ingress_controller_request_duration_seconds_bucket{host=~'%s', le='%s'}[%s]))", hostname, latency, interval)
+	result := doQuery(query) // Result is of type Vector
+	fmt.Println(result)
+	vectorVal := result.(model.Vector)[0] // Cast to mode.Vector and get the first row
+	reqCount := int(vectorVal.Value)
+	//log.Printf("Fast Request Count for host %s in the last %s: %v", hostname, interval, reqCount)
+	return reqCount
 }
