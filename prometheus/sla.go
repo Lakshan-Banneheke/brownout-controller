@@ -1,14 +1,21 @@
 package prometheus
 
+import (
+	"log"
+)
+
 func GetSLAViolationRatio(hostname string, interval string, latency string) float64 {
 	reqTotal := getTotalRequestCount(hostname, interval)
 	reqError := getErrorRequestCount(hostname, interval)
 	reqSlow := getSlowRequestCount(hostname, interval, latency)
 
 	slaViolationRatio := float64(reqSlow+reqError) / float64(reqTotal)
+	log.Printf("SLA violation ratio for host %s", slaViolationRatio)
 	return slaViolationRatio
 }
 
 func GetSLASuccessRatio(hostname string, interval string, latency string) float64 {
-	return 1 - GetSLAViolationRatio(hostname, interval, latency)
+	slaSuccessRatio := 1 - GetSLAViolationRatio(hostname, interval, latency)
+	log.Printf("SLA Success ratio for host %s", slaSuccessRatio)
+	return slaSuccessRatio
 }
