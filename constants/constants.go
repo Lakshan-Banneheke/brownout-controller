@@ -10,4 +10,5 @@ const (
 	ACCEPTED_MINIMUM_SUCCESS_RATE = 0.50
 	K_VALUE                       = 4
 	HOSTNAME                      = "agrimaster.com"
+	OPTIONAL_NODES_NUM            = 3
 )
