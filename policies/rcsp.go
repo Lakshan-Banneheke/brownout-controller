@@ -12,14 +12,14 @@ type RCSP struct{ AbstractPolicy }
 func (rcsp RCSP) ExecuteForCluster(upperThresholdPower float64) map[string]int32 {
 	log.Println("Executing RCSP Policy for the entire cluster")
 	sortedPods := rcsp.sortPodsCluster()
-	allClusterPods := sortedPods
+	allClusterPods := kubernetesCluster.GetPodNamesAll(constants.NAMESPACE)
 	return rcsp.executePolicy(allClusterPods, sortedPods, upperThresholdPower)
 }
 
 func (rcsp RCSP) ExecuteForNode(nodeName string, upperThresholdPower float64) map[string]int32 {
 	log.Printf("Executing RCSP Policy for the node %s\n", nodeName)
 	sortedPods := rcsp.sortPodsNode(nodeName)
-	allClusterPods := kubernetesCluster.GetPodNames(constants.NAMESPACE, constants.OPTIONAL)
+	allClusterPods := kubernetesCluster.GetPodNamesAll(constants.NAMESPACE)
 	return rcsp.executePolicy(allClusterPods, sortedPods, upperThresholdPower)
 }
 
