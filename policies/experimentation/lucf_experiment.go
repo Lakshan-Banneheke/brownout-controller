@@ -53,7 +53,7 @@ func LUCFExperiment(requiredSR float64) {
 		}
 
 		i++
-		time.Sleep(1 * time.Minute)
+		time.Sleep(2 * time.Minute)
 	}
 	// get the pods remaining in the cluster after deactivating above pods
 	predictedClusterPods := policies.SliceDifference(allClusterPods, podsToDeactivate)
