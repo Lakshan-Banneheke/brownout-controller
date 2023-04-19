@@ -11,5 +11,5 @@ func GetTotalRequestCount(hostname string, interval string) {
 	result := doQuery(query)              // Result is of type Vector
 	vectorVal := result.(model.Vector)[0] // Cast to mode.Vector and get the first row
 	reqCount := int(vectorVal.Value)
-	log.Printf("Request Count: %v", reqCount)
+	log.Printf("Total Request Count for %s in the last %s: %v", hostname, interval, reqCount)
 }
