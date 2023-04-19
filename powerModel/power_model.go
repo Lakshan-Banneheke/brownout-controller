@@ -45,7 +45,9 @@ func (model *PowerModel) setCoefficients() {
 	model.coefficients = []float64{constants.C1, constants.C2, constants.C3, constants.C4}
 }
 
+// function to extract parameters and call calculatePower()
 func getPower(podNames []string, workerNodeCount float64, model *PowerModel) float64 {
+
 	// retrieve input parameters needed by the power model
 	podsCPUUsageSum := kubernetesCluster.GetPodsCPUUsageSum(podNames, constants.NAMESPACE) // get the sum of CPU usage of the mentioned pods
 	podCount := float64(len(podNames))                                                     // calculate the pod count
