@@ -14,7 +14,6 @@ import (
 
 func LUCFExperiment(requiredSR float64) {
 
-	allClusterPods := kubernetesCluster.GetPodNamesAll(constants.NAMESPACE)
 	sortedPods := kubernetesCluster.GetPodsSortedCPUUsageAllAscending(constants.NAMESPACE, constants.OPTIONAL)
 
 	n := len(sortedPods)
@@ -56,8 +55,10 @@ func LUCFExperiment(requiredSR float64) {
 		}
 
 		i++
-		time.Sleep(30 * time.Second)
+		time.Sleep(90 * time.Second)
 	}
+
+	allClusterPods := kubernetesCluster.GetPodNamesAll(constants.NAMESPACE)
 	// get the pods remaining in the cluster after deactivating above pods
 	predictedClusterPods := policies.SliceDifference(allClusterPods, podsToDeactivate)
 	var predictedPowerList []float64
