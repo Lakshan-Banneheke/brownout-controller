@@ -33,7 +33,7 @@ func GetSlowRequestCount(hostname string, interval string, latency string) int {
 	totalReq := GetTotalRequestCount(hostname, interval)
 	fastReq := getFastRequestCount(hostname, interval, latency)
 	slowReq := totalReq - fastReq
-	log.Printf("Slow Request Count for host %s in the last %s for latency %s: %v", hostname, interval, latency, slowReq)
+	log.Printf("Slow Request Count for host %s in the last %s for latency %s second: %v", hostname, interval, latency, slowReq)
 	return slowReq
 }
 
