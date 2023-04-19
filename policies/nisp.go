@@ -9,7 +9,7 @@ import (
 // NISP implements the IPolicyNodes interface
 type NISP struct{}
 
-var node_deployments = make(map[string]int32)
+var nodeDeployments = make(map[string]int32)
 
 // ExecuteForCluster
 // Assumption: optional containers are deployed in nodes that are labelled as optional
@@ -35,7 +35,7 @@ func (nisp NISP) executePolicy(allNodes []string, sortedNodes []string, upperThr
 
 	if (upperThresholdPower-predictedPower)/upperThresholdPower < 0.1 {
 		nisp.deactivateNodes(sortedNodes[0:i]) // deactivate all pods of 0 to i hosts
-		return node_deployments
+		return nodeDeployments
 	}
 
 	var policy IPolicyPods = LUCF{} // Can set policy (LUCF, LRU, RCSP)
@@ -43,31 +43,28 @@ func (nisp NISP) executePolicy(allNodes []string, sortedNodes []string, upperThr
 	if i == 1 {
 		return policy.ExecuteForNode(sortedNodes[0], upperThresholdPower) // deactivate some containers of 0th node according to a pod selection policy
 	} else {
-		nisp.deactivateNodes(sortedNodes[0 : i-1])                                         //  node_deployments                             // deactivate all containers of 0 to i-1 hosts
-		one_node_deployments := policy.ExecuteForNode(sortedNodes[i], upperThresholdPower) // deactivate some containers of ith node according to a pod selection policy
-		for key, value1 := range one_node_deployments {
-			if value2, exists := node_deployments[key]; exists {
-				node_deployments[key] = value2 + value1
-			} else {
-				node_deployments[key] = value1
-			}
-		}
+		nisp.deactivateNodes(sortedNodes[0 : i-1])                                       //  node_deployments                             // deactivate all containers of 0 to i-1 hosts
+		oneNodeDeployments := policy.ExecuteForNode(sortedNodes[i], upperThresholdPower) // deactivate some containers of ith node according to a pod selection policy
+		addToNodeDeployments(oneNodeDeployments)
 
-		return node_deployments
+		return nodeDeployments
 	}
 }
 
 func (nisp NISP) deactivateNodes(nodeList []string) {
 	for _, node := range nodeList {
-		one_node_deployments := kubernetesCluster.DeactivateNode(node, constants.NAMESPACE, constants.OPTIONAL)
+		oneNodeDeployments := kubernetesCluster.DeactivateNode(node, constants.NAMESPACE, constants.OPTIONAL)
+		addToNodeDeployments(oneNodeDeployments)
+	}
+}
 
-		for key, value1 := range one_node_deployments {
-			if value2, exists := node_deployments[key]; exists {
-				node_deployments[key] = value2 + value1
-			} else {
-				node_deployments[key] = value1
-			}
+// functions appends values from the map oneNodeDeployments to the map nodeDeployments
+func addToNodeDeployments(oneNodeDeployments map[string]int32) {
+	for key, value1 := range oneNodeDeployments {
+		if value2, exists := nodeDeployments[key]; exists {
+			nodeDeployments[key] = value2 + value1
+		} else {
+			nodeDeployments[key] = value1
 		}
-
 	}
 }
