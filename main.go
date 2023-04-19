@@ -7,6 +7,6 @@ import (
 )
 
 func main() {
-	fmt.Println(prometheus.GetSLASuccessRatio("podinfo.localdev.me", "1d", constants.SLA_VIOLATION_LATENCY))
+	fmt.Println(prometheus.GetSLAViolationRatio("podinfo.localdev.me", "1d", constants.SLA_VIOLATION_LATENCY))
 	fmt.Println(prometheus.GetSLASuccessRatio("podinfo.localdev.me", "1d", constants.SLA_VIOLATION_LATENCY))
 }
