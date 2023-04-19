@@ -66,12 +66,12 @@ func LUCFExperiment(requiredSR float64) {
 			podsToDeactivate = sortedPods[:m+1]
 			deactivatedPods = kubernetesCluster.DeactivatePods(podsToDeactivate, constants.NAMESPACE)
 		}
-		fmt.Println("m: ", m)
 		fmt.Println("Deactivated Pods: ", deactivatedPods)
 		i++
 		time.Sleep(30 * time.Second)
 	}
 
+	fmt.Println("m: ", m)
 	allClusterPods := kubernetesCluster.GetPodNamesAll(constants.NAMESPACE)
 	// get the pods remaining in the cluster after deactivating above pods
 	predictedClusterPods := util.SliceDifference(allClusterPods, podsToDeactivate)
