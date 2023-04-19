@@ -22,3 +22,5 @@ spec:
           env:
             - name: inCluster
               value: "true"
+            - name : PROMETHEUS_IP
+              value: "10.43.218.49"
