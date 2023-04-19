@@ -31,8 +31,6 @@ func LUCFExperiment(requiredSR float64) {
 	for i < math.Log2(float64(n)) {
 
 		fmt.Println("Iteration: ", i)
-		podsToDeactivate = sortedPods[:m+1]
-		fmt.Println("Pods to deactivate: ", podsToDeactivate)
 
 		currentSR := prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY)
 		fmt.Println("Current SR: ", currentSR)
@@ -51,6 +49,7 @@ func LUCFExperiment(requiredSR float64) {
 				fmt.Println("Temp Pods: ", tempSlice)
 				sortedPods = util.SliceDifference(tempSlice, terminatingPods)
 			}
+			podsToDeactivate = sortedPods[:m+1]
 			deactivatedPods = kubernetesCluster.DeactivatePods(podsToDeactivate, constants.NAMESPACE)
 		} else {
 			m = (1 + m) / 2
@@ -63,6 +62,7 @@ func LUCFExperiment(requiredSR float64) {
 				fmt.Println("Temp Pods: ", tempSlice)
 				sortedPods = util.SliceDifference(tempSlice, terminatingPods)
 			}
+			podsToDeactivate = sortedPods[:m+1]
 			deactivatedPods = kubernetesCluster.DeactivatePods(podsToDeactivate, constants.NAMESPACE)
 		}
 		fmt.Println("Deactivated Pods: ", deactivatedPods)
