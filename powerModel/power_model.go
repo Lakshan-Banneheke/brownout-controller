@@ -3,7 +3,6 @@ package powerModel
 import (
 	"brownout-controller/constants"
 	"brownout-controller/kubernetesCluster"
-	"log"
 	"sync"
 )
 
@@ -29,32 +28,34 @@ func GetPowerModel() *PowerModel {
 func (model *PowerModel) GetPowerConsumptionNodes(nodeNames []string) float64 {
 
 	podNames := kubernetesCluster.GetPodsInNodes(nodeNames, constants.NAMESPACE) // retrieve all the pod names of the given nodes
-
-	// call the pod power consumption calculating function for the relevant version
-	return model.GetPowerConsumptionPods(podNames)
+	workerNodeCount := float64(len(nodeNames))                                   // get the number of worker nodes
+	return getPower(podNames, workerNodeCount, model)
 }
 
 // GetPowerConsumptionPods : function to compute power consumption when a set of pods given
 func (model *PowerModel) GetPowerConsumptionPods(podNames []string) float64 {
 
-	// retrieve input parameters needed by the power model
-	podsCPUUsageSum := kubernetesCluster.GetPodsCPUUsageSum(podNames, constants.NAMESPACE) // get the sum of CPU usage of the mentioned pods
-	workerNodeCount := float64(kubernetesCluster.GetWorkerNodeCount())                     // get the number of worker nodes
-	podCount := float64(len(podNames))                                                     // calculate the pod count
-
-	//generate the input parameter list for calculating power
-	params := []float64{workerNodeCount, podCount, podsCPUUsageSum}
-	log.Println(params)
-
-	// calculate the power using the model
-	power := model.calculatePower(params)
-	return power
+	workerNodeCount := float64(kubernetesCluster.GetWorkerNodeCount()) // get the number of worker nodes
+	return getPower(podNames, workerNodeCount, model)
 }
 
 // function to set coefficients of the power model
 func (model *PowerModel) setCoefficients() {
 
 	model.coefficients = []float64{constants.C1, constants.C2, constants.C3, constants.C4}
+}
+
+func getPower(podNames []string, workerNodeCount float64, model *PowerModel) float64 {
+	// retrieve input parameters needed by the power model
+	podsCPUUsageSum := kubernetesCluster.GetPodsCPUUsageSum(podNames, constants.NAMESPACE) // get the sum of CPU usage of the mentioned pods
+	podCount := float64(len(podNames))                                                     // calculate the pod count
+
+	//generate the input parameter list for calculating power
+	params := []float64{workerNodeCount, podCount, podsCPUUsageSum}
+
+	// calculate the power using the model
+	power := model.calculatePower(params)
+	return power
 }
 
 // function to calculate the power from linear regression model
