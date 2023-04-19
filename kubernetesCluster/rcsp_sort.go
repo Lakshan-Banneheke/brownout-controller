@@ -2,7 +2,7 @@ package kubernetesCluster
 
 func GetPodsSortedRandomly(namespace string, categoryLabel string) []string {
 
-	podNames := GetPodNames(namespace, categoryLabel)
+	podNames := GetPodNamesCategory(namespace, categoryLabel)
 
 	return sortPodsRandomly(podNames)
 }
