@@ -44,6 +44,7 @@ func LUCFExperiment(requiredSR float64) {
 			m = (m + n) / 2
 			if i != 0 {
 				kubernetesCluster.ActivatePods(deactivatedPods, constants.NAMESPACE)
+				time.Sleep(5 * time.Second)
 				terminatingPods := kubernetesCluster.GetTerminatingPodNamesAll(constants.NAMESPACE)
 				tempSlice := kubernetesCluster.GetPodsSortedCPUUsageAllAscending(constants.NAMESPACE, constants.OPTIONAL)
 				sortedPods = util.SliceDifference(tempSlice, terminatingPods)
@@ -53,6 +54,7 @@ func LUCFExperiment(requiredSR float64) {
 			m = (1 + m) / 2
 			if i != 0 {
 				kubernetesCluster.ActivatePods(deactivatedPods, constants.NAMESPACE)
+				time.Sleep(5 * time.Second)
 				terminatingPods := kubernetesCluster.GetTerminatingPodNamesAll(constants.NAMESPACE)
 				tempSlice := kubernetesCluster.GetPodsSortedCPUUsageAllAscending(constants.NAMESPACE, constants.OPTIONAL)
 				sortedPods = util.SliceDifference(tempSlice, terminatingPods)
