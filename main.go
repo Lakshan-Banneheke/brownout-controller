@@ -2,8 +2,10 @@ package main
 
 import (
 	"brownout-controller/constants"
+	"brownout-controller/powerModel"
 	"brownout-controller/prometheus"
 	"fmt"
+	"log"
 )
 
 func main() {

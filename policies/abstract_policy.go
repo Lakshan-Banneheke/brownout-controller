@@ -32,7 +32,7 @@ func (absPolicy AbstractPolicy) executePolicy(allClusterPods []string, sortedPod
 		predictedClusterPods := SliceDifference(allClusterPods, podsToDeactivate)
 
 		// get power consumption of the pods
-		predictedPower = powerModel.GetPowerModel("v4").GetPowerConsumptionPods(predictedClusterPods)
+		predictedPower = powerModel.GetPowerModel().GetPowerConsumptionPods(predictedClusterPods)
 
 		if predictedPower > constants.UPPER_THRESHOLD_POWER {
 			m = (m + n) / 2
