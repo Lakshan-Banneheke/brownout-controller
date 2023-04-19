@@ -22,6 +22,10 @@ func doQuery(q string) model.Value {
 	if len(warnings) > 0 {
 		log.Printf("Warnings: %v\n", warnings)
 	}
-	fmt.Println(result.String())
+	vectorVal := result.(model.Vector)
+	for _, elem := range vectorVal {
+		fmt.Println(elem.Metric)
+		fmt.Println(elem.Value)
+	}
 	return result
 }
