@@ -52,7 +52,7 @@ func main() {
 	// get power consumption when a set of nodes given
 	//log.Println(pm.GetPowerConsumptionNodes([]string{"test-kubernetes-controller-1"}))
 
-	q := "sum by (exported_namespace, exported_service, host, le) (increase(nginx_ingress_controller_request_duration_seconds_bucket{host=~\"podinfo.localdev.me\"}[1h]))"
+	q := "sum by (exported_namespace, exported_service, host, le) (increase(nginx_ingress_controller_request_duration_seconds_bucket{host=~\"podinfo.localdev.me\"}[1d]))"
 	prometheus.ExampleAPI_query(q)
 
 }
