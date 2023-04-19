@@ -13,7 +13,7 @@ import (
 
 func LUCFExperiment(requiredSR float64) {
 
-	allClusterPods := kubernetesCluster.GetPodNames(constants.NAMESPACE, constants.OPTIONAL)
+	allClusterPods := kubernetesCluster.GetPodNamesAll(constants.NAMESPACE)
 	sortedPods := kubernetesCluster.GetPodsSortedCPUUsageAllAscending(constants.NAMESPACE, constants.OPTIONAL)
 
 	n := len(sortedPods)
