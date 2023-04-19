@@ -2,7 +2,7 @@ package main
 
 import (
 	"brownout-controller/constants"
-	"brownout-controller/kubernetesCluster"
+	"brownout-controller/prometheus"
 	"fmt"
 )
 
@@ -16,10 +16,11 @@ func main() {
 	//// get power consumption when a set of nodes given
 	//log.Println(pm.GetPowerConsumptionNodes([]string{"node-master", "node-worker-1"}))
 	//
-	//fmt.Println(prometheus.GetSLAViolationRatio("podinfo.localdev.me", "1d", constants.SLA_VIOLATION_LATENCY))
-	//fmt.Println(prometheus.GetSLASuccessRatio("podinfo.localdev.me", "1d", constants.SLA_VIOLATION_LATENCY))
-	//
+	fmt.Println(prometheus.GetSLAViolationRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY))
+	fmt.Println(prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY))
+
 	//brownout.ExecuteBrownout()
-	fmt.Println(kubernetesCluster.GetPodNamesAll(constants.NAMESPACE))
-	fmt.Println(kubernetesCluster.GetPodNamesCategory(constants.NAMESPACE, constants.OPTIONAL))
+	//fmt.Println(kubernetesCluster.GetPodNamesAll(constants.NAMESPACE))
+	//fmt.Println(kubernetesCluster.GetPodNamesCategory(constants.NAMESPACE, constants.OPTIONAL))
+
 }
