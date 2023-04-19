@@ -2,6 +2,7 @@ package kubernetesCluster
 
 import (
 	"context"
+	"fmt"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"log"
 )
@@ -76,7 +77,7 @@ func GetPodsInNodes(nodeNames []string, namespace string) []string {
 			metav1.ListOptions{FieldSelector: "spec.nodeName=" + node})
 
 		if err != nil {
-			panic(err.Error())
+			fmt.Println(err.Error())
 		}
 
 		for _, pod := range podList.Items {
