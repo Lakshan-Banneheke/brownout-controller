@@ -3,7 +3,7 @@ package policies
 import (
 	"brownout-controller/constants"
 	"brownout-controller/kubernetesCluster"
-	"fmt"
+	"brownout-controller/powerModel"
 )
 
 // NISP implements the IPolicyNodes interface
@@ -13,7 +13,7 @@ type NISP struct{}
 // Assumption: optional containers are deployed in nodes that are labelled as optional
 // These nodes do not contain mandatory containers
 func (nisp NISP) ExecuteForCluster() {
-	sortedNodes := kubernetesCluster.GetNodesSortedCPUUsage(constants.OPTIONAL)
+	sortedNodes := kubernetesCluster.GetNodesSortedCPUUsageAscending(constants.OPTIONAL)
 	allNodes := sortedNodes
 	nisp.executePolicy(allNodes, sortedNodes)
 }
@@ -27,9 +27,8 @@ func (nisp NISP) executePolicy(allNodes []string, sortedNodes []string) {
 		i++
 		predictedClusterNodes := SliceDifference(allNodes, sortedNodes[0:i]) // get the nodes remaining in the cluster after deactivating i nodes
 
-		// TODO integrate with the powerModel package
-		fmt.Println(predictedClusterNodes)
-		//predictedPower = powerModel.getNodesPower(predictedClusterNodes)
+		// get power consumption of the nodes
+		predictedPower = powerModel.GetPowerModel("v4").GetPowerConsumptionNodes(predictedClusterNodes)
 	}
 
 	if (constants.UPPER_THRESHOLD_POWER-predictedPower)/constants.UPPER_THRESHOLD_POWER < 0.1 {

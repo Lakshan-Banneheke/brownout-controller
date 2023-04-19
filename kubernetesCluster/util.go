@@ -1,9 +1,12 @@
 package kubernetesCluster
 
 import (
-	"k8s.io/metrics/pkg/apis/metrics/v1beta1"
+	"math/rand"
 	"sort"
 	"strconv"
+	"time"
+
+	"k8s.io/metrics/pkg/apis/metrics/v1beta1"
 )
 
 // function to retrieve the CPU Usage metrics from a given set of metrics
@@ -43,7 +46,7 @@ func extractCPUMetrics(podMetricsItems []v1beta1.PodMetrics, err error) (map[str
 }
 
 // function returns a list of node names in sorted order of increasing cpu usage
-func sortNodesUsage(nodesCPUUsage map[string]int, nodeNames []string) []string {
+func sortNodesUsageAscending(nodesCPUUsage map[string]int, nodeNames []string) []string {
 
 	sort.SliceStable(nodeNames, func(i, j int) bool {
 		return nodesCPUUsage[nodeNames[i]] < nodesCPUUsage[nodeNames[j]]
@@ -53,11 +56,35 @@ func sortNodesUsage(nodesCPUUsage map[string]int, nodeNames []string) []string {
 }
 
 // function returns a list of node names in sorted order of increasing cpu usage
-func sortPodsUsage(podsCPUUsage map[string]int, podNames []string) []string {
+func sortPodsUsageAscending(podsCPUUsage map[string]int, podNames []string) []string {
 
 	sort.SliceStable(podNames, func(i, j int) bool {
 		return podsCPUUsage[podNames[i]] < podsCPUUsage[podNames[j]]
 	})
+
+	return podNames
+}
+
+// function returns a list of node names in sorted order of decreasing cpu usage
+func sortPodsUsageDescending(podsCPUUsage map[string]int, podNames []string) []string {
+
+	sort.SliceStable(podNames, func(i, j int) bool {
+		return podsCPUUsage[podNames[i]] > podsCPUUsage[podNames[j]]
+	})
+
+	return podNames
+}
+
+// function returns a list of pod names in a random order
+func sortPodsRandomly(podNames []string) []string {
+
+	source := rand.NewSource(time.Now().UnixNano())
+	random := rand.New(source)
+
+	for i := len(podNames) - 1; i > 0; i-- {
+		j := random.Intn(i + 1)
+		podNames[i], podNames[j] = podNames[j], podNames[i]
+	}
 
 	return podNames
 }

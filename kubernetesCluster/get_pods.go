@@ -2,8 +2,8 @@ package kubernetesCluster
 
 import (
 	"context"
-	"fmt"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"log"
 )
 
 func GetPodNames(namespace string, categoryLabel string) []string {
@@ -13,7 +13,7 @@ func GetPodNames(namespace string, categoryLabel string) []string {
 		metav1.ListOptions{LabelSelector: "category=" + categoryLabel})
 
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 	}
 
 	// create a list of pod names
@@ -32,7 +32,7 @@ func GetPodsInNode(nodeName string, namespace string, categoryLabel string) []st
 		metav1.ListOptions{LabelSelector: "category=" + categoryLabel, FieldSelector: "spec.nodeName=" + nodeName})
 
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 	}
 
 	// create a list of pod names
