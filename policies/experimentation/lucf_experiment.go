@@ -46,7 +46,9 @@ func LUCFExperiment(requiredSR float64) {
 				kubernetesCluster.ActivatePods(deactivatedPods, constants.NAMESPACE)
 				time.Sleep(5 * time.Second)
 				terminatingPods := kubernetesCluster.GetTerminatingPodNamesAll(constants.NAMESPACE)
+				fmt.Println("Terminating Pods: ", terminatingPods)
 				tempSlice := kubernetesCluster.GetPodsSortedCPUUsageAllAscending(constants.NAMESPACE, constants.OPTIONAL)
+				fmt.Println("Temp Pods: ", tempSlice)
 				sortedPods = util.SliceDifference(tempSlice, terminatingPods)
 			}
 			deactivatedPods = kubernetesCluster.DeactivatePods(podsToDeactivate, constants.NAMESPACE)
@@ -56,7 +58,9 @@ func LUCFExperiment(requiredSR float64) {
 				kubernetesCluster.ActivatePods(deactivatedPods, constants.NAMESPACE)
 				time.Sleep(5 * time.Second)
 				terminatingPods := kubernetesCluster.GetTerminatingPodNamesAll(constants.NAMESPACE)
+				fmt.Println("Terminating Pods: ", terminatingPods)
 				tempSlice := kubernetesCluster.GetPodsSortedCPUUsageAllAscending(constants.NAMESPACE, constants.OPTIONAL)
+				fmt.Println("Temp Pods: ", tempSlice)
 				sortedPods = util.SliceDifference(tempSlice, terminatingPods)
 			}
 			deactivatedPods = kubernetesCluster.DeactivatePods(podsToDeactivate, constants.NAMESPACE)
