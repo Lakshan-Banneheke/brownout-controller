@@ -11,7 +11,7 @@ func GetPodsSortedCPUUsageAllAscending(namespace string, categoryLabel string) [
 	metricsClient := getMetricsClient()
 	// get the CPU usage for the pod that matches the label selector
 	podMetrics, err := metricsClient.MetricsV1beta1().PodMetricses(namespace).List(context.Background(),
-		metav1.ListOptions{LabelSelector: "category=" + categoryLabel, FieldSelector: "status.phase=Running"})
+		metav1.ListOptions{LabelSelector: "category=" + categoryLabel})
 
 	podsCPUUsage, podNames := extractCPUMetrics(podMetrics.Items, err)
 

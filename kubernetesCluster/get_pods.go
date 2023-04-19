@@ -11,7 +11,7 @@ func GetPodNamesAll(namespace string) []string {
 	clientset := getKubernetesClientSet()
 	// get the list of pods that match the categoryLabel selector (optional or mandatory)
 	podList, err := clientset.CoreV1().Pods(namespace).List(context.Background(),
-		metav1.ListOptions{FieldSelector: "status.phase=Running"})
+		metav1.ListOptions{})
 
 	if err != nil {
 		log.Println(err.Error())
@@ -30,7 +30,7 @@ func GetPodNamesCategory(namespace string, categoryLabel string) []string {
 	clientset := getKubernetesClientSet()
 	// get the list of pods that match the categoryLabel selector (optional or mandatory)
 	podList, err := clientset.CoreV1().Pods(namespace).List(context.Background(),
-		metav1.ListOptions{LabelSelector: "category=" + categoryLabel, FieldSelector: "status.phase=Running"})
+		metav1.ListOptions{LabelSelector: "category=" + categoryLabel})
 
 	if err != nil {
 		log.Println(err.Error())
@@ -49,7 +49,7 @@ func GetPodsInNode(nodeName string, namespace string, categoryLabel string) []st
 	clientset := getKubernetesClientSet()
 	// get the list of pods that match the categoryLabel selector (optional or mandatory)
 	podList, err := clientset.CoreV1().Pods(namespace).List(context.Background(),
-		metav1.ListOptions{LabelSelector: "category=" + categoryLabel, FieldSelector: "spec.nodeName=" + nodeName + ",status.phase=Running"})
+		metav1.ListOptions{LabelSelector: "category=" + categoryLabel, FieldSelector: "spec.nodeName=" + nodeName})
 
 	if err != nil {
 		log.Println(err.Error())
@@ -74,7 +74,7 @@ func GetPodsInNodes(nodeNames []string, namespace string) []string {
 	for _, node := range nodeNames {
 		// get the list of pods that resides in the node
 		podList, err := clientset.CoreV1().Pods(namespace).List(context.Background(),
-			metav1.ListOptions{FieldSelector: "spec.nodeName=" + node + ",status.phase=Running"})
+			metav1.ListOptions{FieldSelector: "spec.nodeName=" + node})
 
 		if err != nil {
 			fmt.Println(err.Error())
