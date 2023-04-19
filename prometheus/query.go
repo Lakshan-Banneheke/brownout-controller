@@ -22,6 +22,6 @@ func doQuery(q string) model.Value {
 	if len(warnings) > 0 {
 		log.Printf("Warnings: %v\n", warnings)
 	}
-	fmt.Println(result.Type())
+	fmt.Println(result.String())
 	return result
 }
