@@ -34,37 +34,39 @@ func LUCFExperiment(requiredSR float64) {
 
 		currentSR := prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY)
 		fmt.Println("Current SR: ", currentSR)
-		fmt.Println("m: ", m)
 
 		if math.Abs(currentSR-requiredSR) < 0.05 {
 			break
 		} else if currentSR > requiredSR {
-			m = (m + n) / 2
 			if i != 0 {
+				m = (m + n) / 2
 				kubernetesCluster.ActivatePods(deactivatedPods, constants.NAMESPACE)
-				time.Sleep(5 * time.Second)
+				time.Sleep(30 * time.Second)
 				terminatingPods := kubernetesCluster.GetTerminatingPodNamesAll(constants.NAMESPACE)
 				fmt.Println("Terminating Pods: ", terminatingPods)
 				tempSlice := kubernetesCluster.GetPodsSortedCPUUsageAllAscending(constants.NAMESPACE, constants.OPTIONAL)
 				fmt.Println("Temp Pods: ", tempSlice)
 				sortedPods = util.SliceDifference(tempSlice, terminatingPods)
 			}
+			fmt.Println("m: ", m)
 			podsToDeactivate = sortedPods[:m+1]
 			deactivatedPods = kubernetesCluster.DeactivatePods(podsToDeactivate, constants.NAMESPACE)
 		} else {
-			m = (1 + m) / 2
 			if i != 0 {
+				m = (1 + m) / 2
 				kubernetesCluster.ActivatePods(deactivatedPods, constants.NAMESPACE)
-				time.Sleep(5 * time.Second)
+				time.Sleep(30 * time.Second)
 				terminatingPods := kubernetesCluster.GetTerminatingPodNamesAll(constants.NAMESPACE)
 				fmt.Println("Terminating Pods: ", terminatingPods)
 				tempSlice := kubernetesCluster.GetPodsSortedCPUUsageAllAscending(constants.NAMESPACE, constants.OPTIONAL)
 				fmt.Println("Temp Pods: ", tempSlice)
 				sortedPods = util.SliceDifference(tempSlice, terminatingPods)
 			}
+			fmt.Println("m: ", m)
 			podsToDeactivate = sortedPods[:m+1]
 			deactivatedPods = kubernetesCluster.DeactivatePods(podsToDeactivate, constants.NAMESPACE)
 		}
+		fmt.Println("m: ", m)
 		fmt.Println("Deactivated Pods: ", deactivatedPods)
 		i++
 		time.Sleep(30 * time.Second)
