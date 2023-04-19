@@ -24,3 +24,13 @@ func GetSlowRequestCount(hostname string, interval string) {
 	//reqCount := int(vectorVal.Value)
 	//log.Printf("Total Request Count for %s in the last %s: %v", hostname, interval, reqCount)
 }
+
+// GetFastRequestCount interval parameter can have 1m, 30m, 1d, etc
+func GetFastRequestCount(hostname string, interval string) {
+	query := "sum by (le) (increase(nginx_ingress_controller_request_duration_seconds_bucket{host=~'" + hostname + "', le='1'}[" + interval + "]))"
+	result := doQuery(query) // Result is of type Vector
+	fmt.Println(result)
+	//vectorVal := result.(model.Vector)[0] // Cast to mode.Vector and get the first row
+	//reqCount := int(vectorVal.Value)
+	//log.Printf("Fast Request Count for host %s in the last %s: %v", hostname, interval, reqCount)
+}
