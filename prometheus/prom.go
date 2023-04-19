@@ -11,15 +11,22 @@ import (
 )
 
 func ExampleAPI_query(q string) {
+	// PROMETHEUS_IP should be set in environment variables
+	prometheusIP, present := os.LookupEnv("PROMETHEUS_IP")
+	if !present {
+		panic("PROMETHEUS_IP should be set in environment variables")
+	}
+
+	prometheusURL := "http://" + prometheusIP + ":9090"
 	client, err := api.NewClient(api.Config{
-		Address: "http://10.43.218.49:9090",
+		Address: prometheusURL,
 	})
 	if err != nil {
 		log.Printf("Error creating client: %v\n", err)
 		os.Exit(1)
 	}
 
-	log.Printf("Creatied client: %v\n", err)
+	log.Println("Created Prometheus Client")
 
 	v1api := v1.NewAPI(client)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
