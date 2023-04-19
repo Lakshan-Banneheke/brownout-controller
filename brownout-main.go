@@ -11,7 +11,7 @@ import (
 )
 
 func brownout() {
-	PowerModel := powerModel.GetPowerModel(constants.POWER_MODEL_VERSION)
+	PowerModel := powerModel.GetPowerModel()
 
 	var prev_deactivated_deployments = make(map[string]int32)
 

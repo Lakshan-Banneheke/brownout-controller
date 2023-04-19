@@ -30,7 +30,7 @@ func (nisp NISP) executePolicy(allNodes []string, sortedNodes []string, upperThr
 		predictedClusterNodes := SliceDifference(allNodes, sortedNodes[0:i]) // get the nodes remaining in the cluster after deactivating i nodes
 
 		// get power consumption of the nodes
-		predictedPower = powerModel.GetPowerModel("v4").GetPowerConsumptionNodes(predictedClusterNodes)
+		predictedPower = powerModel.GetPowerModel().GetPowerConsumptionNodes(predictedClusterNodes)
 	}
 
 	if (upperThresholdPower-predictedPower)/upperThresholdPower < 0.1 {
