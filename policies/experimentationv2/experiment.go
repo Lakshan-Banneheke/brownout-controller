@@ -18,6 +18,7 @@ func DoExperiment(upperThresholdPower float64) {
 	deactivatedPods := lucf.ExecuteForCluster(upperThresholdPower)
 	log.Println("Deactivated Pods: ", deactivatedPods)
 
+	log.Println("Waiting 5 minutes")
 	time.Sleep(5 * time.Minute)
 
 	allClusterPods := kubernetesCluster.GetPodNamesAll(constants.NAMESPACE)
