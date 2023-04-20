@@ -29,6 +29,7 @@ func (nisp NISP) executePolicy(allNodes []string, sortedNodes []string, upperThr
 	predictedPower := powerModel.GetPowerModel().GetPowerConsumptionNodes(allNodes)
 
 	if predictedPower < upperThresholdPower {
+		log.Println("Predicted Power", predictedPower)
 		log.Println("Predicted power less than upper threshold. Deactivating pods is not possible.")
 		return nodeDeployments
 	}
