@@ -127,7 +127,7 @@ func updateDeactivatedPods(tempDeactivatedPods map[string]int32, deactivatedPods
 //		//		tempDeactivatedPods := kubernetesCluster.DeactivateNode(node, constants.NAMESPACE, constants.OPTIONAL)
 //		//		updateDeactivatedPods(tempDeactivatedPods, deactivatedPods)
 //		//	}
-//		//	podsToDeactivate = kubernetesCluster.GetPodsInNode(sortedNodes[i], constants.NAMESPACE, constants.OPTIONAL)
+//		//	podsToDeactivate = kubernetesCluster.GetPodsInNodeCategory(sortedNodes[i], constants.NAMESPACE, constants.OPTIONAL)
 //		//	tempDeactivatedPods := kubernetesCluster.DeactivatePods(podsToDeactivate, constants.OPTIONAL)
 //		//	updateDeactivatedPods(tempDeactivatedPods, deactivatedPods)
 //		//

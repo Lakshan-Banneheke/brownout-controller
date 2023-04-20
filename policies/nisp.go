@@ -17,6 +17,7 @@ var nodeDeployments = make(map[string]int32)
 // Assumption: optional containers are deployed in nodes that are labelled as optional
 // These nodes do not contain mandatory containers
 func (nisp NISP) ExecuteForCluster(upperThresholdPower float64) map[string]int32 {
+	log.Println("Executing NISP Policy for the entire cluster")
 	sortedNodes := kubernetesCluster.GetNodesSortedCPUUsageAscending(constants.OPTIONAL)
 	allNodes := kubernetesCluster.GetAllNodeNames()
 	return nisp.executePolicy(allNodes, sortedNodes, upperThresholdPower)
@@ -26,6 +27,11 @@ func (nisp NISP) executePolicy(allNodes []string, sortedNodes []string, upperThr
 
 	i := 0
 	predictedPower := powerModel.GetPowerModel().GetPowerConsumptionNodes(allNodes)
+
+	if predictedPower < upperThresholdPower {
+		log.Println("Predicted power less than upper threshold. Deactivating pods is not possible.")
+		return nodeDeployments
+	}
 
 	for predictedPower > upperThresholdPower {
 		log.Println("===============================================================")

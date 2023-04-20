@@ -64,7 +64,7 @@ func GetPodNamesCategory(namespace string, categoryLabel string) []string {
 	return podNames
 }
 
-func GetPodsInNode(nodeName string, namespace string, categoryLabel string) []string {
+func GetPodsInNodeCategory(nodeName string, namespace string, categoryLabel string) []string {
 	clientset := getKubernetesClientSet()
 	// get the list of pods that match the categoryLabel selector (optional or mandatory)
 	podList, err := clientset.CoreV1().Pods(namespace).List(context.Background(),
