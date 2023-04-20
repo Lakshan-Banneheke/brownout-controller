@@ -46,7 +46,7 @@ func RCSPExperiment(requiredSR float64) {
 				terminatingPods := kubernetesCluster.GetTerminatingPodNamesAll(constants.NAMESPACE)
 				fmt.Println("Terminating Pods: ", terminatingPods)
 
-				tempSlice := kubernetesCluster.GetPodsSortedCPUUsageAllAscending(constants.NAMESPACE, constants.OPTIONAL)
+				tempSlice := kubernetesCluster.GetPodsSortedRandomly(constants.NAMESPACE, constants.OPTIONAL)
 				fmt.Println("Temp Pods: ", tempSlice)
 
 				sortedPods = util.SliceDifference(tempSlice, terminatingPods)
@@ -63,7 +63,7 @@ func RCSPExperiment(requiredSR float64) {
 				terminatingPods := kubernetesCluster.GetTerminatingPodNamesAll(constants.NAMESPACE)
 				fmt.Println("Terminating Pods: ", terminatingPods)
 
-				tempSlice := kubernetesCluster.GetPodsSortedCPUUsageAllAscending(constants.NAMESPACE, constants.OPTIONAL)
+				tempSlice := kubernetesCluster.GetPodsSortedRandomly(constants.NAMESPACE, constants.OPTIONAL)
 				fmt.Println("Temp Pods: ", tempSlice)
 
 				sortedPods = util.SliceDifference(tempSlice, terminatingPods)
