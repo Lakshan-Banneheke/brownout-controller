@@ -34,7 +34,7 @@ func (nisp NISP) executePolicy(allNodes []string, sortedNodes []string, upperThr
 		predictedPower = powerModel.GetPowerModel().GetPowerConsumptionNodes(predictedClusterNodes)
 	}
 
-	if (upperThresholdPower-predictedPower)/upperThresholdPower < 0.1 {
+	if (upperThresholdPower-predictedPower)/upperThresholdPower < 0.5 {
 		nisp.deactivateNodes(sortedNodes[0:i]) // deactivate all pods of 0 to i hosts
 		return nodeDeployments
 	}
