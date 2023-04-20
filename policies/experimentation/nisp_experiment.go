@@ -5,6 +5,7 @@ import (
 	"brownout-controller/kubernetesCluster"
 	"brownout-controller/powerModel"
 	"brownout-controller/prometheus"
+	"brownout-controller/util"
 	"fmt"
 	"log"
 	"math"
@@ -20,7 +21,7 @@ func NISPExperiment(requiredSR float64) {
 	var i int32 = 0
 
 	//var nodesToDeactivate []string
-	//var deactivatedNodes []string
+	var deactivatedNodes []string
 
 	//var podsToDeactivate []string
 	var tempDeactivatedPods map[string]int32
@@ -48,7 +49,12 @@ func NISPExperiment(requiredSR float64) {
 
 	}
 
-	predictedClusterWorkerNodes := sortedNodes[i:]
+	totalClusterNodes := kubernetesCluster.GetAllNodeNames()
+	if i > 0 {
+		deactivatedNodes = sortedNodes[0 : i-1]
+	}
+
+	predictedClusterWorkerNodes := util.SliceDifference(totalClusterNodes, deactivatedNodes)
 
 	var predictedPowerList []float64
 	var srList []float64
