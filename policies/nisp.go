@@ -46,7 +46,7 @@ func (nisp NISP) executePolicy(allNodes []string, sortedNodes []string, upperThr
 	}
 
 	if (upperThresholdPower-predictedPower)/upperThresholdPower < 0.05 {
-		log.Printf("Exact node count used. Deactivating a;; pods in %v nodes", i)
+		log.Printf("Exact node count used. Deactivating all pods in %v nodes", i)
 		nisp.deactivateNodes(sortedNodes[0:i]) // deactivate all pods of 0 to i hosts
 		return nodeDeployments
 	}
