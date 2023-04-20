@@ -29,10 +29,10 @@ func DoExperiment(upperThresholdPower float64) {
 
 	fmt.Println("Getting power and SR")
 	for i := 1; i <= 60; i++ {
+		srList = append(srList, prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY))
 		// get power consumption of the pods
 		predictedPowerList = append(predictedPowerList, powerModel.GetPowerModel().GetPowerConsumptionPods(allClusterPods))
 		log.Println("Predicted Power List: ", predictedPowerList)
-		srList = append(srList, prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY))
 		i++
 		time.Sleep(1 * time.Second)
 	}
