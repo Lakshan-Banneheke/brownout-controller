@@ -18,8 +18,8 @@ func DoExperiment(upperThresholdPower float64) {
 	deactivatedPods := lucf.ExecuteForCluster(upperThresholdPower)
 	log.Println("Deactivated Pods: ", deactivatedPods)
 
-	log.Println("Waiting 5 minutes")
-	time.Sleep(5 * time.Minute)
+	log.Println("Waiting 3 minutes")
+	time.Sleep(3 * time.Minute)
 
 	allClusterPods := kubernetesCluster.GetPodNamesAll(constants.NAMESPACE)
 	log.Println("Pods after deactivation: ", allClusterPods)
@@ -29,10 +29,20 @@ func DoExperiment(upperThresholdPower float64) {
 
 	fmt.Println("Getting power and SR")
 	for i := 1; i <= 60; i++ {
+		log.Println("==================================================================")
+
 		srList = append(srList, prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY))
 		// get power consumption of the pods
 		predictedPowerList = append(predictedPowerList, powerModel.GetPowerModel().GetPowerConsumptionPods(allClusterPods))
 		log.Println("Predicted Power List: ", predictedPowerList)
+		log.Println("SR List: ", srList)
+
+		avgPower := average(predictedPowerList)
+		avgSr := average(srList)
+
+		log.Println("Average SR: ", avgSr)
+		log.Println("Average Power: ", avgPower)
+
 		i++
 		time.Sleep(1 * time.Second)
 	}
@@ -40,7 +50,8 @@ func DoExperiment(upperThresholdPower float64) {
 	avgPower := average(predictedPowerList)
 	avgSr := average(srList)
 
-	log.Println("Upper threshold power: ", upperThresholdPower)
 	log.Println("Average SR: ", avgSr)
 	log.Println("Average Power: ", avgPower)
+
+	log.Println("Upper threshold power: ", upperThresholdPower)
 }
