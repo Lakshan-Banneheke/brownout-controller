@@ -11,11 +11,9 @@ import (
 	"time"
 )
 
-func DoExperiment(upperThresholdPower float64) {
+func DoExperiment(policy policies.IPolicy, upperThresholdPower float64) {
 
-	lucf := policies.LUCF{}
-
-	deactivatedPods := lucf.ExecuteForCluster(upperThresholdPower)
+	deactivatedPods := policy.ExecuteForCluster(upperThresholdPower)
 	log.Println("Deactivated Pods: ", deactivatedPods)
 
 	log.Println("Waiting 3 minutes")

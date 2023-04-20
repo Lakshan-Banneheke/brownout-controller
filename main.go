@@ -3,6 +3,7 @@ package main
 import (
 	"brownout-controller/constants"
 	"brownout-controller/kubernetesCluster"
+	"brownout-controller/policies"
 	"brownout-controller/policies/experimentationv2"
 	"brownout-controller/powerModel"
 	"brownout-controller/prometheus"
@@ -17,7 +18,8 @@ func main() {
 	fmt.Println("Initial Power: ", powerModel.GetPowerModel().GetPowerConsumptionPods(pods))
 	prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY)
 
-	experimentationv2.DoExperiment(18.75)
+	hucf := policies.HUCF{}
+	experimentationv2.DoExperiment(hucf, 9)
 
 	//fmt.Println(prometheus.GetSLAViolationRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY))
 	//fmt.Println(prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY))
