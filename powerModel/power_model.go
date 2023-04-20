@@ -28,7 +28,7 @@ func GetPowerModel() *PowerModel {
 func (model *PowerModel) GetPowerConsumptionNodes(nodeNames []string) float64 {
 
 	podNames := kubernetesCluster.GetPodsInNodes(nodeNames, constants.NAMESPACE) // retrieve all the pod names of the given nodes
-	workerNodeCount := float64(len(nodeNames))                                   // get the number of worker nodes
+	workerNodeCount := float64(len(nodeNames)) - 1                               // get the number of worker nodes
 	return getPower(podNames, workerNodeCount, model)
 }
 
