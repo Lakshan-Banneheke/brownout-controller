@@ -17,7 +17,7 @@ var nodeDeployments = make(map[string]int32)
 // These nodes do not contain mandatory containers
 func (nisp NISP) ExecuteForCluster(upperThresholdPower float64) map[string]int32 {
 	sortedNodes := kubernetesCluster.GetNodesSortedCPUUsageAscending(constants.OPTIONAL)
-	allNodes := sortedNodes
+	allNodes := kubernetesCluster.GetAllNodeNames()
 	return nisp.executePolicy(allNodes, sortedNodes, upperThresholdPower)
 }
 
