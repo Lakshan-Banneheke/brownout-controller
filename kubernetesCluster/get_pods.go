@@ -2,6 +2,7 @@ package kubernetesCluster
 
 import (
 	"context"
+	"fmt"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"log"
 )
@@ -11,6 +12,25 @@ func GetPodNamesAll(namespace string) []string {
 	// get the list of pods that match the categoryLabel selector (optional or mandatory)
 	podList, err := clientset.CoreV1().Pods(namespace).List(context.Background(),
 		metav1.ListOptions{})
+
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	// create a list of pod names
+	var podNames []string
+	for _, pod := range podList.Items {
+		podNames = append(podNames, pod.Name)
+	}
+
+	return podNames
+}
+
+func GetTerminatingPodNamesAll(namespace string) []string {
+	clientset := getKubernetesClientSet()
+	// get the list of pods that match the categoryLabel selector (optional or mandatory)
+	podList, err := clientset.CoreV1().Pods(namespace).List(context.Background(),
+		metav1.ListOptions{FieldSelector: "status.phase=Terminating"})
 
 	if err != nil {
 		log.Println(err.Error())
@@ -76,7 +96,7 @@ func GetPodsInNodes(nodeNames []string, namespace string) []string {
 			metav1.ListOptions{FieldSelector: "spec.nodeName=" + node})
 
 		if err != nil {
-			panic(err.Error())
+			fmt.Println(err.Error())
 		}
 
 		for _, pod := range podList.Items {

@@ -23,4 +23,6 @@ spec:
             - name: inCluster
               value: "true"
             - name : PROMETHEUS_IP
-              value: "10.43.218.49"
+              value: "10.43.253.156"
+            - name : REQUIRED_SR
+              value: "0.8"

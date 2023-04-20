@@ -4,6 +4,7 @@ import (
 	"brownout-controller/constants"
 	"brownout-controller/kubernetesCluster"
 	"brownout-controller/powerModel"
+	"brownout-controller/util"
 	"math"
 )
 
@@ -29,7 +30,7 @@ func (absPolicy AbstractPolicy) executePolicy(allClusterPods []string, sortedPod
 		podsToDeactivate = sortedPods[:m+1]
 
 		// get the pods remaining in the cluster after deactivating above pods
-		predictedClusterPods := SliceDifference(allClusterPods, podsToDeactivate)
+		predictedClusterPods := util.SliceDifference(allClusterPods, podsToDeactivate)
 
 		// get power consumption of the pods
 		predictedPower = powerModel.GetPowerModel().GetPowerConsumptionPods(predictedClusterPods)

@@ -12,9 +12,9 @@ import (
 	"time"
 )
 
-func LUCFExperiment(requiredSR float64) {
+func RCSPExperiment(requiredSR float64) {
 
-	sortedPods := kubernetesCluster.GetPodsSortedCPUUsageAllAscending(constants.NAMESPACE, constants.OPTIONAL)
+	sortedPods := kubernetesCluster.GetPodsSortedRandomly(constants.NAMESPACE, constants.OPTIONAL)
 
 	n := len(sortedPods)
 	min := 1
@@ -49,7 +49,7 @@ func LUCFExperiment(requiredSR float64) {
 				terminatingPods := kubernetesCluster.GetTerminatingPodNamesAll(constants.NAMESPACE)
 				fmt.Println("Terminating Pods: ", terminatingPods)
 
-				tempSlice := kubernetesCluster.GetPodsSortedCPUUsageAllAscending(constants.NAMESPACE, constants.OPTIONAL)
+				tempSlice := kubernetesCluster.GetPodsSortedRandomly(constants.NAMESPACE, constants.OPTIONAL)
 				fmt.Println("Temp Pods: ", tempSlice)
 
 				sortedPods = util.SliceDifference(tempSlice, terminatingPods)
@@ -67,7 +67,7 @@ func LUCFExperiment(requiredSR float64) {
 				terminatingPods := kubernetesCluster.GetTerminatingPodNamesAll(constants.NAMESPACE)
 				fmt.Println("Terminating Pods: ", terminatingPods)
 
-				tempSlice := kubernetesCluster.GetPodsSortedCPUUsageAllAscending(constants.NAMESPACE, constants.OPTIONAL)
+				tempSlice := kubernetesCluster.GetPodsSortedRandomly(constants.NAMESPACE, constants.OPTIONAL)
 				fmt.Println("Temp Pods: ", tempSlice)
 
 				sortedPods = util.SliceDifference(tempSlice, terminatingPods)

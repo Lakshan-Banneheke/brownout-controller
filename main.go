@@ -1,26 +1,17 @@
 package main
 
 import (
-	"brownout-controller/brownout"
-	"brownout-controller/constants"
-	"brownout-controller/powerModel"
-	"brownout-controller/prometheus"
-	"fmt"
-	"log"
+	"brownout-controller/policies/experimentation"
+	"os"
+	"strconv"
 )
 
 func main() {
 
-	// get the power model
-	pm := powerModel.GetPowerModel()
+	//fmt.Println(prometheus.GetSLAViolationRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY))
+	//fmt.Println(prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY))
+	requiredSR := os.Getenv("REQUIRED_SR")
+	requiredSRFloat, _ := strconv.ParseFloat(requiredSR, 32)
+	experimentation.LUCFExperiment(requiredSRFloat)
 
-	// get power consumption when a set of pods given
-	log.Println(pm.GetPowerConsumptionPods([]string{"agri-app-master-75656cf88b-fcd29", "agri-app-master-75656cf88b-xtkl4", "agri-app-master-75656cf88b-hxplj"}))
-	// get power consumption when a set of nodes given
-	log.Println(pm.GetPowerConsumptionNodes([]string{"node-master", "node-worker-1"}))
-
-	fmt.Println(prometheus.GetSLAViolationRatio("podinfo.localdev.me", "1d", constants.SLA_VIOLATION_LATENCY))
-	fmt.Println(prometheus.GetSLASuccessRatio("podinfo.localdev.me", "1d", constants.SLA_VIOLATION_LATENCY))
-
-	brownout.ExecuteBrownout()
 }
