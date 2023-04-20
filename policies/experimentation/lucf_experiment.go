@@ -44,7 +44,7 @@ func LUCFExperiment(requiredSR float64) {
 				min = m
 				m = (m + max) / 2
 				kubernetesCluster.ActivatePods(deactivatedPods, constants.NAMESPACE)
-				time.Sleep(30 * time.Second)
+				time.Sleep(90 * time.Second)
 
 				terminatingPods := kubernetesCluster.GetTerminatingPodNamesAll(constants.NAMESPACE)
 				fmt.Println("Terminating Pods: ", terminatingPods)
@@ -62,7 +62,7 @@ func LUCFExperiment(requiredSR float64) {
 				max = m
 				m = (min + m) / 2
 				kubernetesCluster.ActivatePods(deactivatedPods, constants.NAMESPACE)
-				time.Sleep(30 * time.Second)
+				time.Sleep(90 * time.Second)
 
 				terminatingPods := kubernetesCluster.GetTerminatingPodNamesAll(constants.NAMESPACE)
 				fmt.Println("Terminating Pods: ", terminatingPods)
