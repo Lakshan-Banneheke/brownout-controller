@@ -25,7 +25,7 @@ func (nisp NISP) ExecuteForCluster(upperThresholdPower float64) map[string]int32
 func (nisp NISP) executePolicy(allNodes []string, sortedNodes []string, upperThresholdPower float64) map[string]int32 {
 
 	i := 0
-	var predictedPower float64 = 0
+	predictedPower := powerModel.GetPowerModel().GetPowerConsumptionNodes(allNodes)
 
 	for predictedPower > upperThresholdPower {
 		log.Println("===============================================================")
