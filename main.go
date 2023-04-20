@@ -15,8 +15,8 @@ func main() {
 	//fmt.Println(prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY))
 	pods := kubernetesCluster.GetPodNamesAll(constants.NAMESPACE)
 	for {
-		fmt.Println(powerModel.GetPowerModel().GetPowerConsumptionPods(pods))
-		fmt.Println(prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY))
+		fmt.Println("Current Power: ", powerModel.GetPowerModel().GetPowerConsumptionPods(pods))
+		prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY)
 		time.Sleep(30 * time.Second)
 	}
 }
