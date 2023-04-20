@@ -42,7 +42,7 @@ func (absPolicy AbstractPolicy) executePolicy(allClusterPods []string, sortedPod
 
 		if predictedPower > upperThresholdPower {
 			m = (m + n) / 2
-		} else if (upperThresholdPower-predictedPower)/(upperThresholdPower) < 0.1 {
+		} else if (upperThresholdPower-predictedPower)/(upperThresholdPower) < 0.05 {
 			break
 		} else {
 			m = (1 + m) / 2
