@@ -28,7 +28,7 @@ func DoExperiment(upperThresholdPower float64) {
 	var srList []float64
 
 	fmt.Println("Getting power and SR")
-	for i := 1; i <= 60; i++ {
+	for i := 1; i <= 30; i++ {
 		log.Println("==================================================================")
 
 		srList = append(srList, prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY))
