@@ -11,13 +11,13 @@ import (
 
 func main() {
 
-	//thresholds := []float64{19, 18.75, 18.5, 18.25, 18, 17.5, 17, 16.5, 16}
+	//thresholds := []float64{19, 18.75, 18.5, 18, 17.5, 17, 16.5, 16}
 
 	pods := kubernetesCluster.GetPodNamesAll(constants.NAMESPACE)
 	fmt.Println("Initial Power: ", powerModel.GetPowerModel().GetPowerConsumptionPods(pods))
 	prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY)
 
-	experimentationv2.DoExperiment(18.5)
+	experimentationv2.DoExperiment(18.0)
 
 	//fmt.Println(prometheus.GetSLAViolationRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY))
 	//fmt.Println(prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY))
