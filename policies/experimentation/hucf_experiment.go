@@ -17,6 +17,8 @@ func HUCFExperiment(requiredSR float64) {
 	sortedPods := kubernetesCluster.GetPodsSortedCPUUsageAllDescending(constants.NAMESPACE, constants.OPTIONAL)
 
 	n := len(sortedPods)
+	min := 1
+	max := n
 
 	if n == 0 {
 		return
@@ -39,7 +41,8 @@ func HUCFExperiment(requiredSR float64) {
 			break
 		} else if currentSR > requiredSR {
 			if i != 0 {
-				m = (m + n) / 2
+				min = m
+				m = (m + max) / 2
 				kubernetesCluster.ActivatePods(deactivatedPods, constants.NAMESPACE)
 				time.Sleep(30 * time.Second)
 
@@ -56,7 +59,8 @@ func HUCFExperiment(requiredSR float64) {
 			deactivatedPods = kubernetesCluster.DeactivatePods(podsToDeactivate, constants.NAMESPACE)
 		} else {
 			if i != 0 {
-				m = (1 + m) / 2
+				max = m
+				m = (min + m) / 2
 				kubernetesCluster.ActivatePods(deactivatedPods, constants.NAMESPACE)
 				time.Sleep(30 * time.Second)
 
