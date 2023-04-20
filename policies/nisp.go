@@ -27,17 +27,16 @@ func (nisp NISP) executePolicy(allNodes []string, sortedNodes []string, upperThr
 
 	i := 0
 	predictedPower := powerModel.GetPowerModel().GetPowerConsumptionNodes(allNodes)
-
+	log.Println("Predicted Power", predictedPower)
 	if predictedPower < upperThresholdPower {
-		log.Println("Predicted Power", predictedPower)
 		log.Println("Predicted power less than upper threshold. Deactivating pods is not possible.")
 		return nodeDeployments
 	}
 
 	for predictedPower > upperThresholdPower {
 		log.Println("===============================================================")
-		log.Println("Iteration: ", i)
 		i++
+		log.Println("i: ", i)
 		predictedClusterNodes := util.SliceDifference(allNodes, sortedNodes[0:i]) // get the nodes remaining in the cluster after deactivating i nodes
 
 		// get power consumption of the nodes
