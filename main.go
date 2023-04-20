@@ -1,17 +1,16 @@
 package main
 
 import (
-	"brownout-controller/policies/experimentation"
-	"os"
-	"strconv"
+	"brownout-controller/constants"
+	"brownout-controller/kubernetesCluster"
+	"brownout-controller/powerModel"
+	"fmt"
 )
 
 func main() {
 
 	//fmt.Println(prometheus.GetSLAViolationRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY))
 	//fmt.Println(prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY))
-	requiredSR := os.Getenv("REQUIRED_SR")
-	requiredSRFloat, _ := strconv.ParseFloat(requiredSR, 32)
-	experimentation.LUCFExperiment(requiredSRFloat)
-
+	pods := kubernetesCluster.GetPodNamesAll(constants.NAMESPACE)
+	fmt.Println(powerModel.GetPowerModel().GetPowerConsumptionPods(pods))
 }
