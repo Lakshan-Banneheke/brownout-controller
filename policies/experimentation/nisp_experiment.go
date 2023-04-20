@@ -5,7 +5,6 @@ import (
 	"brownout-controller/kubernetesCluster"
 	"brownout-controller/powerModel"
 	"brownout-controller/prometheus"
-	"brownout-controller/util"
 	"fmt"
 	"log"
 	"math"
@@ -20,10 +19,10 @@ func NISPExperiment(requiredSR float64) {
 	//Number of nodes
 	var i int32 = 0
 
-	var nodesToDeactivate []string
+	//var nodesToDeactivate []string
 	//var deactivatedNodes []string
 
-	var podsToDeactivate []string
+	//var podsToDeactivate []string
 	var tempDeactivatedPods map[string]int32
 	var deactivatedPods map[string]int32
 
@@ -38,29 +37,10 @@ func NISPExperiment(requiredSR float64) {
 			break
 
 		} else if currentSR > requiredSR {
-
-			if i != 0 {
-				kubernetesCluster.ActivatePods(deactivatedPods, constants.NAMESPACE)
-				time.Sleep(30 * time.Second)
-
-				sortedNodes = kubernetesCluster.GetNodesSortedCPUUsageAscending(constants.OPTIONAL)
-			}
-
-			nodesToDeactivate = sortedNodes[0:i]
-
-			for _, node := range nodesToDeactivate {
-				//deactivatedNodes = append(deactivatedNodes, node)
-				podsInNode := kubernetesCluster.GetPodsInNode(node, constants.NAMESPACE, constants.OPTIONAL)
-				podsToDeactivate = append(podsToDeactivate, podsInNode...)
-				tempDeactivatedPods = kubernetesCluster.DeactivateNode(node, constants.NAMESPACE, constants.OPTIONAL)
-				updateDeactivatedPods(tempDeactivatedPods, deactivatedPods)
-			}
+			tempDeactivatedPods = kubernetesCluster.DeactivateNode(sortedNodes[i], constants.NAMESPACE, constants.OPTIONAL)
+			updateDeactivatedPods(tempDeactivatedPods, deactivatedPods)
 			i++
 		} else {
-
-			//activate the last set of pods deactivated
-			kubernetesCluster.ActivatePods(tempDeactivatedPods, constants.NAMESPACE)
-			time.Sleep(30 * time.Second)
 			break
 		}
 
@@ -68,8 +48,7 @@ func NISPExperiment(requiredSR float64) {
 
 	}
 
-	allClusterNodes := kubernetesCluster.GetAllNodeNames()
-	predictedClusterNodes := util.SliceDifference(allClusterNodes, nodesToDeactivate)
+	predictedClusterWorkerNodes := sortedNodes[i:]
 
 	var predictedPowerList []float64
 	var srList []float64
@@ -77,7 +56,7 @@ func NISPExperiment(requiredSR float64) {
 	fmt.Println("Exited Loop")
 	for i := 1; i <= 300; i++ {
 		// get power consumption of the nodes
-		predictedPowerList = append(predictedPowerList, powerModel.GetPowerModel().GetPowerConsumptionNodes(predictedClusterNodes))
+		predictedPowerList = append(predictedPowerList, powerModel.GetPowerModel().GetPowerConsumptionNodes(predictedClusterWorkerNodes))
 		srList = append(srList, prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY))
 		i++
 		time.Sleep(1 * time.Second)
@@ -87,7 +66,7 @@ func NISPExperiment(requiredSR float64) {
 	avgSr := average(srList)
 
 	log.Println("Required SR: ", requiredSR)
-	log.Println("Number of nodes deactivated: ", len(nodesToDeactivate))
+	log.Println("Number of active worker nodes: ", len(predictedClusterWorkerNodes))
 	log.Println("Average Power: ", avgPower)
 	log.Println("Average SR: ", avgSr)
 
