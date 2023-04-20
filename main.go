@@ -19,5 +19,4 @@ func main() {
 		fmt.Println(prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY))
 		time.Sleep(30 * time.Second)
 	}
-
 }
