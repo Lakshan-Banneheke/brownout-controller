@@ -12,10 +12,12 @@ type AbstractPolicy struct{}
 func (absPolicy AbstractPolicy) executePolicy(allClusterPods []string, sortedPods []string, upperThresholdPower float64) map[string]int32 {
 
 	n := len(sortedPods)
-
 	if n == 0 {
 		return make(map[string]int32)
 	}
+
+	min := 1
+	max := n
 
 	m := n / 2 // mid point
 
@@ -35,11 +37,13 @@ func (absPolicy AbstractPolicy) executePolicy(allClusterPods []string, sortedPod
 		predictedPower = powerModel.GetPowerModel().GetPowerConsumptionPods(predictedClusterPods)
 
 		if predictedPower > upperThresholdPower {
-			m = (m + n) / 2
+			min = m
+			m = (m + max) / 2
 		} else if (upperThresholdPower-predictedPower)/(upperThresholdPower) < 0.1 {
 			break
 		} else {
-			m = (1 + m) / 2
+			max = m
+			m = (min + m) / 2
 		}
 
 		i++
