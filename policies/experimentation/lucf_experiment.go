@@ -42,10 +42,13 @@ func LUCFExperiment(requiredSR float64) {
 				m = (m + n) / 2
 				kubernetesCluster.ActivatePods(deactivatedPods, constants.NAMESPACE)
 				time.Sleep(30 * time.Second)
+
 				terminatingPods := kubernetesCluster.GetTerminatingPodNamesAll(constants.NAMESPACE)
 				fmt.Println("Terminating Pods: ", terminatingPods)
+
 				tempSlice := kubernetesCluster.GetPodsSortedCPUUsageAllAscending(constants.NAMESPACE, constants.OPTIONAL)
 				fmt.Println("Temp Pods: ", tempSlice)
+
 				sortedPods = util.SliceDifference(tempSlice, terminatingPods)
 			}
 			fmt.Println("m: ", m)
@@ -56,10 +59,13 @@ func LUCFExperiment(requiredSR float64) {
 				m = (1 + m) / 2
 				kubernetesCluster.ActivatePods(deactivatedPods, constants.NAMESPACE)
 				time.Sleep(30 * time.Second)
+
 				terminatingPods := kubernetesCluster.GetTerminatingPodNamesAll(constants.NAMESPACE)
 				fmt.Println("Terminating Pods: ", terminatingPods)
+
 				tempSlice := kubernetesCluster.GetPodsSortedCPUUsageAllAscending(constants.NAMESPACE, constants.OPTIONAL)
 				fmt.Println("Temp Pods: ", tempSlice)
+
 				sortedPods = util.SliceDifference(tempSlice, terminatingPods)
 			}
 			fmt.Println("m: ", m)
@@ -68,13 +74,14 @@ func LUCFExperiment(requiredSR float64) {
 		}
 		fmt.Println("Deactivated Pods: ", deactivatedPods)
 		i++
-		time.Sleep(30 * time.Second)
+
+		fmt.Println("Waiting for 5 minutes")
+		time.Sleep(5 * time.Minute)
 	}
 
-	fmt.Println("m: ", m)
 	allClusterPods := kubernetesCluster.GetPodNamesAll(constants.NAMESPACE)
-	// get the pods remaining in the cluster after deactivating above pods
 	predictedClusterPods := util.SliceDifference(allClusterPods, podsToDeactivate)
+
 	var predictedPowerList []float64
 	var srList []float64
 
@@ -94,12 +101,4 @@ func LUCFExperiment(requiredSR float64) {
 	log.Println("Number of pods deactivated: ", len(podsToDeactivate))
 	log.Println("Average Power: ", avgPower)
 	log.Println("Average SR: ", avgSr)
-}
-
-func average(listFloat []float64) float64 {
-	sum := 0.0
-	for _, x := range listFloat {
-		sum += x
-	}
-	return sum / float64(len(listFloat))
 }

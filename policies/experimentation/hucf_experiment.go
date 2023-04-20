@@ -3,9 +3,9 @@ package experimentation
 import (
 	"brownout-controller/constants"
 	"brownout-controller/kubernetesCluster"
-	"brownout-controller/policies"
 	"brownout-controller/powerModel"
 	"brownout-controller/prometheus"
+	"brownout-controller/util"
 	"fmt"
 	"log"
 	"math"
@@ -14,7 +14,6 @@ import (
 
 func HUCFExperiment(requiredSR float64) {
 
-	allClusterPods := kubernetesCluster.GetPodNamesAll(constants.NAMESPACE)
 	sortedPods := kubernetesCluster.GetPodsSortedCPUUsageAllDescending(constants.NAMESPACE, constants.OPTIONAL)
 
 	n := len(sortedPods)
@@ -31,35 +30,58 @@ func HUCFExperiment(requiredSR float64) {
 
 	for i < math.Log2(float64(n)) {
 
-		podsToDeactivate = sortedPods[:m+1]
+		fmt.Println("Iteration: ", i)
 
 		currentSR := prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY)
 		fmt.Println("Current SR: ", currentSR)
-		fmt.Println("m: ", m)
 
 		if math.Abs(currentSR-requiredSR) < 0.05 {
 			break
 		} else if currentSR > requiredSR {
-			m = (m + n) / 2
 			if i != 0 {
+				m = (m + n) / 2
 				kubernetesCluster.ActivatePods(deactivatedPods, constants.NAMESPACE)
-				sortedPods = kubernetesCluster.GetPodsSortedCPUUsageAllDescending(constants.NAMESPACE, constants.OPTIONAL)
+				time.Sleep(30 * time.Second)
+
+				terminatingPods := kubernetesCluster.GetTerminatingPodNamesAll(constants.NAMESPACE)
+				fmt.Println("Terminating Pods: ", terminatingPods)
+
+				tempSlice := kubernetesCluster.GetPodsSortedCPUUsageAllAscending(constants.NAMESPACE, constants.OPTIONAL)
+				fmt.Println("Temp Pods: ", tempSlice)
+
+				sortedPods = util.SliceDifference(tempSlice, terminatingPods)
 			}
+			fmt.Println("m: ", m)
+			podsToDeactivate = sortedPods[:m+1]
 			deactivatedPods = kubernetesCluster.DeactivatePods(podsToDeactivate, constants.NAMESPACE)
 		} else {
-			m = (1 + m) / 2
 			if i != 0 {
+				m = (1 + m) / 2
 				kubernetesCluster.ActivatePods(deactivatedPods, constants.NAMESPACE)
-				sortedPods = kubernetesCluster.GetPodsSortedCPUUsageAllDescending(constants.NAMESPACE, constants.OPTIONAL)
+				time.Sleep(30 * time.Second)
+
+				terminatingPods := kubernetesCluster.GetTerminatingPodNamesAll(constants.NAMESPACE)
+				fmt.Println("Terminating Pods: ", terminatingPods)
+
+				tempSlice := kubernetesCluster.GetPodsSortedCPUUsageAllAscending(constants.NAMESPACE, constants.OPTIONAL)
+				fmt.Println("Temp Pods: ", tempSlice)
+
+				sortedPods = util.SliceDifference(tempSlice, terminatingPods)
 			}
+			fmt.Println("m: ", m)
+			podsToDeactivate = sortedPods[:m+1]
 			deactivatedPods = kubernetesCluster.DeactivatePods(podsToDeactivate, constants.NAMESPACE)
 		}
-
+		fmt.Println("Deactivated Pods: ", deactivatedPods)
 		i++
-		time.Sleep(30 * time.Second)
+
+		fmt.Println("Waiting for 5 minutes")
+		time.Sleep(5 * time.Minute)
 	}
-	// get the pods remaining in the cluster after deactivating above pods
-	predictedClusterPods := policies.SliceDifference(allClusterPods, podsToDeactivate)
+
+	allClusterPods := kubernetesCluster.GetPodNamesAll(constants.NAMESPACE)
+	predictedClusterPods := util.SliceDifference(allClusterPods, podsToDeactivate)
+
 	var predictedPowerList []float64
 	var srList []float64
 
