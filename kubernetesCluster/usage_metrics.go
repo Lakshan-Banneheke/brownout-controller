@@ -5,7 +5,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/metrics/pkg/apis/metrics/v1beta1"
 	"log"
-	"time"
 )
 
 // GetPodsCPUUsageSum : function to retrieve the CPU Usage sum of a set of pods
@@ -31,8 +30,6 @@ func getPodMetrics(pods []string, namespace string) []v1beta1.PodMetrics {
 		podMetrics, err := metricsClient.MetricsV1beta1().PodMetricses(namespace).Get(context.Background(), podName, metav1.GetOptions{})
 		if err != nil {
 			log.Println("ERROR:", err.Error())
-			// Waits for 1 minute because above error might be because getting metrics from a node has issues
-			time.Sleep(1 * time.Minute)
 		}
 		podMetricsItems = append(podMetricsItems, *podMetrics)
 	}
