@@ -14,6 +14,10 @@ import (
 
 func DoExperimentNodePolicies(policy policies.IPolicyNodes, upperThresholdPower float64) {
 
+	pods := kubernetesCluster.GetPodNamesAll(constants.NAMESPACE)
+	fmt.Println("Initial Power: ", powerModel.GetPowerModel().GetPowerConsumptionPods(pods))
+	prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY)
+
 	deactivatedPods, deactivatedNodes := policy.ExecuteForCluster(upperThresholdPower)
 	log.Println("Deactivated Pods: ", deactivatedPods)
 	log.Println("Deactivated Nodes: ", deactivatedNodes)
@@ -57,5 +61,6 @@ func DoExperimentNodePolicies(policy policies.IPolicyNodes, upperThresholdPower 
 	log.Println("Average SR: ", avgSr)
 	log.Println("Average Power: ", avgPower)
 
-	log.Println("Upper threshold power: ", upperThresholdPower)
+	//log.Println("Upper threshold power: ", upperThresholdPower)
+
 }

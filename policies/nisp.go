@@ -14,6 +14,7 @@ type NISP struct{}
 var nodeDeployments = make(map[string]int32)
 var deactivatedNodes []string
 
+// TODO There's a mistake in using lucf directly per node for nisp :D Cuz lucf uses GetPodsPower to calculate the power. It doesnt consider that some nodes have been turned off, we'll have to tweak the algorithm
 // ExecuteForCluster
 // Assumption: optional containers are deployed in nodes that are labelled as optional
 // These nodes do not contain mandatory containers

@@ -51,5 +51,5 @@ func DoExperimentPodPolicies(policy policies.IPolicyPods, upperThresholdPower fl
 	log.Println("Average SR: ", avgSr)
 	log.Println("Average Power: ", avgPower)
 
-	log.Println("Upper threshold power: ", upperThresholdPower)
+	//log.Println("Upper threshold power: ", upperThresholdPower)
 }
