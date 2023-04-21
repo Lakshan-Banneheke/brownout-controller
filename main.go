@@ -25,8 +25,8 @@ func main() {
 	fmt.Println("Initial Power: ", powerModel.GetPowerModel().GetPowerConsumptionPods(pods))
 	prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY)
 
-	nisp := policies.NISP{}
-	experimentationv2.DoExperiment(nisp, 13)
+	policy := policies.LUCF{}
+	experimentationv2.DoExperiment(policy, 15.5)
 
 	//fmt.Println(prometheus.GetSLAViolationRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY))
 	//fmt.Println(prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY))
