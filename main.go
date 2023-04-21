@@ -19,8 +19,8 @@ func main() {
 	prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY)
 
 	//nisp := policies.NISP{}
-	hucf := policies.HUCF{}
-	experimentationv2.DoExperimentPodPolicies(hucf, 15)
+	policy := policies.LUCF{}
+	experimentationv2.DoExperimentPodPolicies(policy, 19)
 	//experimentationv2.DoExperimentNodePolicies(nisp, 18.5)
 
 	//fmt.Println(prometheus.GetSLAViolationRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY))
