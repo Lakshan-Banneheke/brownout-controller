@@ -28,7 +28,7 @@ func main() {
 	nisp := policies.NISP{}
 	//hucf := policies.HUCF{}
 	//experimentationv2.DoExperimentPodPolicies(hucf, 16)
-	experimentationv2.DoExperimentNodePolicies(nisp, 15)
+	experimentationv2.DoExperimentNodePolicies(nisp, 14)
 
 	//fmt.Println(prometheus.GetSLAViolationRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY))
 	//fmt.Println(prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY))
