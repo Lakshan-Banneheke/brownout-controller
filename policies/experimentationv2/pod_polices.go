@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func DoExperiment(policy policies.IPolicy, upperThresholdPower float64) {
+func DoExperimentPodPolicies(policy policies.IPolicyPods, upperThresholdPower float64) {
 
 	deactivatedPods := policy.ExecuteForCluster(upperThresholdPower)
 	log.Println("Deactivated Pods: ", deactivatedPods)
