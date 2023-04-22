@@ -7,8 +7,6 @@ import (
 
 func main() {
 
-	//thresholds := []float64{19, 18.5, 18, 17.5, 17, 16.5, 16}
-
 	nisp := policies.NISP{}
 	//policy := policies.HUCF{}
 	//experimentationv2.DoExperimentPodPolicies(policy, 12)
