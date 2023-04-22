@@ -9,10 +9,10 @@ func main() {
 
 	//thresholds := []float64{19, 18.5, 18, 17.5, 17, 16.5, 16}
 
-	//nisp := policies.NISP{}
-	policy := policies.HUCF{}
-	experimentationv2.DoExperimentPodPolicies(policy, 12)
-	//experimentationv2.DoExperimentNodePolicies(nisp, 12)
+	nisp := policies.NISP{}
+	//policy := policies.HUCF{}
+	//experimentationv2.DoExperimentPodPolicies(policy, 12)
+	experimentationv2.DoExperimentNodePolicies(nisp, 11)
 
 	//fmt.Println(prometheus.GetSLAViolationRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY))
 	//fmt.Println(prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY))
