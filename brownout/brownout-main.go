@@ -11,16 +11,15 @@ import (
 )
 
 func ExecuteBrownout() {
-	PowerModel := powerModel.GetPowerModel()
 
 	var prevDeactivatedDeployments = make(map[string]int32)
 
 	for {
 		currentSuccessRate := prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY)
 
-		// ACCEPTED_SUCCESS_RATE = approx. 0.75
+		// ACCEPTED_SUCCESS_RATE = approx. 0.65
 		if currentSuccessRate > constants.ACCEPTED_SUCCESS_RATE {
-			currentPowerConsumption := PowerModel.GetPowerConsumptionPods(kubernetesCluster.GetPodNamesAll(constants.NAMESPACE))
+			currentPowerConsumption := powerModel.GetPowerModel().GetPowerConsumptionPods(kubernetesCluster.GetPodNamesAll(constants.NAMESPACE))
 			// current_success_rate / ACCEPTED_SUCCESS_RATE = k * (current_power_consumption / upper_threshold_power )
 			upperThresholdPower := constants.K_VALUE * (currentPowerConsumption * constants.ACCEPTED_SUCCESS_RATE / currentSuccessRate)
 

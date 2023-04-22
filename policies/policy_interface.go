@@ -6,6 +6,7 @@ type IPolicy interface {
 
 // IPolicyPods for all pod selection policies that are pod-wise (lucf, lru, rcsp)
 type IPolicyPods interface {
+	IPolicy
 	ExecuteForCluster(upperThresholdPower float64) map[string]int32
 	ExecuteForNode(nodeName string, upperThresholdPower float64) map[string]int32
 	sortPodsCluster() []string
@@ -14,6 +15,7 @@ type IPolicyPods interface {
 
 // IPolicyNodes for all pod selection policies that are node-wise (nisp)
 type IPolicyNodes interface {
+	IPolicy
 	ExecuteForCluster(upperThresholdPower float64) (map[string]int32, []string)
 	deactivateNodes(nodeList []string) []string
 }
