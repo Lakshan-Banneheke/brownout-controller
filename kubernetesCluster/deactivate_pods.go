@@ -2,9 +2,9 @@ package kubernetesCluster
 
 import (
 	"context"
-	"fmt"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"log"
 )
 
 // DeactivatePods function returns the deactivated deployment map
@@ -37,10 +37,10 @@ func DeactivatePods(podNames []string, namespace string) map[string]int32 {
 //}
 
 func annotatePodForDeletion(podName string, namespace string) corev1.Pod {
-	clientset := GetKubernetesClientSet()
+	clientset := getKubernetesClientSet()
 	pod, err := clientset.CoreV1().Pods(namespace).Get(context.Background(), podName, metav1.GetOptions{})
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 	}
 
 	// set the annotation on the Pod object
@@ -50,16 +50,16 @@ func annotatePodForDeletion(podName string, namespace string) corev1.Pod {
 	// update the Pod object
 	pod, err = clientset.CoreV1().Pods("default").Update(context.Background(), pod, metav1.UpdateOptions{})
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 	}
 
-	fmt.Printf("Pod %s annotated with controller.kubernetes.io/pod-deletion-cost:-999 and scheduled for deletion\n", podName)
+	log.Printf("Pod %s annotated with controller.kubernetes.io/pod-deletion-cost:-999 and scheduled for deletion\n", podName)
 
 	return *pod
 }
 
 func getDeployment(pod corev1.Pod, namespace string) string {
-	clientset := GetKubernetesClientSet()
+	clientset := getKubernetesClientSet()
 	ownerPod := pod.ObjectMeta.OwnerReferences
 	replicaSetName := ownerPod[0].Name
 	replicaSet, _ := clientset.AppsV1().ReplicaSets(namespace).Get(context.Background(), replicaSetName, metav1.GetOptions{})
@@ -69,18 +69,18 @@ func getDeployment(pod corev1.Pod, namespace string) string {
 }
 
 func scaleDownDeployment(deploymentName string, count int32, namespace string) {
-	clientset := GetKubernetesClientSet()
+	clientset := getKubernetesClientSet()
 	scale, err := clientset.AppsV1().Deployments(namespace).GetScale(context.Background(), deploymentName, metav1.GetOptions{})
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 	}
 
 	scale.Spec.Replicas -= count
 
 	updatedScale, err := clientset.AppsV1().Deployments(namespace).UpdateScale(context.Background(), deploymentName, scale, metav1.UpdateOptions{})
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 	}
 
-	fmt.Printf("Deployment %s in namespace %s scaled down to %d replicas\n", deploymentName, namespace, updatedScale.Spec.Replicas)
+	log.Printf("Deployment %s in namespace %s scaled down to %d replicas\n", deploymentName, namespace, updatedScale.Spec.Replicas)
 }
