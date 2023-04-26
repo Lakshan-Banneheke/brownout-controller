@@ -3,7 +3,7 @@ package main
 import (
 	"brownout-controller/constants"
 	"brownout-controller/policies"
-	"brownout-controller/policies/experimentation"
+	"brownout-controller/policies/experimentationv2"
 )
 
 func main() {
@@ -15,10 +15,10 @@ func main() {
 	nisp := policies.NISP{}
 	//rcsp := policies.RCSP{}
 
-	//experimentation.DoBrownoutExperimentPodPolicy(rcsp, constants.K_RSCP)
-	experimentation.DoBrownoutExperimentNodePolicy(nisp, constants.K_NISP)
+	//experimentationv2.DoBrownoutExperimentPodPolicy(rcsp, constants.K_RSCP)
+	experimentationv2.DoBrownoutExperimentNodePolicy(nisp, constants.K_NISP)
 
-	//experimentation.DoExperimentPodPolicies(policy, 12)
+	//experimentationv2.DoExperimentPodPolicies(policy, 12)
 
 	//fmt.Println(prometheus.GetSLAViolationRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY))
 	//fmt.Println(prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY))

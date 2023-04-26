@@ -1,4 +1,4 @@
-package experimentation
+package experimentationv2
 
 import (
 	"brownout-controller/constants"
