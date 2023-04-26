@@ -51,10 +51,9 @@ func annotatePodForDeletion(podName string, namespace string) corev1.Pod {
 	pod, err = clientset.CoreV1().Pods("default").Update(context.Background(), pod, metav1.UpdateOptions{})
 	if err != nil {
 		log.Println(err.Error())
+	} else {
+		log.Printf("Pod %s annotated with controller.kubernetes.io/pod-deletion-cost:-999 and scheduled for deletion\n", podName)
 	}
-
-	log.Printf("Pod %s annotated with controller.kubernetes.io/pod-deletion-cost:-999 and scheduled for deletion\n", podName)
-
 	return *pod
 }
 

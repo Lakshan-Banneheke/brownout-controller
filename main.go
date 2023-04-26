@@ -2,23 +2,30 @@ package main
 
 import (
 	"brownout-controller/constants"
-	"brownout-controller/powerModel"
-	"brownout-controller/prometheus"
-	"fmt"
-	"log"
+	"brownout-controller/experimentation"
+	"brownout-controller/policies"
 )
 
 func main() {
 
-	// get the power model
-	pm := powerModel.GetPowerModel()
+	//pods := kubernetesCluster.GetPodNamesAll(constants.NAMESPACE)
+	//fmt.Println("Initial Power: ", powerModel.GetPowerModel().GetPowerConsumptionPods(pods))
+	//prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY)
 
-	// get power consumption when a set of pods given
-	log.Println(pm.GetPowerConsumptionPods([]string{"agri-app-master-75656cf88b-fcd29", "agri-app-master-75656cf88b-xtkl4", "agri-app-master-75656cf88b-hxplj"}))
-	// get power consumption when a set of nodes given
-	log.Println(pm.GetPowerConsumptionNodes([]string{"node-master", "node-worker-1"}))
+	nisp := policies.NISP{}
+	//rcsp := policies.RCSP{}
 
-	fmt.Println(prometheus.GetSLAViolationRatio("podinfo.localdev.me", "1d", constants.SLA_VIOLATION_LATENCY))
-	fmt.Println(prometheus.GetSLASuccessRatio("podinfo.localdev.me", "1d", constants.SLA_VIOLATION_LATENCY))
+	//experimentation.DoBrownoutExperimentPodPolicy(rcsp, constants.K_RSCP)
+	experimentation.DoBrownoutExperimentNodePolicy(nisp, constants.K_NISP)
 
+	//experimentation.DoExperimentPodPolicies(policy, 12)
+
+	//fmt.Println(prometheus.GetSLAViolationRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY))
+	//fmt.Println(prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY))
+	//pods := kubernetesCluster.GetPodNamesAll(constants.NAMESPACE)
+	//for {
+	//	fmt.Println("Current Power: ", powerModel.GetPowerModel().GetPowerConsumptionPods(pods))
+	//	prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY)
+	//	time.Sleep(30 * time.Second)
+	//}
 }

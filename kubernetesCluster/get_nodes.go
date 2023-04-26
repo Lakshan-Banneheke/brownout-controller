@@ -2,9 +2,10 @@ package kubernetesCluster
 
 import (
 	"context"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"log"
 	"strconv"
+
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 func GetNodeNames(categoryLabel string) []string {
@@ -12,6 +13,25 @@ func GetNodeNames(categoryLabel string) []string {
 	// get the list of nodes that match the label selector (optional or mandatory or mixed)
 	nodeList, err := clientset.CoreV1().Nodes().List(context.Background(),
 		metav1.ListOptions{LabelSelector: "category=" + categoryLabel})
+
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	// create a list of node names
+	var nodeNames []string
+	for _, node := range nodeList.Items {
+		nodeNames = append(nodeNames, node.Name)
+	}
+
+	return nodeNames
+}
+
+func GetAllNodeNames() []string {
+	clientset := getKubernetesClientSet()
+	// get the list of all nodes (optional & mandatory & mixed)
+	nodeList, err := clientset.CoreV1().Nodes().List(context.Background(),
+		metav1.ListOptions{})
 
 	if err != nil {
 		log.Println(err.Error())
