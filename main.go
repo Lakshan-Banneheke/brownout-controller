@@ -2,8 +2,8 @@ package main
 
 import (
 	"brownout-controller/constants"
+	"brownout-controller/experimentation"
 	"brownout-controller/policies"
-	"brownout-controller/policies/experimentation"
 )
 
 func main() {
