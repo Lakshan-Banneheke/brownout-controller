@@ -1,6 +1,7 @@
 package kubernetesCluster
 
 import (
+	"fmt"
 	"math/rand"
 	"sort"
 	"strconv"
@@ -13,7 +14,7 @@ import (
 func extractCPUMetrics(podMetricsItems []v1beta1.PodMetrics, err error) (map[string]int, []string) {
 
 	if err != nil {
-		panic(err.Error())
+		fmt.Println(err.Error())
 	}
 
 	// make a map of pod Name and cpu usage
@@ -33,7 +34,7 @@ func extractCPUMetrics(podMetricsItems []v1beta1.PodMetrics, err error) (map[str
 			}
 			cpuUsageInt, err := strconv.Atoi(contCPUTrimmed)
 			if err != nil {
-				panic(err.Error())
+				fmt.Println(err.Error())
 			}
 			podCPU += cpuUsageInt
 		}

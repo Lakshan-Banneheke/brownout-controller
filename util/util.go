@@ -1,4 +1,4 @@
-package policies
+package util
 
 // SliceDifference returns the difference between two string slices.
 // The difference here means that the values which are in slice1 but not present in slice2.
