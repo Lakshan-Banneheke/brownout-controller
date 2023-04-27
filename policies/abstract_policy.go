@@ -4,6 +4,8 @@ import (
 	"brownout-controller/constants"
 	"brownout-controller/kubernetesCluster"
 	"brownout-controller/powerModel"
+	"brownout-controller/util"
+	"log"
 	"math"
 )
 
@@ -27,19 +29,23 @@ func (absPolicy AbstractPolicy) executePolicy(allClusterPods []string, sortedPod
 
 	// performing a binary search to get the optimum cluster configuration
 	for i < math.Log2(float64(n)) {
-
+		log.Println("===============================================================")
+		log.Println("Iteration: ", i)
+		log.Println("m: ", m)
 		podsToDeactivate = sortedPods[:m+1]
 
 		// get the pods remaining in the cluster after deactivating above pods
-		predictedClusterPods := SliceDifference(allClusterPods, podsToDeactivate)
+		predictedClusterPods := util.SliceDifference(allClusterPods, podsToDeactivate)
 
 		// get power consumption of the pods
 		predictedPower = powerModel.GetPowerModel().GetPowerConsumptionPods(predictedClusterPods)
+		log.Println("Predicted Power", predictedPower)
+		log.Println("Upper Threshold", upperThresholdPower)
 
 		if predictedPower > upperThresholdPower {
 			min = m
 			m = (m + max) / 2
-		} else if (upperThresholdPower-predictedPower)/(upperThresholdPower) < 0.1 {
+		} else if (upperThresholdPower-predictedPower)/(upperThresholdPower) < 0.05 {
 			break
 		} else {
 			max = m
@@ -48,5 +54,7 @@ func (absPolicy AbstractPolicy) executePolicy(allClusterPods []string, sortedPod
 
 		i++
 	}
+	log.Println("Value for identified: ", m)
+	log.Println("Deactivating pods")
 	return kubernetesCluster.DeactivatePods(podsToDeactivate, constants.NAMESPACE)
 }

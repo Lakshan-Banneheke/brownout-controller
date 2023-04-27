@@ -22,7 +22,7 @@ func GetPodsSortedCPUUsageAllAscending(namespace string, categoryLabel string) [
 func GetPodsSortedCPUUsageInNodeAscending(nodeName string, namespace string, categoryLabel string) []string {
 	metricsClient := getMetricsClient()
 	// get the pods in the given node of the given category
-	pods := GetPodsInNode(nodeName, namespace, categoryLabel)
+	pods := GetPodsInNodeCategory(nodeName, namespace, categoryLabel)
 
 	// get pod Metrics for all the pods in that node
 	var podMetricsItems []v1beta1.PodMetrics
