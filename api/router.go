@@ -30,10 +30,9 @@ func initMetricsSubRouter(r *mux.Router) {
 	// Route handles & endpoints
 	// TODO Samples below. Delete later.
 	s.HandleFunc("/books", getBooks).Methods("GET")
-	s.HandleFunc("/books/{id}", getBook).Methods("GET")
-	s.HandleFunc("/books", createBook).Methods("POST")
-	s.HandleFunc("/books/{id}", updateBook).Methods("PUT")
-	s.HandleFunc("/books/{id}", deleteBook).Methods("DELETE")
+
+	// Websocket Sample
+	s.HandleFunc("/ws", handleWebSocket)
 }
 
 func initBrownoutSubRouter(r *mux.Router) {
@@ -41,4 +40,8 @@ func initBrownoutSubRouter(r *mux.Router) {
 
 	// TODO Samples below. Delete later.
 	s.HandleFunc("/books", getBooks).Methods("GET")
+	s.HandleFunc("/books/{id}", getBook).Methods("GET")
+	s.HandleFunc("/books", createBook).Methods("POST")
+	s.HandleFunc("/books/{id}", updateBook).Methods("PUT")
+	s.HandleFunc("/books/{id}", deleteBook).Methods("DELETE")
 }
