@@ -1,6 +1,9 @@
 package main
 
-import "brownout-controller/api"
+import (
+	"brownout-controller/constants"
+	"brownout-controller/kubernetesCluster"
+)
 
 func main() {
 
@@ -25,5 +28,5 @@ func main() {
 	//	time.Sleep(30 * time.Second)
 	//}
 
-	api.InitAPI()
+	kubernetesCluster.DeactivateNode("test-node-worker-3", constants.NAMESPACE, constants.OPTIONAL)
 }
