@@ -14,5 +14,4 @@ const (
 	K_RSCP                        = 0.9582
 	K_NISP                        = 0.8199
 	HOSTNAME                      = "agrimaster.com"
-	OPTIONAL_NODES_NUM            = 3
 )

@@ -54,7 +54,7 @@ func (absPolicy AbstractPolicy) executePolicy(allClusterPods []string, sortedPod
 
 		i++
 	}
-	log.Println("Value for identified: ", m)
+	log.Println("Value for m identified: ", m)
 	log.Println("Deactivating pods")
 	return kubernetesCluster.DeactivatePods(podsToDeactivate, constants.NAMESPACE)
 }
