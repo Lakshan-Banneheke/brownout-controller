@@ -1,10 +1,6 @@
 package main
 
-import (
-	"brownout-controller/constants"
-	"brownout-controller/experimentation"
-	"brownout-controller/policies"
-)
+import "brownout-controller/api"
 
 func main() {
 
@@ -12,11 +8,11 @@ func main() {
 	//fmt.Println("Initial Power: ", powerModel.GetPowerModel().GetPowerConsumptionPods(pods))
 	//prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY)
 
-	nisp := policies.NISP{}
-	//rcsp := policies.RCSP{}
-
-	//experimentation.DoBrownoutExperimentPodPolicy(rcsp, constants.K_RSCP)
-	experimentation.DoBrownoutExperimentNodePolicy(nisp, constants.K_NISP)
+	//nisp := policies.NISP{}
+	////rcsp := policies.RCSP{}
+	//
+	////experimentation.DoBrownoutExperimentPodPolicy(rcsp, constants.K_RSCP)
+	//experimentation.DoBrownoutExperimentNodePolicy(nisp, constants.K_NISP)
 
 	//experimentation.DoExperimentPodPolicies(policy, 12)
 
@@ -28,4 +24,6 @@ func main() {
 	//	prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY)
 	//	time.Sleep(30 * time.Second)
 	//}
+
+	api.InitAPI()
 }
