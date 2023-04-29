@@ -12,12 +12,11 @@ import (
 type NISP struct{}
 
 var nodeDeployments = make(map[string]int32)
-var deactivatedNodes []string
 
 // ExecuteForCluster
 // Assumption: optional containers are deployed in nodes that are labelled as optional
 // These nodes do not contain mandatory containers
-func (nisp NISP) ExecuteForCluster(upperThresholdPower float64) (map[string]int32, []string) {
+func (nisp NISP) ExecuteForCluster(upperThresholdPower float64) map[string]int32 {
 	log.Println("Executing NISP Policy for the entire cluster")
 	sortedNodes := kubernetesCluster.GetNodesSortedCPUUsageAscending(constants.OPTIONAL)
 	allNodes := kubernetesCluster.GetAllNodeNames()
@@ -25,14 +24,14 @@ func (nisp NISP) ExecuteForCluster(upperThresholdPower float64) (map[string]int3
 }
 
 // function returns a map of deployments scaled down and nodes deactivated
-func (nisp NISP) executePolicy(allNodes []string, sortedNodes []string, upperThresholdPower float64) (map[string]int32, []string) {
+func (nisp NISP) executePolicy(allNodes []string, sortedNodes []string, upperThresholdPower float64) map[string]int32 {
 
 	i := 0
 	predictedPower := powerModel.GetPowerModel().GetPowerConsumptionNodes(allNodes)
 	log.Println("Predicted Power", predictedPower)
 	if predictedPower < upperThresholdPower {
 		log.Println("Predicted power less than upper threshold. Deactivating pods is not possible.")
-		return nodeDeployments, deactivatedNodes
+		return nodeDeployments
 	}
 
 	for predictedPower > upperThresholdPower {
@@ -49,30 +48,29 @@ func (nisp NISP) executePolicy(allNodes []string, sortedNodes []string, upperThr
 
 	if (upperThresholdPower-predictedPower)/upperThresholdPower < 0.05 {
 		log.Printf("Exact node count used. Deactivating all pods in %v nodes", i)
-		deactivatedNodes = nisp.deactivateNodes(sortedNodes[0:i]) // deactivate all pods of 0 to i hosts
-		return nodeDeployments, deactivatedNodes
+		nisp.deactivateNodes(sortedNodes[0:i]) // deactivate all pods of 0 to i hosts
+		return nodeDeployments
 	}
 
 	var policy IPolicyPods = LUCF{} // Can set policy (LUCF, LRU, RCSP)
 
 	if i == 1 {
 		log.Printf("i = 1. Executing LUCF for 1st node")
-		return policy.ExecuteForNode(sortedNodes[0], upperThresholdPower), deactivatedNodes // deactivate some containers of 0th node according to a pod selection policy
+		return policy.ExecuteForNode(sortedNodes[0], upperThresholdPower) // deactivate some containers of 0th node according to a pod selection policy
 	} else {
 		log.Printf("i = %v. Deactivating all pods in %v nodes", i, i-1)
-		deactivatedNodes = nisp.deactivateNodes(sortedNodes[0 : i-1])
+		nisp.deactivateNodes(sortedNodes[0 : i-1])
 		log.Printf("Executing LUCF for %vth node", i)                                    //  node_deployments                             // deactivate all containers of 0 to i-1 hosts
 		oneNodeDeployments := policy.ExecuteForNode(sortedNodes[i], upperThresholdPower) // deactivate some containers of ith node according to a pod selection policy
 		nodeDeployments = util.AddToDeployments(oneNodeDeployments, nodeDeployments)
 
-		return nodeDeployments, deactivatedNodes
+		return nodeDeployments
 	}
 }
 
-func (nisp NISP) deactivateNodes(nodeList []string) []string {
+func (nisp NISP) deactivateNodes(nodeList []string) {
 	for _, node := range nodeList {
 		oneNodeDeployments := kubernetesCluster.DeactivateNode(node, constants.NAMESPACE, constants.OPTIONAL)
 		nodeDeployments = util.AddToDeployments(oneNodeDeployments, nodeDeployments)
 	}
-	return nodeList
 }

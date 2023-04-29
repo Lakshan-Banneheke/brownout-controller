@@ -46,6 +46,25 @@ func GetAllNodeNames() []string {
 	return nodeNames
 }
 
+func GetActiveNodeNames() []string {
+	clientset := getKubernetesClientSet()
+	// get the list of all nodes (optional & mandatory & mixed)
+	nodeList, err := clientset.CoreV1().Nodes().List(context.Background(),
+		metav1.ListOptions{FieldSelector: "spec.unschedulable=false"})
+
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	// create a list of node names
+	var nodeNames []string
+	for _, node := range nodeList.Items {
+		nodeNames = append(nodeNames, node.Name)
+	}
+
+	return nodeNames
+}
+
 func GetActiveWorkerNodeCount() int {
 	clientset := getKubernetesClientSet()
 	// retrieve all nodes in the cluster
