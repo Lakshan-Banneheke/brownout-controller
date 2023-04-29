@@ -10,6 +10,7 @@ import (
 // InitAPI Initializes the router and starts listening on the specified port
 func InitAPI() {
 	addr := ":" + constants.PORT
+	log.Println("Initializing the API Server")
 	log.Fatal(http.ListenAndServe(addr, initRouter()))
 }
 
@@ -28,8 +29,6 @@ func initMetricsSubRouter(r *mux.Router) {
 	s := r.PathPrefix("/metrics").Subrouter()
 
 	// Route handles & endpoints
-	// TODO Samples below. Delete later.
-	s.HandleFunc("/books", getBooks).Methods("GET")
 
 	// Websocket Sample
 	s.HandleFunc("/ws", handleWebSocket)
@@ -38,10 +37,9 @@ func initMetricsSubRouter(r *mux.Router) {
 func initBrownoutSubRouter(r *mux.Router) {
 	s := r.PathPrefix("/brownout").Subrouter()
 
-	// TODO Samples below. Delete later.
-	s.HandleFunc("/books", getBooks).Methods("GET")
-	s.HandleFunc("/books/{id}", getBook).Methods("GET")
-	s.HandleFunc("/books", createBook).Methods("POST")
-	s.HandleFunc("/books/{id}", updateBook).Methods("PUT")
-	s.HandleFunc("/books/{id}", deleteBook).Methods("DELETE")
+	// Route handles & endpoints
+	s.HandleFunc("/activate", handleBrownoutActivation).Methods("POST")
+	s.HandleFunc("/deactivate", handleBrownoutDeactivation).Methods("POST")
+	s.HandleFunc("/battery/set", handleSetBattery).Methods("POST")
+
 }

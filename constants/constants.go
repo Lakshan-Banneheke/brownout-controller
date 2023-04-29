@@ -3,7 +3,8 @@ package constants
 const (
 	OPTIONAL                      = "optional"
 	NAMESPACE                     = "default"
-	UPPER_THRESHOLD_POWER         = 5000
+	BATTERY_UPPER_THRESHOLD       = 80
+	BATTERY_LOWER_THRESHOLD       = 50
 	SLA_VIOLATION_LATENCY         = "0.25" //seconds
 	SLA_INTERVAL                  = "1m"
 	ACCEPTED_SUCCESS_RATE         = 0.65

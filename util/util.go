@@ -17,3 +17,15 @@ func SliceDifference(slice1, slice2 []string) []string {
 	}
 	return difference
 }
+
+// AddToDeployments functions appends values from the map deployments1 to the map deployments2 and returns deployments2
+func AddToDeployments(deployments1 map[string]int32, deployments2 map[string]int32) map[string]int32 {
+	for key, value1 := range deployments1 {
+		if value2, exists := deployments2[key]; exists {
+			deployments2[key] = value2 + value1
+		} else {
+			deployments2[key] = value1
+		}
+	}
+	return deployments2
+}
