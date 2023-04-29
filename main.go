@@ -8,11 +8,8 @@ func main() {
 	//fmt.Println("Initial Power: ", powerModel.GetPowerModel().GetPowerConsumptionPods(pods))
 	//prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY)
 
-	//nisp := policies.NISP{}
-	////rcsp := policies.RCSP{}
-	//
-	////experimentation.DoBrownoutExperimentPodPolicy(rcsp, constants.K_RSCP)
-	//experimentation.DoBrownoutExperimentNodePolicy(nisp, constants.K_NISP)
+	////experimentation.DoBrownoutExperimentPodPolicy("RCSP" constants.K_RCSP)
+	//experimentation.DoBrownoutExperimentNodePolicy("NISP", constants.K_NISP)
 
 	//experimentation.DoExperimentPodPolicies(policy, 12)
 

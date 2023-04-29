@@ -3,7 +3,6 @@ package brownout
 import (
 	"brownout-controller/constants"
 	"brownout-controller/kubernetesCluster"
-	"brownout-controller/policies"
 	"brownout-controller/powerModel"
 	"brownout-controller/prometheus"
 	"brownout-controller/util"
@@ -53,16 +52,15 @@ func runBrownout() {
 		upperThresholdPower := constants.K_VALUE * (currentPowerConsumption * constants.ACCEPTED_SUCCESS_RATE / currentSuccessRate)
 		log.Println("Calculated upper threshold Power: ", upperThresholdPower)
 
-		// Deactivate containers based on a container selection policy
-		// (Node Idling, LUCF, LRU, Random)
-		lucf := policies.LUCF{}
+		// Deactivate containers based on the container selection policy specified in constants
+		policy := getSelectedPolicy(constants.POLICY)
 
 		//DEACTIVATE_CONTAINERS(upperThresholdPower)
-		currentDeactivatedDeployments := lucf.ExecuteForCluster(upperThresholdPower)
+		currentDeactivatedDeployments := policy.ExecuteForCluster(upperThresholdPower)
 		deactivatedDeployments = util.AddToDeployments(currentDeactivatedDeployments, deactivatedDeployments)
 
 		// ACCEPTED_LOW_SUCCESS_RATE = approx. 0.50
-	} else if currentSuccessRate < constants.ACCEPTED_MINIMUM_SUCCESS_RATE {
+	} else if currentSuccessRate < constants.ACCEPTED_MIN_SUCCESS_RATE {
 		stopBrownout()
 	}
 }
