@@ -46,11 +46,11 @@ func GetAllNodeNames() []string {
 	return nodeNames
 }
 
-func GetWorkerNodeCount() int {
+func GetActiveWorkerNodeCount() int {
 	clientset := getKubernetesClientSet()
 	// retrieve all nodes in the cluster
 	nodeList, err := clientset.CoreV1().Nodes().List(context.Background(),
-		metav1.ListOptions{LabelSelector: "!node-role.kubernetes.io/master"})
+		metav1.ListOptions{LabelSelector: "!node-role.kubernetes.io/master", FieldSelector: "spec.unschedulable=false"})
 
 	if err != nil {
 		panic(err.Error())

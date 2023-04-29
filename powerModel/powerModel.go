@@ -35,7 +35,7 @@ func (model *PowerModel) GetPowerConsumptionNodes(nodeNames []string) float64 {
 // GetPowerConsumptionPods : function to compute power consumption when a set of pods given
 func (model *PowerModel) GetPowerConsumptionPods(podNames []string) float64 {
 
-	workerNodeCount := float64(kubernetesCluster.GetWorkerNodeCount()) // get the number of worker nodes
+	workerNodeCount := float64(kubernetesCluster.GetActiveWorkerNodeCount()) // get the number of worker nodes
 	return getPower(podNames, workerNodeCount, model)
 }
 
