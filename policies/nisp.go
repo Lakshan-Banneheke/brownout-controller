@@ -63,7 +63,7 @@ func (nisp NISP) executePolicy(allNodes []string, sortedNodes []string, upperThr
 		deactivatedNodes = nisp.deactivateNodes(sortedNodes[0 : i-1])
 		log.Printf("Executing LUCF for %vth node", i)                                    //  node_deployments                             // deactivate all containers of 0 to i-1 hosts
 		oneNodeDeployments := policy.ExecuteForNode(sortedNodes[i], upperThresholdPower) // deactivate some containers of ith node according to a pod selection policy
-		addToNodeDeployments(oneNodeDeployments)
+		nodeDeployments = util.AddToDeployments(oneNodeDeployments, nodeDeployments)
 
 		return nodeDeployments, deactivatedNodes
 	}
@@ -72,18 +72,7 @@ func (nisp NISP) executePolicy(allNodes []string, sortedNodes []string, upperThr
 func (nisp NISP) deactivateNodes(nodeList []string) []string {
 	for _, node := range nodeList {
 		oneNodeDeployments := kubernetesCluster.DeactivateNode(node, constants.NAMESPACE, constants.OPTIONAL)
-		addToNodeDeployments(oneNodeDeployments)
+		nodeDeployments = util.AddToDeployments(oneNodeDeployments, nodeDeployments)
 	}
 	return nodeList
-}
-
-// functions appends values from the map oneNodeDeployments to the map nodeDeployments
-func addToNodeDeployments(oneNodeDeployments map[string]int32) {
-	for key, value1 := range oneNodeDeployments {
-		if value2, exists := nodeDeployments[key]; exists {
-			nodeDeployments[key] = value2 + value1
-		} else {
-			nodeDeployments[key] = value1
-		}
-	}
 }
