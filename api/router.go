@@ -40,13 +40,6 @@ func initBrownoutSubRouter(r *mux.Router) {
 	// Route handles & endpoints
 	s.HandleFunc("/activate", handleBrownoutActivation).Methods("POST")
 	s.HandleFunc("/deactivate", handleBrownoutDeactivation).Methods("POST")
+	s.HandleFunc("/battery/set", handleSetBattery).Methods("POST")
 
-	// TODO endpoint to get battery percentage
-
-	// TODO Samples below. Delete later.
-	s.HandleFunc("/books", getBooks).Methods("GET")
-	s.HandleFunc("/books/{id}", getBook).Methods("GET")
-	s.HandleFunc("/books", createBook).Methods("POST")
-	s.HandleFunc("/books/{id}", updateBook).Methods("PUT")
-	s.HandleFunc("/books/{id}", deleteBook).Methods("DELETE")
 }

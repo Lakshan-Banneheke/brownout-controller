@@ -1,12 +1,14 @@
 package brownout
 
+import "log"
+
 var batteryPercentage int
 
-// User can use this API endpoint to periodically send the battery percentage to the brownout controller
-func setBatteryPercentage(y int) {
+func SetBatteryPercentage(y int) {
+	log.Printf("Battery percentage set to %v%%", y)
 	batteryPercentage = y
 }
 
-func getBatteryPercentage() int {
+func GetBatteryPercentage() int {
 	return batteryPercentage
 }
