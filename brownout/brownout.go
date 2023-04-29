@@ -15,24 +15,28 @@ var deactivatedDeployments = map[string]int32{}
 
 // ActivateBrownout is triggered if the signal is sent to activate the brownout algorithm through the API
 func ActivateBrownout() {
-	log.Println("Brownout has been activated")
+	log.Println("Brownout Activated")
+
 	for {
-		log.Printf("Checking battery percentage. Battery is at %v%%", batteryPercentage)
-		if batteryPercentage < constants.BATTERY_LOWER_THRESHOLD {
-			log.Printf("Battery percentage less than %v%%. Executing Brownout in the cluster", constants.BATTERY_LOWER_THRESHOLD)
-			runBrownout()
-		} else if batteryPercentage > constants.BATTERY_UPPER_THRESHOLD {
-			log.Printf("Battery percentage greater than %v%%. Stopping Brownout in the cluster", constants.BATTERY_UPPER_THRESHOLD)
-			stopBrownout()
+		if brownoutActive {
+			log.Printf("Checking battery percentage. Battery is at %v%%", batteryPercentage)
+			if batteryPercentage < constants.BATTERY_LOWER_THRESHOLD {
+				log.Printf("Battery percentage less than %v%%. Executing Brownout in the cluster", constants.BATTERY_LOWER_THRESHOLD)
+				runBrownout()
+			} else if batteryPercentage > constants.BATTERY_UPPER_THRESHOLD {
+				log.Printf("Battery percentage greater than %v%%. Stopping Brownout in the cluster", constants.BATTERY_UPPER_THRESHOLD)
+				stopBrownout()
+			}
+			time.Sleep(5 * time.Minute)
+		} else {
+			break
 		}
-		time.Sleep(5 * time.Minute)
 	}
 }
 
-// DeactivateBrownout is triggered if the signal is sent to activate the brownout algorithm through the API
 func DeactivateBrownout() {
-	log.Println("Brownout has been deactivated")
 	stopBrownout()
+	log.Println("Brownout Deactivated")
 }
 
 func runBrownout() {
