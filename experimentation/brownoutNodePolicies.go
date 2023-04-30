@@ -3,7 +3,6 @@ package experimentation
 import (
 	"brownout-controller/constants"
 	"brownout-controller/kubernetesCluster"
-	"brownout-controller/policies"
 	"brownout-controller/powerModel"
 	"brownout-controller/prometheus"
 	"log"
@@ -11,7 +10,7 @@ import (
 
 // DoBrownoutExperimentNodePolicy Deactivate containers based on a container selection policy
 // (LUCF, LRU, Random)
-func DoBrownoutExperimentNodePolicy(policy policies.IPolicyNodes, policyK float64) {
+func DoBrownoutExperimentNodePolicy(policy string, policyK float64) {
 
 	currentSuccessRate := prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY)
 	log.Println("Initial SR: ", currentSuccessRate)

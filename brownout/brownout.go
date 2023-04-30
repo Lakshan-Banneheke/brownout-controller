@@ -57,7 +57,7 @@ func runBrownout() {
 
 		//DEACTIVATE_CONTAINERS(upperThresholdPower)
 		currentDeactivatedDeployments := policy.ExecuteForCluster(upperThresholdPower)
-		deactivatedDeployments = util.AddToDeployments(currentDeactivatedDeployments, deactivatedDeployments)
+		deactivatedDeployments = util.AddDeployments(currentDeactivatedDeployments, deactivatedDeployments)
 
 		// ACCEPTED_LOW_SUCCESS_RATE = approx. 0.50
 	} else if currentSuccessRate < constants.ACCEPTED_MIN_SUCCESS_RATE {
