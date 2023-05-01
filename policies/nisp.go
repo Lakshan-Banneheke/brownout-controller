@@ -35,12 +35,12 @@ func (nisp NISP) executePolicy(allNodes []string, sortedNodes []string, upperThr
 	}
 
 	for predictedPower > upperThresholdPower {
-		log.Println("===============================================================")
 		i++
-		log.Println("i: ", i)
 		predictedClusterNodes := util.SliceDifference(allNodes, sortedNodes[0:i]) // get the nodes remaining in the cluster after deactivating nodes 0 to i (i not inclusive)
-
 		predictedPower = powerModel.GetPowerModel().GetPowerConsumptionNodesWithMigration(predictedClusterNodes, 1)
+
+		log.Println("===============================================================")
+		log.Println("i: ", i)
 		log.Println("Predicted Power", predictedPower)
 		log.Println("Upper Threshold", upperThresholdPower)
 	}
@@ -52,30 +52,33 @@ func (nisp NISP) executePolicy(allNodes []string, sortedNodes []string, upperThr
 		return deactivatedNodeDeployments
 	}
 
-	var policy IPolicyPods = LUCF{} // Can set policy (LUCF, LRU, RCSP)
-
 	if i == 1 {
-		log.Printf("i = 1. Executing LUCF for 1st node")
-		kubernetesCluster.CordonNode(sortedNodes[0])                                            // cordoning the node before executing LUCF ensures that this node is not considered in node count in the power prediction inside LUCF since it only counts active nodes
-		deactivatedNodeDeployments = policy.ExecuteForNode(sortedNodes[0], upperThresholdPower) // deactivate some containers of 0th node according to a pod selection policy
-		nisp.migrateNode(sortedNodes[0])                                                        // migrate containers of the 0th node to the other available nodes
+		log.Printf("Selected value for i = %v.", i)
+		nisp.executePolicyForNode(sortedNodes[i-1], upperThresholdPower)
+		nisp.migrateNode(sortedNodes[i-1]) // migrate containers of the 0th node to the other available nodes
 		return deactivatedNodeDeployments
 	} else {
-		log.Printf("i = %v. Deactivating all pods in %v nodes", i, i-1)
+		log.Printf("Selected value for i = %v. Deactivating all pods in %v nodes", i, i-1)
 		nisp.deactivateNodes(sortedNodes[0 : i-1]) // deactivate all containers of nodes 0 to i-1 hosts (i-1 not inclusive)
-		log.Printf("Executing LUCF for %vth node", i)
-		kubernetesCluster.CordonNode(sortedNodes[0])
-		oneNodeDeactivatedDeployments := policy.ExecuteForNode(sortedNodes[i-1], upperThresholdPower) // deactivate some containers of i-1th node according to a pod selection policy
-		nisp.migrateNode(sortedNodes[i-1])                                                            // migrate containers of the i-1th node to the other available nodes
-		deactivatedNodeDeployments = util.AddDeployments(oneNodeDeactivatedDeployments, deactivatedNodeDeployments)
+		nisp.executePolicyForNode(sortedNodes[i-1], upperThresholdPower)
+		nisp.migrateNode(sortedNodes[i-1])
 		return deactivatedNodeDeployments
 	}
 }
 
+func (nisp NISP) executePolicyForNode(nodeName string, upperThresholdPower float64) {
+	policy := util.GetSelectedPodPolicy(constants.NISP_PER_NODE_POLICY)
+	log.Printf("Executing LUCF in node %s", nodeName)
+	kubernetesCluster.CordonNode(nodeName)                                                                      // cordoning the node before executing LUCF ensures that this node is not considered in node count in the power prediction inside LUCF since it only counts active nodes
+	oneNodeDeactivatedDeployments := policy.ExecuteForNode(nodeName, upperThresholdPower)                       // deactivate some containers of 0th node according to a pod selection policy
+	deactivatedNodeDeployments = util.AddDeployments(oneNodeDeactivatedDeployments, deactivatedNodeDeployments) // add to global variable deactivatedNodeDeployments
+}
+
 func (nisp NISP) deactivateNodes(nodeList []string) {
 	for _, node := range nodeList {
-		oneNodeDeployments := kubernetesCluster.DeactivateNode(node, constants.NAMESPACE, constants.OPTIONAL)
-		deactivatedNodeDeployments = util.AddDeployments(oneNodeDeployments, deactivatedNodeDeployments)
+		log.Printf("Deactivating node %s", node)
+		oneNodeDeactivatedDeployments := kubernetesCluster.DeactivateNode(node, constants.NAMESPACE, constants.OPTIONAL)
+		deactivatedNodeDeployments = util.AddDeployments(oneNodeDeactivatedDeployments, deactivatedNodeDeployments)
 	}
 }
 

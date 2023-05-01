@@ -53,7 +53,7 @@ func runBrownout() {
 		log.Println("Calculated upper threshold Power: ", upperThresholdPower)
 
 		// Deactivate containers based on the container selection policy specified in constants
-		policy := getSelectedPolicy(constants.POLICY)
+		policy := util.GetSelectedPolicy(constants.POLICY)
 
 		//DEACTIVATE_CONTAINERS(upperThresholdPower)
 		currentDeactivatedDeployments := policy.ExecuteForCluster(upperThresholdPower)

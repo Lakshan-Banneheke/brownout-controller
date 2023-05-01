@@ -1,5 +1,10 @@
 package util
 
+import (
+	"brownout-controller/policies"
+	"fmt"
+)
+
 // SliceDifference returns the difference between two string slices.
 // The difference here means that the values which are in slice1 but not present in slice2.
 func SliceDifference(slice1, slice2 []string) []string {
@@ -28,4 +33,32 @@ func AddDeployments(deployments1 map[string]int32, deployments2 map[string]int32
 		}
 	}
 	return deployments2
+}
+
+func GetSelectedPolicy(policyName string) policies.IPolicy {
+	switch policyName {
+	case "NISP":
+		return policies.NISP{}
+	case "LUCF":
+		return policies.LUCF{}
+	case "HUCF":
+		return policies.HUCF{}
+	case "RCSP":
+		return policies.RCSP{}
+	default:
+		panic(fmt.Sprintf("Error: Policy %s not available", policyName))
+	}
+}
+
+func GetSelectedPodPolicy(policyName string) policies.IPolicyPods {
+	switch policyName {
+	case "LUCF":
+		return policies.LUCF{}
+	case "HUCF":
+		return policies.HUCF{}
+	case "RCSP":
+		return policies.RCSP{}
+	default:
+		panic(fmt.Sprintf("Error: Policy %s not available", policyName))
+	}
 }
