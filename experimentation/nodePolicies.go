@@ -38,6 +38,7 @@ func DoExperimentNodePolicies(policyName string, upperThresholdPower float64) {
 
 		srList = append(srList, prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY))
 		// get power consumption of the pods
+		// NOTE: Don't use GetPowerConsumptionNodesWithMigration() here as migration has already happened
 		predictedPowerList = append(predictedPowerList, powerModel.GetPowerModel().GetPowerConsumptionNodes(activeNodes))
 		log.Println("Predicted Power List: ", predictedPowerList)
 		log.Println("SR List: ", srList)

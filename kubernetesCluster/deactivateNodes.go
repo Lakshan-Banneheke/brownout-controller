@@ -9,7 +9,7 @@ import (
 // DeactivateNode function returns the deactivated deployment map
 func DeactivateNode(nodeName string, namespace string, categoryLabel string) map[string]int32 {
 	// cordon the node so that new pods cannot be scheduled on it
-	cordonNode(nodeName)
+	CordonNode(nodeName)
 
 	pods := GetPodsInNodeCategory(nodeName, namespace, categoryLabel)
 	deployments := DeactivatePods(pods, namespace)
@@ -19,7 +19,7 @@ func DeactivateNode(nodeName string, namespace string, categoryLabel string) map
 	return deployments
 }
 
-func cordonNode(nodeName string) {
+func CordonNode(nodeName string) {
 	clientset := getKubernetesClientSet()
 	node, err := clientset.CoreV1().Nodes().Get(context.Background(), nodeName, metav1.GetOptions{})
 	if err != nil {

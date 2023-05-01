@@ -2,6 +2,7 @@ package constants
 
 const (
 	POLICY                    = "NISP" // Options: NISP, LUCF, HUCF, RCSP
+	NISP_PER_NODE_POLICY      = "LUCF"
 	OPTIONAL                  = "optional"
 	NAMESPACE                 = "default"
 	BATTERY_UPPER_THRESHOLD   = 80

@@ -32,6 +32,14 @@ func (model *PowerModel) GetPowerConsumptionNodes(nodeNames []string) float64 {
 	return getPower(podNames, workerNodeCount, model)
 }
 
+// GetPowerConsumptionNodesWithMigration : function to compute power consumption when a set of nodes given and pods of m nodes are migrated
+func (model *PowerModel) GetPowerConsumptionNodesWithMigration(nodeNames []string, m int) float64 {
+
+	podNames := kubernetesCluster.GetPodsInNodes(nodeNames, constants.NAMESPACE) // retrieve all the pod names of the given nodes
+	workerNodeCount := float64(len(nodeNames) - 1 - m)                           // get the number of active worker nodes after m nodes are migrated
+	return getPower(podNames, workerNodeCount, model)
+}
+
 // GetPowerConsumptionPods : function to compute power consumption when a set of pods given
 func (model *PowerModel) GetPowerConsumptionPods(podNames []string) float64 {
 
