@@ -3,6 +3,7 @@ package powerModel
 import (
 	"brownout-controller/constants"
 	"brownout-controller/kubernetesCluster"
+	"log"
 	"sync"
 )
 
@@ -29,6 +30,7 @@ func (model *PowerModel) GetPowerConsumptionNodes(nodeNames []string) float64 {
 
 	podNames := kubernetesCluster.GetPodsInNodes(nodeNames, constants.NAMESPACE) // retrieve all the pod names of the given nodes
 	workerNodeCount := float64(len(nodeNames)) - 1                               // get the number of worker nodes
+	log.Printf("Active worker node count: %v", workerNodeCount)
 	return getPower(podNames, workerNodeCount, model)
 }
 
@@ -37,6 +39,7 @@ func (model *PowerModel) GetPowerConsumptionNodesWithMigration(nodeNames []strin
 
 	podNames := kubernetesCluster.GetPodsInNodes(nodeNames, constants.NAMESPACE) // retrieve all the pod names of the given nodes
 	workerNodeCount := float64(len(nodeNames) - 1 - m)                           // get the number of active worker nodes after m nodes are migrated
+	log.Printf("Active worker node count: %v", workerNodeCount)
 	return getPower(podNames, workerNodeCount, model)
 }
 
@@ -44,6 +47,7 @@ func (model *PowerModel) GetPowerConsumptionNodesWithMigration(nodeNames []strin
 func (model *PowerModel) GetPowerConsumptionPods(podNames []string) float64 {
 
 	workerNodeCount := float64(kubernetesCluster.GetActiveWorkerNodeCount()) // get the number of worker nodes
+	log.Printf("Active worker node count: %v", workerNodeCount)
 	return getPower(podNames, workerNodeCount, model)
 }
 
