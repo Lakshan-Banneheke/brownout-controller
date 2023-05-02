@@ -1,8 +1,17 @@
 package main
 
-import "brownout-controller/api"
+import (
+	"brownout-controller/experimentation"
+	"os"
+	"strconv"
+)
 
 func main() {
+
+	policy := os.Getenv("policy") // get policy name from env variables eg: NISP
+	uts := os.Getenv("UT")        // get upper threshold from env variables
+	ut, _ := strconv.ParseFloat(uts, 64)
+	experimentation.DoExperimentNodePolicies(policy, ut)
 
 	//pods := kubernetesCluster.GetPodNamesAll(constants.NAMESPACE)
 	//fmt.Println("Initial Power: ", powerModel.GetPowerModel().GetPowerConsumptionPods(pods))
@@ -10,8 +19,6 @@ func main() {
 
 	////experimentation.DoBrownoutExperimentPodPolicy("RCSP" constants.K_RCSP)
 	//experimentation.DoBrownoutExperimentNodePolicy("NISP", constants.K_NISP)
-
-	//experimentation.DoExperimentPodPolicies(policy, 12)
 
 	//fmt.Println(prometheus.GetSLAViolationRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY))
 	//fmt.Println(prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY))
@@ -22,12 +29,4 @@ func main() {
 	//	time.Sleep(30 * time.Second)
 	//}
 
-	//kubernetesCluster.DeactivateNode("test-node-worker-3", constants.NAMESPACE, constants.OPTIONAL)
-	//kubernetesCluster.DeactivateNode("test-node-worker-5", constants.NAMESPACE, constants.OPTIONAL)
-
-	//kubernetesCluster.UncordonAllNodes()
-
-	//log.Println(kubernetesCluster.GetActiveWorkerNodeCount())
-
-	api.InitAPI()
 }

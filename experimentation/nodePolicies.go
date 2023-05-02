@@ -5,34 +5,33 @@ import (
 	"brownout-controller/kubernetesCluster"
 	"brownout-controller/powerModel"
 	"brownout-controller/prometheus"
-	"fmt"
 	"log"
 	"time"
 )
 
 func DoExperimentNodePolicies(policyName string, upperThresholdPower float64) {
+	log.Printf("Running experiment for %s policy at UT = %v W", policyName, upperThresholdPower)
+
 	policy := getSelectedPolicy(policyName)
 
 	pods := kubernetesCluster.GetPodNamesAll(constants.NAMESPACE)
-	fmt.Println("Initial Power: ", powerModel.GetPowerModel().GetPowerConsumptionPods(pods))
+	log.Println("Initial Power: ", powerModel.GetPowerModel().GetPowerConsumptionPods(pods))
 	prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY)
 
 	deactivatedPods := policy.ExecuteForCluster(upperThresholdPower)
 	log.Println("Deactivated Pods: ", deactivatedPods)
 
-	log.Println("Waiting 3 minutes")
-	time.Sleep(3 * time.Minute)
+	log.Println("Waiting 4 minutes")
+	time.Sleep(4 * time.Minute)
 
-	allClusterPods := kubernetesCluster.GetPodNamesAll(constants.NAMESPACE)
 	activeNodes := kubernetesCluster.GetActiveNodeNames()
 
-	log.Println("Pods after deactivation: ", allClusterPods)
 	log.Println("Active nodes after deactivation: ", activeNodes)
 
 	var predictedPowerList []float64
 	var srList []float64
 
-	fmt.Println("Getting power and SR")
+	log.Println("Getting power and SR")
 	for i := 1; i <= 30; i++ {
 		log.Println("==================================================================")
 
