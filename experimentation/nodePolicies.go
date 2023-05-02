@@ -20,8 +20,8 @@ func DoExperimentNodePolicies(policyName string, upperThresholdPower float64) {
 	deactivatedPods := policy.ExecuteForCluster(upperThresholdPower)
 	log.Println("Deactivated Pods: ", deactivatedPods)
 
-	log.Println("Waiting 4 minutes")
-	time.Sleep(4 * time.Minute)
+	log.Println("Waiting 5 minutes")
+	time.Sleep(5 * time.Minute)
 
 	activeNodes := kubernetesCluster.GetActiveNodeNames()
 
