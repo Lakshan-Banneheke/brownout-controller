@@ -7,7 +7,7 @@ import (
 )
 
 func ActivatePods(deploymentMap map[string]int32, namespace string) {
-	uncordonAllNodes()
+	UncordonAllNodes()
 	for deploymentName, value := range deploymentMap {
 		scaleUpDeployment(deploymentName, value, namespace)
 	}
@@ -30,7 +30,7 @@ func scaleUpDeployment(deploymentName string, count int32, namespace string) {
 	log.Printf("Deployment %s in namespace %s scaled up to %d replicas\n", deploymentName, namespace, updatedScale.Spec.Replicas)
 }
 
-func uncordonAllNodes() {
+func UncordonAllNodes() {
 	log.Println("Uncordoning all cordoned nodes")
 	clientset := getKubernetesClientSet()
 	nodes, err := clientset.CoreV1().Nodes().List(context.Background(), metav1.ListOptions{})

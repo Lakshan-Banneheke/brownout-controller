@@ -32,7 +32,7 @@ func (absPolicy AbstractPolicy) executePolicy(allClusterPods []string, sortedPod
 		log.Println("===============================================================")
 		log.Println("Iteration: ", i)
 		log.Println("m: ", m)
-		podsToDeactivate = sortedPods[:m+1]
+		podsToDeactivate = sortedPods[:m]
 
 		// get the pods remaining in the cluster after deactivating above pods
 		predictedClusterPods := util.SliceDifference(allClusterPods, podsToDeactivate)

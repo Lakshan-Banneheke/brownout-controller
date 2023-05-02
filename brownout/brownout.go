@@ -3,6 +3,7 @@ package brownout
 import (
 	"brownout-controller/constants"
 	"brownout-controller/kubernetesCluster"
+	"brownout-controller/policies"
 	"brownout-controller/powerModel"
 	"brownout-controller/prometheus"
 	"brownout-controller/util"
@@ -53,7 +54,7 @@ func runBrownout() {
 		log.Println("Calculated upper threshold Power: ", upperThresholdPower)
 
 		// Deactivate containers based on the container selection policy specified in constants
-		policy := util.GetSelectedPolicy(constants.POLICY)
+		policy := policies.GetSelectedPolicy(constants.POLICY)
 
 		//DEACTIVATE_CONTAINERS(upperThresholdPower)
 		currentDeactivatedDeployments := policy.ExecuteForCluster(upperThresholdPower)

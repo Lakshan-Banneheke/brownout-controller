@@ -7,11 +7,11 @@ import (
 )
 
 // DeactivateNode function returns the deactivated deployment map
-func DeactivateNode(nodeName string, namespace string, categoryLabel string) map[string]int32 {
+func DeactivateNode(nodeName string, namespace string) map[string]int32 {
 	// cordon the node so that new pods cannot be scheduled on it
 	CordonNode(nodeName)
 
-	pods := GetPodsInNodeCategory(nodeName, namespace, categoryLabel)
+	pods := GetPodsInNode(nodeName, namespace)
 	deployments := DeactivatePods(pods, namespace)
 
 	log.Printf("All pods in node %s has been deactivated. The node is now idle\n", nodeName)
