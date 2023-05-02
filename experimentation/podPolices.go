@@ -3,6 +3,7 @@ package experimentation
 import (
 	"brownout-controller/constants"
 	"brownout-controller/kubernetesCluster"
+	"brownout-controller/policies"
 	"brownout-controller/powerModel"
 	"brownout-controller/prometheus"
 	"fmt"
@@ -11,7 +12,7 @@ import (
 )
 
 func DoExperimentPodPolicies(policyName string, upperThresholdPower float64) {
-	policy := getSelectedPolicy(policyName)
+	policy := policies.GetSelectedPolicy(policyName)
 	deactivatedPods := policy.ExecuteForCluster(upperThresholdPower)
 	log.Println("Deactivated Pods: ", deactivatedPods)
 

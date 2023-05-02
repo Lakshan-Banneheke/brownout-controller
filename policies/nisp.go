@@ -68,7 +68,7 @@ func (nisp NISP) executePolicy(allNodes []string, sortedNodes []string, upperThr
 }
 
 func (nisp NISP) executePolicyForNode(nodeName string, upperThresholdPower float64) {
-	policy := util.GetSelectedPodPolicy(constants.NISP_PER_NODE_POLICY)
+	policy := GetSelectedPodPolicy(constants.NISP_PER_NODE_POLICY)
 	log.Printf("Executing LUCF in node %s", nodeName)
 	kubernetesCluster.CordonNode(nodeName)                                                                                // cordoning the node before executing LUCF ensures that this node is not considered in node count in the power prediction inside LUCF since it only counts active nodes
 	oneNodeDeactivatedDeployments := policy.ExecuteForNode(nodeName, upperThresholdPower)                                 // deactivate some containers of 0th node according to a pod selection policy

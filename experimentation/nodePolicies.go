@@ -3,6 +3,7 @@ package experimentation
 import (
 	"brownout-controller/constants"
 	"brownout-controller/kubernetesCluster"
+	"brownout-controller/policies"
 	"brownout-controller/powerModel"
 	"brownout-controller/prometheus"
 	"log"
@@ -12,7 +13,7 @@ import (
 func DoExperimentNodePolicies(policyName string, upperThresholdPower float64) {
 	log.Printf("Running experiment for %s policy at UT = %v W", policyName, upperThresholdPower)
 
-	policy := getSelectedPolicy(policyName)
+	policy := policies.GetSelectedPolicy(policyName)
 
 	pods := kubernetesCluster.GetPodNamesAll(constants.NAMESPACE)
 	log.Println("Initial Power: ", powerModel.GetPowerModel().GetPowerConsumptionPods(pods))
