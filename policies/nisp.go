@@ -78,7 +78,7 @@ func (nisp NISP) executePolicyForNode(nodeName string, upperThresholdPower float
 func (nisp NISP) deactivateNodes(nodeList []string) {
 	for _, node := range nodeList {
 		log.Printf("Deactivating node %s", node)
-		oneNodeDeactivatedDeployments := kubernetesCluster.DeactivateNode(node, constants.NAMESPACE, constants.OPTIONAL)
+		oneNodeDeactivatedDeployments := kubernetesCluster.DeactivateNode(node, constants.NAMESPACE)
 		nisp.deactivatedNodeDeployments = util.AddDeployments(oneNodeDeactivatedDeployments, nisp.deactivatedNodeDeployments)
 	}
 }
