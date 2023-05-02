@@ -57,7 +57,7 @@ func DoExperimentNodePolicies(policyName string, upperThresholdPower float64) {
 
 	log.Println("Average SR: ", avgSr)
 	log.Println("Average Power: ", avgPower)
-
+	kubernetesCluster.UncordonAllNodes()
 	//log.Println("Upper threshold power: ", upperThresholdPower)
 
 }
