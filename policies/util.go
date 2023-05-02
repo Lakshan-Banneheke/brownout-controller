@@ -4,6 +4,8 @@ import "fmt"
 
 func GetSelectedPolicy(policyName string) IPolicy {
 	switch policyName {
+	case "NIMSP":
+		return NIMSP{}
 	case "NISP":
 		return NISP{}
 	case "LUCF":
