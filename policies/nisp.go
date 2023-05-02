@@ -86,5 +86,5 @@ func (nisp NISP) deactivateNodes(nodeList []string) {
 func (nisp NISP) migrateNode(nodeName string) {
 	log.Printf("Migrating all pods in node %s", nodeName)
 	kubernetesCluster.CordonNode(nodeName)
-	kubernetesCluster.DeletePodsInNode(nodeName, constants.NAMESPACE, constants.OPTIONAL)
+	kubernetesCluster.DeletePodsInNode(nodeName, constants.NAMESPACE)
 }

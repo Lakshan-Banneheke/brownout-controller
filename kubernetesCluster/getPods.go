@@ -83,6 +83,25 @@ func GetPodsInNodeCategory(nodeName string, namespace string, categoryLabel stri
 	return podNames
 }
 
+func GetPodsInNode(nodeName string, namespace string) []string {
+	clientset := getKubernetesClientSet()
+	// get the list of pods that match the categoryLabel selector (optional or mandatory)
+	podList, err := clientset.CoreV1().Pods(namespace).List(context.Background(),
+		metav1.ListOptions{FieldSelector: "spec.nodeName=" + nodeName})
+
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	// create a list of pod names
+	var podNames []string
+	for _, pod := range podList.Items {
+		podNames = append(podNames, pod.Name)
+	}
+
+	return podNames
+}
+
 // GetPodsInNodes : function to retrieve the list of pods in a given set of nodes
 func GetPodsInNodes(nodeNames []string, namespace string) []string {
 	clientset := getKubernetesClientSet()
