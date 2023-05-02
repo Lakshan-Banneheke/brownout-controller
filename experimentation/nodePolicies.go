@@ -15,9 +15,9 @@ func DoExperimentNodePolicies(policyName string, upperThresholdPower float64) {
 
 	policy := policies.GetSelectedPolicy(policyName)
 
+	prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY)
 	pods := kubernetesCluster.GetPodNamesAll(constants.NAMESPACE)
 	log.Println("Initial Power: ", powerModel.GetPowerModel().GetPowerConsumptionPods(pods))
-	prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY)
 
 	deactivatedPods := policy.ExecuteForCluster(upperThresholdPower)
 	log.Println("Deactivated Pods: ", deactivatedPods)
