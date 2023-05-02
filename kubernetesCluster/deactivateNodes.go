@@ -1,13 +1,39 @@
 package kubernetesCluster
 
-import "log"
+import (
+	"context"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"log"
+)
 
 // DeactivateNode function returns the deactivated deployment map
-func DeactivateNode(nodeName string, namespace string, categoryLabel string) map[string]int32 {
-	pods := GetPodsInNodeCategory(nodeName, namespace, categoryLabel)
+func DeactivateNode(nodeName string, namespace string) map[string]int32 {
+	// cordon the node so that new pods cannot be scheduled on it
+	CordonNode(nodeName)
+
+	pods := GetPodsInNode(nodeName, namespace)
 	deployments := DeactivatePods(pods, namespace)
-	// TODO Do something to prevent new pods from being created in that node.
-	// Cordon off the node? But then how can it be reconnected
+
 	log.Printf("All pods in node %s has been deactivated. The node is now idle\n", nodeName)
+
 	return deployments
+}
+
+func CordonNode(nodeName string) {
+	clientset := getKubernetesClientSet()
+	node, err := clientset.CoreV1().Nodes().Get(context.Background(), nodeName, metav1.GetOptions{})
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	node.Spec.Unschedulable = true
+	node, err = clientset.CoreV1().Nodes().Update(context.Background(), node, metav1.UpdateOptions{})
+	if err != nil {
+		log.Println(err.Error())
+	}
+	if node.Spec.Unschedulable {
+		log.Printf("Node %s has been cordoned\n", nodeName)
+	} else {
+		log.Printf("Error: Node %s is not cordoned\n", nodeName)
+	}
 }

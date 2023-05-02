@@ -6,41 +6,37 @@ import (
 	"brownout-controller/policies"
 	"brownout-controller/powerModel"
 	"brownout-controller/prometheus"
-	"brownout-controller/util"
-	"fmt"
 	"log"
 	"time"
 )
 
-func DoExperimentNodePolicies(policy policies.IPolicyNodes, upperThresholdPower float64) {
+func DoExperimentNodePolicies(policyName string, upperThresholdPower float64) {
+	log.Printf("Running experiment for %s policy at Upper Threshold = %vW", policyName, upperThresholdPower)
 
-	pods := kubernetesCluster.GetPodNamesAll(constants.NAMESPACE)
-	fmt.Println("Initial Power: ", powerModel.GetPowerModel().GetPowerConsumptionPods(pods))
+	policy := policies.GetSelectedPolicy(policyName)
+
 	prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY)
 
-	deactivatedPods, deactivatedNodes := policy.ExecuteForCluster(upperThresholdPower)
+	deactivatedPods := policy.ExecuteForCluster(upperThresholdPower)
 	log.Println("Deactivated Pods: ", deactivatedPods)
-	log.Println("Deactivated Nodes: ", deactivatedNodes)
 
-	log.Println("Waiting 3 minutes")
-	time.Sleep(3 * time.Minute)
+	log.Println("Waiting 5 minutes")
+	time.Sleep(5 * time.Minute)
 
-	allClusterPods := kubernetesCluster.GetPodNamesAll(constants.NAMESPACE)
-	allNodes := kubernetesCluster.GetAllNodeNames()
-	activeNodes := util.SliceDifference(allNodes, deactivatedNodes)
+	activeNodes := kubernetesCluster.GetActiveNodeNames()
 
-	log.Println("Pods after deactivation: ", allClusterPods)
 	log.Println("Active nodes after deactivation: ", activeNodes)
 
 	var predictedPowerList []float64
 	var srList []float64
 
-	fmt.Println("Getting power and SR")
+	log.Println("Getting power and SR")
 	for i := 1; i <= 30; i++ {
 		log.Println("==================================================================")
 
 		srList = append(srList, prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY))
 		// get power consumption of the pods
+		// NOTE: Don't use GetPowerConsumptionNodesWithMigration() here as migration has already happened
 		predictedPowerList = append(predictedPowerList, powerModel.GetPowerModel().GetPowerConsumptionNodes(activeNodes))
 		log.Println("Predicted Power List: ", predictedPowerList)
 		log.Println("SR List: ", srList)
@@ -60,7 +56,7 @@ func DoExperimentNodePolicies(policy policies.IPolicyNodes, upperThresholdPower 
 
 	log.Println("Average SR: ", avgSr)
 	log.Println("Average Power: ", avgPower)
-
+	kubernetesCluster.UncordonAllNodes()
 	//log.Println("Upper threshold power: ", upperThresholdPower)
 
 }

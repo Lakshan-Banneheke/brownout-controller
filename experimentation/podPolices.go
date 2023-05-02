@@ -11,7 +11,12 @@ import (
 	"time"
 )
 
-func DoExperimentPodPolicies(policy policies.IPolicyPods, upperThresholdPower float64) {
+func DoExperimentPodPolicies(policyName string, upperThresholdPower float64) {
+	log.Printf("Running experiment for %s policy at Upper Threshold = %vW", policyName, upperThresholdPower)
+
+	policy := policies.GetSelectedPolicy(policyName)
+
+	prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY)
 
 	deactivatedPods := policy.ExecuteForCluster(upperThresholdPower)
 	log.Println("Deactivated Pods: ", deactivatedPods)
