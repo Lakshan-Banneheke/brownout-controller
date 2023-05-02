@@ -11,7 +11,7 @@ import (
 )
 
 func DoExperimentNodePolicies(policyName string, upperThresholdPower float64) {
-	log.Printf("Running experiment for %s policy at UT = %v W", policyName, upperThresholdPower)
+	log.Printf("Running experiment for %s policy at Upper Threshold = %vW", policyName, upperThresholdPower)
 
 	policy := policies.GetSelectedPolicy(policyName)
 
