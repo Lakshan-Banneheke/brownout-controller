@@ -28,10 +28,7 @@ func initRouter() *mux.Router {
 func initMetricsSubRouter(r *mux.Router) {
 	s := r.PathPrefix("/metrics").Subrouter()
 
-	// Route handles & endpoints
-
-	// Websocket Sample
-	s.HandleFunc("/ws", handleWebSocket)
+	s.HandleFunc("/power", handleGetPower)
 }
 
 func initBrownoutSubRouter(r *mux.Router) {
@@ -41,5 +38,4 @@ func initBrownoutSubRouter(r *mux.Router) {
 	s.HandleFunc("/activate", handleBrownoutActivation).Methods("POST")
 	s.HandleFunc("/deactivate", handleBrownoutDeactivation).Methods("POST")
 	s.HandleFunc("/battery/set", handleSetBattery).Methods("POST")
-
 }
