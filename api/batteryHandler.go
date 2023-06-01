@@ -3,7 +3,9 @@ package api
 import (
 	"brownout-controller/brownout"
 	"encoding/json"
+	"log"
 	"net/http"
+	"time"
 )
 
 type responseBody struct {
@@ -28,5 +30,38 @@ func handleSetBattery(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	} else {
 		http.Error(w, "Battery Percentage should be an integer between 0 and 100", http.StatusBadRequest)
+	}
+}
+
+type BatteryData struct {
+	Timestamp int64 `json:"timestamp"`
+	Battery   int   `json:"battery"`
+}
+
+func handleListenBattery(w http.ResponseWriter, r *http.Request) {
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	log.Println("Client Connected to listen battery")
+	for {
+		batteryData := BatteryData{
+			Timestamp: time.Now().Unix(),
+			Battery:   brownout.GetBatteryPercentage(),
+		}
+
+		// Send the data to the client
+		err := conn.WriteJSON(batteryData)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		log.Println("Battery percentage value written")
+		log.Printf("Timestamp: %v, Battery: %vW", batteryData.Timestamp, batteryData.Battery)
+
+		// Wait for some time before sending the next data
+		time.Sleep(30 * time.Second)
 	}
 }

@@ -28,7 +28,8 @@ func initRouter() *mux.Router {
 func initMetricsSubRouter(r *mux.Router) {
 	s := r.PathPrefix("/metrics").Subrouter()
 
-	s.HandleFunc("/power", handleGetPower)
+	s.HandleFunc("/power", handleListenPower)
+	s.HandleFunc("/battery", handleListenBattery)
 }
 
 func initBrownoutSubRouter(r *mux.Router) {
