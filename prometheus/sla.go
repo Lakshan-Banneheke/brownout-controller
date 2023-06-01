@@ -5,9 +5,9 @@ import (
 )
 
 func GetSLAViolationRatio(hostname string, interval string, latency string) float64 {
-	reqTotal := getTotalRequestCount(hostname, interval)
-	reqError := getErrorRequestCount(hostname, interval)
-	reqSlow := getSlowRequestCount(hostname, interval, latency)
+	reqTotal := GetTotalRequestCount(hostname, interval)
+	reqError := GetErrorRequestCount(hostname, interval)
+	reqSlow := GetSlowRequestCount(hostname, interval, latency)
 
 	slaViolationRatio := float64(reqSlow+reqError) / float64(reqTotal)
 	log.Printf("SLA violation ratio for host %v", slaViolationRatio)
