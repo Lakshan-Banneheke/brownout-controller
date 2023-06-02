@@ -22,11 +22,11 @@ func handleListenPodData(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pods := kubernetesCluster.GetPodNamesAll(constants.NAMESPACE)
-	podCPU := kubernetesCluster.GetPodsCPUUsageSum(pods, constants.NAMESPACE)
-
 	log.Println("Client Connected to listen pod data")
 	for {
+		pods := kubernetesCluster.GetPodNamesAll(constants.NAMESPACE)
+		podCPU := kubernetesCluster.GetPodsCPUUsageSum(pods, constants.NAMESPACE)
+
 		podData := PodData{
 			Timestamp: time.Now().Unix(),
 			PodList:   pods,
