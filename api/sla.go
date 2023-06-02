@@ -3,6 +3,7 @@ package api
 import (
 	"brownout-controller/constants"
 	"brownout-controller/prometheus"
+	"brownout-controller/variables"
 	"log"
 	"net/http"
 	"time"
@@ -29,11 +30,11 @@ func handleListenSLA(w http.ResponseWriter, r *http.Request) {
 	for {
 		slaData := SLAData{
 			Timestamp:     time.Now().Unix(),
-			TotReq:        prometheus.GetTotalRequestCount(constants.HOSTNAME, constants.SLA_INTERVAL),
-			ErrReq:        prometheus.GetErrorRequestCount(constants.HOSTNAME, constants.SLA_INTERVAL),
-			SlowReq:       prometheus.GetSlowRequestCount(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY),
-			TotSuccessReq: prometheus.GetTotalSuccessRequestCount(constants.HOSTNAME, constants.SLA_INTERVAL),
-			SLASuccess:    prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY),
+			TotReq:        prometheus.GetTotalRequestCount(constants.HOSTNAME, variables.SLA_INTERVAL),
+			ErrReq:        prometheus.GetErrorRequestCount(constants.HOSTNAME, variables.SLA_INTERVAL),
+			SlowReq:       prometheus.GetSlowRequestCount(constants.HOSTNAME, variables.SLA_INTERVAL, variables.SLA_VIOLATION_LATENCY),
+			TotSuccessReq: prometheus.GetTotalSuccessRequestCount(constants.HOSTNAME, variables.SLA_INTERVAL),
+			SLASuccess:    prometheus.GetSLASuccessRatio(constants.HOSTNAME, variables.SLA_INTERVAL, variables.SLA_VIOLATION_LATENCY),
 		}
 
 		// Send the data to the client

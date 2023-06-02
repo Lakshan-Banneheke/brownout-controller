@@ -42,4 +42,6 @@ func initBrownoutSubRouter(r *mux.Router) {
 	s.HandleFunc("/activate", handleBrownoutActivation).Methods("POST")
 	s.HandleFunc("/deactivate", handleBrownoutDeactivation).Methods("POST")
 	s.HandleFunc("/battery/set", handleSetBattery).Methods("POST")
+	s.HandleFunc("/variables/{name}", handleGetVariable).Methods("GET")
+	s.HandleFunc("/variables/{name}", handleSetVariable).Methods("POST")
 }

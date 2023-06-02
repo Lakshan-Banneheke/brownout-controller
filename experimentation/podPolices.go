@@ -6,6 +6,7 @@ import (
 	"brownout-controller/policies"
 	"brownout-controller/powerModel"
 	"brownout-controller/prometheus"
+	"brownout-controller/variables"
 	"fmt"
 	"log"
 	"time"
@@ -16,7 +17,7 @@ func DoExperimentPodPolicies(policyName string, upperThresholdPower float64) {
 
 	policy := policies.GetSelectedPolicy(policyName)
 
-	prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY)
+	prometheus.GetSLASuccessRatio(constants.HOSTNAME, variables.SLA_INTERVAL, variables.SLA_VIOLATION_LATENCY)
 
 	deactivatedPods := policy.ExecuteForCluster(upperThresholdPower)
 	log.Println("Deactivated Pods: ", deactivatedPods)
@@ -34,7 +35,7 @@ func DoExperimentPodPolicies(policyName string, upperThresholdPower float64) {
 	for i := 1; i <= 30; i++ {
 		log.Println("==================================================================")
 
-		srList = append(srList, prometheus.GetSLASuccessRatio(constants.HOSTNAME, constants.SLA_INTERVAL, constants.SLA_VIOLATION_LATENCY))
+		srList = append(srList, prometheus.GetSLASuccessRatio(constants.HOSTNAME, variables.SLA_INTERVAL, variables.SLA_VIOLATION_LATENCY))
 		// get power consumption of the pods
 		predictedPowerList = append(predictedPowerList, powerModel.GetPowerModel().GetPowerConsumptionPods(allClusterPods))
 		log.Println("Predicted Power List: ", predictedPowerList)
