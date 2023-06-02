@@ -32,6 +32,7 @@ func initMetricsSubRouter(r *mux.Router) {
 	s.HandleFunc("/battery", handleListenBattery)
 	s.HandleFunc("/sla", handleListenSLA)
 	s.HandleFunc("/nodes/list", handleListenNodeData)
+	s.HandleFunc("/pods", handleListenPodData)
 }
 
 func initBrownoutSubRouter(r *mux.Router) {
