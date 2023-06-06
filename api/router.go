@@ -18,6 +18,9 @@ func initRouter() *mux.Router {
 	// Init router
 	r := mux.NewRouter()
 
+	// Create a middleware handler for CORS
+	r.Use(corsMiddleware)
+
 	r.HandleFunc("/", home).Methods("GET")
 
 	initMetricsSubRouter(r)
