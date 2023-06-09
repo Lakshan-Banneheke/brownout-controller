@@ -5,8 +5,10 @@ import (
 	"brownout-controller/variables"
 	"encoding/json"
 	"github.com/gorilla/mux"
+	"log"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 func handleBrownoutActivation(w http.ResponseWriter, r *http.Request) {
@@ -19,6 +21,39 @@ func handleBrownoutDeactivation(w http.ResponseWriter, r *http.Request) {
 	brownout.SetBrownoutActive(false)
 	go brownout.DeactivateBrownout() // The function will be executed in a new thread (goroutine)
 	w.WriteHeader(http.StatusOK)
+}
+
+type BrownoutStatus struct {
+	Timestamp      int64 `json:"timestamp"`
+	BrownoutActive bool  `json:"brownout_active"`
+}
+
+func handleListenBrownoutStatus(w http.ResponseWriter, r *http.Request) {
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	log.Println("Client Connected to listen brownout status")
+	for {
+		brownoutStatus := BrownoutStatus{
+			Timestamp:      time.Now().Unix(),
+			BrownoutActive: brownout.GetBrownoutActive(),
+		}
+
+		// Send the data to the client
+		err := conn.WriteJSON(brownoutStatus)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		log.Println("BrownoutActive value written")
+		log.Printf("Timestamp: %v, BrownoutActive: %v", brownoutStatus.Timestamp, brownoutStatus.BrownoutActive)
+
+		// Wait for some time before sending the next data
+		time.Sleep(30 * time.Second)
+	}
 }
 
 // Get a variable value
