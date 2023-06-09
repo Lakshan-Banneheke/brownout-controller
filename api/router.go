@@ -2,6 +2,7 @@ package api
 
 import (
 	"brownout-controller/constants"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
@@ -11,15 +12,19 @@ import (
 func InitAPI() {
 	addr := ":" + constants.PORT
 	log.Println("Initializing the API Server")
-	log.Fatal(http.ListenAndServe(addr, initRouter()))
+
+	corsHandler := handlers.CORS(
+		handlers.AllowedOrigins([]string{"*"}),            // Allow requests from any origin
+		handlers.AllowedMethods([]string{"GET", "POST"}),  // Allow GET and POST methods
+		handlers.AllowedHeaders([]string{"Content-Type"}), // Allow "Content-Type" header
+	)
+
+	log.Fatal(http.ListenAndServe(addr, corsHandler(initRouter())))
 }
 
 func initRouter() *mux.Router {
 	// Init router
 	r := mux.NewRouter()
-
-	// Create a middleware handler for CORS
-	r.Use(corsMiddleware)
 
 	r.HandleFunc("/", home).Methods("GET")
 
