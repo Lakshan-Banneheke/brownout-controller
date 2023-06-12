@@ -52,7 +52,7 @@ func handleListenBrownoutStatus(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Timestamp: %v, BrownoutActive: %v", brownoutStatus.Timestamp, brownoutStatus.BrownoutActive)
 
 		// Wait for some time before sending the next data
-		time.Sleep(30 * time.Second)
+		time.Sleep(1 * time.Second)
 	}
 }
 
