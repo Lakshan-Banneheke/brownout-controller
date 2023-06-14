@@ -2,6 +2,7 @@ package api
 
 import (
 	"brownout-controller/constants"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
@@ -11,7 +12,14 @@ import (
 func InitAPI() {
 	addr := ":" + constants.PORT
 	log.Println("Initializing the API Server")
-	log.Fatal(http.ListenAndServe(addr, initRouter()))
+
+	corsHandler := handlers.CORS(
+		handlers.AllowedOrigins([]string{"*"}),            // Allow requests from any origin
+		handlers.AllowedMethods([]string{"GET", "POST"}),  // Allow GET and POST methods
+		handlers.AllowedHeaders([]string{"Content-Type"}), // Allow "Content-Type" header
+	)
+
+	log.Fatal(http.ListenAndServe(addr, corsHandler(initRouter())))
 }
 
 func initRouter() *mux.Router {
@@ -28,10 +36,12 @@ func initRouter() *mux.Router {
 func initMetricsSubRouter(r *mux.Router) {
 	s := r.PathPrefix("/metrics").Subrouter()
 
-	// Route handles & endpoints
-
-	// Websocket Sample
-	s.HandleFunc("/ws", handleWebSocket)
+	s.HandleFunc("/power", handleListenPower)
+	s.HandleFunc("/battery", handleListenBattery)
+	s.HandleFunc("/sla", handleListenSLA)
+	s.HandleFunc("/nodes/list", handleListenNodeData)
+	s.HandleFunc("/pods", handleListenPodData)
+	s.HandleFunc("/deployments", handleListenDeploymentData)
 }
 
 func initBrownoutSubRouter(r *mux.Router) {
@@ -41,5 +51,7 @@ func initBrownoutSubRouter(r *mux.Router) {
 	s.HandleFunc("/activate", handleBrownoutActivation).Methods("POST")
 	s.HandleFunc("/deactivate", handleBrownoutDeactivation).Methods("POST")
 	s.HandleFunc("/battery/set", handleSetBattery).Methods("POST")
-
+	s.HandleFunc("/variables/{name}", handleGetVariable).Methods("GET")
+	s.HandleFunc("/variables/{name}", handleSetVariable).Methods("POST")
+	s.HandleFunc("/status", handleListenBrownoutStatus)
 }

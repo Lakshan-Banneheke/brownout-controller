@@ -6,8 +6,8 @@ import (
 	"log"
 )
 
-// interval parameter can have 1m, 30m, 1d, etc
-func getTotalRequestCount(hostname string, interval string) int {
+// GetTotalRequestCount interval parameter can have 1m, 30m, 1d, etc
+func GetTotalRequestCount(hostname string, interval string) int {
 	query := fmt.Sprintf("sum by (host) (increase(nginx_ingress_controller_requests{host=~'%s'}[%s]))", hostname, interval)
 	result := doQuery(query) // Result is of type Vector
 	if result.(model.Vector).Len() == 0 {
@@ -19,8 +19,8 @@ func getTotalRequestCount(hostname string, interval string) int {
 	return reqCount
 }
 
-// interval parameter can have 1m, 30m, 1d, etc
-func getErrorRequestCount(hostname string, interval string) int {
+// GetErrorRequestCount interval parameter can have 1m, 30m, 1d, etc
+func GetErrorRequestCount(hostname string, interval string) int {
 	query := fmt.Sprintf("sum by (host) (increase(nginx_ingress_controller_requests{status=~'[4-5].*', host=~'%s'}[%s]))", hostname, interval)
 	result := doQuery(query) // Result is of type Vector
 	if result.(model.Vector).Len() == 0 {
@@ -32,19 +32,19 @@ func getErrorRequestCount(hostname string, interval string) int {
 	return reqCount
 }
 
-// getSlowRequestCount returns the count of requests which are slower than the given latency
+// GetSlowRequestCount returns the count of requests which are slower than the given latency
 // parameter latency (in seconds): 0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10
 // parameter interval: 1m, 30m, 1d, etc
-func getSlowRequestCount(hostname string, interval string, latency string) int {
-	totalSuccessReq := getTotalSuccessRequestCount(hostname, interval)
+func GetSlowRequestCount(hostname string, interval string, latency string) int {
+	totalSuccessReq := GetTotalSuccessRequestCount(hostname, interval)
 	fastReq := getFastRequestCount(hostname, interval, latency)
 	slowReq := totalSuccessReq - fastReq
 	log.Printf("Slow Request Count for host %s in the last %s for latency %s second: %v", hostname, interval, latency, slowReq)
 	return slowReq
 }
 
-// interval parameter can have 1m, 30m, 1d, etc
-func getTotalSuccessRequestCount(hostname string, interval string) int {
+// GetTotalSuccessRequestCount interval parameter can have 1m, 30m, 1d, etc
+func GetTotalSuccessRequestCount(hostname string, interval string) int {
 	query := fmt.Sprintf("sum by (host) (increase(nginx_ingress_controller_requests{status!~'[4-5].*', host=~'%s'}[%s]))", hostname, interval)
 	result := doQuery(query) // Result is of type Vector
 	if result.(model.Vector).Len() == 0 {

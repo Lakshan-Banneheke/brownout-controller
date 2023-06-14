@@ -24,6 +24,13 @@ func GetPowerModel() *PowerModel {
 	return model
 }
 
+// GetPowerConsumptionCluster : function to compute power consumption of the cluster
+func (model *PowerModel) GetPowerConsumptionCluster() float64 {
+
+	activeNodes := kubernetesCluster.GetActiveNodeNames()
+	return model.GetPowerConsumptionNodes(activeNodes)
+}
+
 // GetPowerConsumptionNodes : function to compute power consumption when a set of nodes given
 func (model *PowerModel) GetPowerConsumptionNodes(nodeNames []string) float64 {
 
